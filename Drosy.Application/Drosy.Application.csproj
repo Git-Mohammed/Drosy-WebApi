@@ -1,0 +1,20 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+    <PropertyGroup>
+        <TargetFramework>net9.0</TargetFramework>
+        <ImplicitUsings>enable</ImplicitUsings>
+        <Nullable>enable</Nullable>
+    </PropertyGroup>
+
+    <ItemGroup>
+      <ProjectReference Include="..\Drosy.Domain\Drosy.Domain.csproj" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <Folder Include="Features\Authentication\Interfaces\" />
+      <Folder Include="Features\Authentication\Services\" />
+      <Folder Include="Features\Users\DTOs\" />
+      <Folder Include="Features\Users\Services\" />
+    </ItemGroup>
+
+</Project>
