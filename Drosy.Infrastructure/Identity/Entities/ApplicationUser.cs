@@ -2,7 +2,7 @@
 
 namespace Drosy.Infrastructure.Identity.Entities
 {
-    public class ApplicationUser : IdentityUser
+    public class ApplicationUser : IdentityUser<int>
     {
 
     }

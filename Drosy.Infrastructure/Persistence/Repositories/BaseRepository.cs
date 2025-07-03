@@ -1,5 +1,5 @@
 ﻿using Drosy.Domain.Interfaces.Repository;
-using Drosy.Infrastructure.Persistence.DbContext;
+using Drosy.Infrastructure.Persistence.DbContexts;
 using Microsoft.EntityFrameworkCore;
 
 namespace Drosy.Infrastructure.Persistence.Repositories

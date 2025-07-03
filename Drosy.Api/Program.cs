@@ -1,5 +1,6 @@
 using Drosy.Api.Extensions.DependencyInjection;
 using Drosy.Api.Filters;
+using Drosy.Application.Interfaces.Common;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -15,13 +16,14 @@ builder.Services.AddOpenApi();
 builder.Services.AddSwaggerGen();
 builder.Services.AddInfrastructureServices(builder.Configuration);
 builder.Services.AddApplicationServices(builder.Configuration);
-
+builder.Services.AddDBInitializer();
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
 {
-  app.UseSwagger();
+    app.MapOpenApi();
+    app.UseSwagger();
     app.UseSwaggerUI(options =>
         options.SwaggerEndpoint("/openapi/v1.json", "api")
     );
@@ -32,5 +34,7 @@ app.UseHttpsRedirection();
 app.UseAuthorization();
 
 app.MapControllers();
+
+app.setupDBInitializer();
 
 app.Run();

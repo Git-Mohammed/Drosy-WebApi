@@ -2,7 +2,7 @@
 using Drosy.Infrastructure.Identity.Entities;
 using Drosy.Infrastructure.Logging;
 using Drosy.Infrastructure.Mapping.Configs;
-using Drosy.Infrastructure.Persistence.DbContext;
+using Drosy.Infrastructure.Persistence.DbContexts;
 using Drosy.Infrastructure.Validators;
 using FluentValidation;
 using Mapster;
@@ -32,7 +32,7 @@ namespace Drosy.Api.Extensions.DependencyInjection
 
             #region Register Identity
 
-            services.AddIdentity<ApplicationUser, IdentityRole>(options =>
+            services.AddIdentity<ApplicationUser, ApplicationRole>(options =>
             {
                 options.Password.RequireDigit = true;
                 options.Password.RequireUppercase = false;
