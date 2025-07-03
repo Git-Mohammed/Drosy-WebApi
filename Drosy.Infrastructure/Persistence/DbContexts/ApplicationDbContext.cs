@@ -3,7 +3,7 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 
-namespace Drosy.Infrastructure.Persistence.DbContext
+namespace Drosy.Infrastructure.Persistence.DbContexts
 {
     public class ApplicationDbContext(DbContextOptions<ApplicationDbContext> options)
         : IdentityDbContext<ApplicationUser,ApplicationRole,int>(options)

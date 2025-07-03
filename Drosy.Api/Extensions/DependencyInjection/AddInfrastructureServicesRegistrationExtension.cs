@@ -2,7 +2,7 @@
 using Drosy.Infrastructure.Identity.Entities;
 using Drosy.Infrastructure.Logging;
 using Drosy.Infrastructure.Mapping.Configs;
-using Drosy.Infrastructure.Persistence.DbContext;
+using Drosy.Infrastructure.Persistence.DbContexts;
 using Drosy.Infrastructure.Validators;
 using FluentValidation;
 using Mapster;
