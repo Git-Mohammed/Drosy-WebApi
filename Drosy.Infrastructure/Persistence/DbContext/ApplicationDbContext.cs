@@ -6,7 +6,7 @@ using Microsoft.EntityFrameworkCore;
 namespace Drosy.Infrastructure.Persistence.DbContext
 {
     public class ApplicationDbContext(DbContextOptions<ApplicationDbContext> options)
-        : IdentityDbContext<ApplicationUser>(options)
+        : IdentityDbContext<ApplicationUser,ApplicationRole,int>(options)
     {
         protected override void OnModelCreating(ModelBuilder builder)
         {
@@ -15,12 +15,12 @@ namespace Drosy.Infrastructure.Persistence.DbContext
 
             #region Rename Identity Tables Names
             builder.Entity<ApplicationUser>().ToTable("Users", "Identity");
-            builder.Entity<IdentityRole>().ToTable("Roles", "Identity");
-            builder.Entity<IdentityUserRole<string>>().ToTable("UserRoles", "Identity");
-            builder.Entity<IdentityUserClaim<string>>().ToTable("UserClaims", "Identity");
-            builder.Entity<IdentityUserLogin<string>>().ToTable("UserLogins", "Identity");
-            builder.Entity<IdentityRoleClaim<string>>().ToTable("RoleClaims", "Identity");
-            builder.Entity<IdentityUserToken<string>>().ToTable("UserTokens", "Identity");
+            builder.Entity<ApplicationRole>().ToTable("Roles", "Identity");
+            builder.Entity<IdentityUserRole<int>>().ToTable("UserRoles", "Identity");
+            builder.Entity<IdentityUserClaim<int>>().ToTable("UserClaims", "Identity");
+            builder.Entity<IdentityUserLogin<int>>().ToTable("UserLogins", "Identity");
+            builder.Entity<IdentityRoleClaim<int>>().ToTable("RoleClaims", "Identity");
+            builder.Entity<IdentityUserToken<int>>().ToTable("UserTokens", "Identity");
             #endregion
         }
     }

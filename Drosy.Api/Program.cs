@@ -21,7 +21,7 @@ var app = builder.Build();
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
 {
-  app.UseSwagger();
+    app.UseSwagger();
     app.UseSwaggerUI(options =>
         options.SwaggerEndpoint("/openapi/v1.json", "api")
     );
