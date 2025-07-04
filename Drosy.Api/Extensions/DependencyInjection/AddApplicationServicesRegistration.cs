@@ -1,7 +1,7 @@
 ﻿using System.Text;
 using Drosy.Application.Features.Authentication.DTOs;
-using Drosy.Application.Features.Users.Interfaces;
 using Drosy.Application.Interfaces;
+using Drosy.Application.Interfaces.Common;
 using Drosy.Infrastructure.Identity;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
@@ -13,7 +13,7 @@ namespace Drosy.Api.Extensions.DependencyInjection
         public static IServiceCollection AddApplicationServices(this IServiceCollection services, IConfiguration configuration)
         {
             #region UserServices Registration
-            services.AddScoped<IUserService, UserService>();
+            services.AddScoped<IIdentityService, IdentityService>();
             #endregion
 
             #region JWT Registration
