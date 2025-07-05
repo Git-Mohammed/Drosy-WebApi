@@ -5,6 +5,7 @@ using Drosy.Application.Interfaces.Common;
 using Drosy.Domain.Interfaces.Repository;
 using Drosy.Domain.Shared.ResultPattern;
 using Drosy.Domain.Shared.ResultPattern.ErrorComponents;
+using System.Security.Claims;
 
 namespace Drosy.Application.UsesCases.Authentication.Services
 {
@@ -42,6 +43,10 @@ namespace Drosy.Application.UsesCases.Authentication.Services
             return Result.Success(tokenResult.Value);
         }
 
+        public bool IsAuthorized(ClaimsPrincipal user, string requiredRole)
+        {
+            return user.IsInRole(requiredRole);
+        }
         public async Task<Result<AuthModel>> RefreshTokenAsync(string tokenString)
         {
             if (string.IsNullOrEmpty(tokenString)) return Result.Failure<AuthModel>(Error.NullValue);
