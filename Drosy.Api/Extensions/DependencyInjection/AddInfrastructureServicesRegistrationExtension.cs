@@ -1,8 +1,11 @@
 ﻿using Drosy.Application.Interfaces.Common;
+using Drosy.Domain.Interfaces.Repository;
 using Drosy.Infrastructure.Identity.Entities;
 using Drosy.Infrastructure.Logging;
 using Drosy.Infrastructure.Mapping.Configs;
 using Drosy.Infrastructure.Persistence.DbContexts;
+using Drosy.Infrastructure.Persistence.Repositories;
+using Drosy.Infrastructure.Persistence.UnitOfWork;
 using Drosy.Infrastructure.Validators;
 using FluentValidation;
 using Mapster;
@@ -48,6 +51,11 @@ namespace Drosy.Api.Extensions.DependencyInjection
                 option.UseSqlServer(configuration.GetConnectionString("DefaultConnection"));
             });
             #endregion
+
+            #region Custom Services
+            services.AddScoped<IUnitOfWork, UnitOfWork>();
+            services.AddScoped<IRefreshTokenRepository, RefreshTokenRepository>();
+            #endregion 
 
             return services;
         }

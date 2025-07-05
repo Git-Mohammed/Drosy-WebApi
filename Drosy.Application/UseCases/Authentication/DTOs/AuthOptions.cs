@@ -1,4 +1,4 @@
-﻿namespace Drosy.Application.Features.Authentication.DTOs
+﻿namespace Drosy.Application.UsesCases.Authentication.DTOs
 {
     public class AuthOptions
     {
