@@ -1,4 +1,5 @@
-﻿using System.Text;
+﻿
+using System.Text;
 using Drosy.Application.UsesCases.Authentication.DTOs;
 using Drosy.Application.Interfaces;
 using Drosy.Application.Interfaces.Common;
@@ -10,6 +11,8 @@ using Microsoft.IdentityModel.Tokens;
 using Drosy.Domain.Interfaces.Repository;
 using Drosy.Infrastructure.JWT;
 using Drosy.Infrastructure.Persistence.Repositories;
+using Drosy.Application.UseCases.Students.Interfaces;
+using Drosy.Application.UseCases.Students.Services;
 
 namespace Drosy.Api.Extensions.DependencyInjection
 {
@@ -24,10 +27,9 @@ namespace Drosy.Api.Extensions.DependencyInjection
             #region Custom Services
             services.AddScoped<IAuthService, AuthService>();
             services.AddScoped<IJwtService, JwtService>();
-            services.AddScoped<IRefreshTokenRepository, RefreshTokenRepository>();
-            services.AddScoped<IAppUserRepository, AppUserRepository>();
+            services.AddScoped<IStudentService, StudentService>();
             #endregion
-            
+
             #region JWT Registration
 
             var authOption = configuration.GetSection("JWT").Get<AuthOptions>();
