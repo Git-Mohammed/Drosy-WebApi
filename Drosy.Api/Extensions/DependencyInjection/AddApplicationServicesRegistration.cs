@@ -2,11 +2,11 @@
 using Drosy.Application.UsesCases.Authentication.DTOs;
 using Drosy.Application.Interfaces;
 using Drosy.Application.Interfaces.Common;
+using Drosy.Application.UseCases.Authentication.Interfaces;
+using Drosy.Application.UseCases.Authentication.Services;
 using Drosy.Infrastructure.Identity;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
-using Drosy.Application.UsesCases.Authentication.Interfaces;
-using Drosy.Application.UsesCases.Authentication.Services;
 using Drosy.Domain.Interfaces.Repository;
 using Drosy.Infrastructure.JWT;
 using Drosy.Infrastructure.Persistence.Repositories;

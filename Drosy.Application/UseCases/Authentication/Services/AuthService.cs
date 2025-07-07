@@ -1,12 +1,12 @@
-﻿using Drosy.Application.UsesCases.Authentication.DTOs;
-using Drosy.Application.UsesCases.Authentication.Interfaces;
+﻿using Drosy.Application.Interfaces.Common;
+using Drosy.Application.UseCases.Authentication.Interfaces;
+using Drosy.Application.UsesCases.Authentication.DTOs;
 using Drosy.Application.UsesCases.Users.DTOs;
-using Drosy.Application.Interfaces.Common;
 using Drosy.Domain.Interfaces.Repository;
 using Drosy.Domain.Shared.ResultPattern;
 using Drosy.Domain.Shared.ResultPattern.ErrorComponents;
 
-namespace Drosy.Application.UsesCases.Authentication.Services
+namespace Drosy.Application.UseCases.Authentication.Services
 {
     public class AuthService : IAuthService
     {
@@ -21,7 +21,7 @@ namespace Drosy.Application.UsesCases.Authentication.Services
             _identityService = identity;
         }
 
-        public async Task<Result<AuthModel>> LoginAsync(UserLoginDTO user)
+        public async Task<Result<AuthModel>> LoginAsync(UserLoginDTO user, CancellationToken cancellationToken)
         {
             if (user is null) return Result.Failure<AuthModel>(Error.NullValue);
 
@@ -34,7 +34,7 @@ namespace Drosy.Application.UsesCases.Authentication.Services
             if (result.IsFailure) 
                 return Result.Failure<AuthModel>(result.Error);
 
-            var tokenResult = await _jwtService.CreateTokenAsync(existingUser);
+            var tokenResult = await _jwtService.CreateTokenAsync(existingUser, cancellationToken);
 
             if (tokenResult.IsFailure)
                 return Result.Failure<AuthModel>(tokenResult.Error);
@@ -42,10 +42,10 @@ namespace Drosy.Application.UsesCases.Authentication.Services
             return Result.Success(tokenResult.Value);
         }
 
-        public async Task<Result<AuthModel>> RefreshTokenAsync(string tokenString)
+        public async Task<Result<AuthModel>> RefreshTokenAsync(string tokenString, CancellationToken cancellationToken)
         {
             if (string.IsNullOrEmpty(tokenString)) return Result.Failure<AuthModel>(Error.NullValue);
-            return await _jwtService.RefreshTokenAsync(tokenString);
+            return await _jwtService.RefreshTokenAsync(tokenString, cancellationToken);
         }
     }
 }

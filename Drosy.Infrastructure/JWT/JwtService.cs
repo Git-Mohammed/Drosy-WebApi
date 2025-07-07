@@ -63,7 +63,7 @@ namespace Drosy.Infrastructure.JWT
             var tokenHandler = new JwtSecurityTokenHandler();
             return tokenHandler.WriteToken(token);
         }
-        public async Task<Result<AuthModel>> CreateTokenAsync(AppUser user)
+        public async Task<Result<AuthModel>> CreateTokenAsync(AppUser user, CancellationToken cancellationToken)
         {
             if (user is null) return Result.Failure<AuthModel>(Error.NullValue);
 
@@ -92,10 +92,10 @@ namespace Drosy.Infrastructure.JWT
                 token.RefreshToken = refreshToken.Token;
                 token.RefreshTokenExpiration = refreshToken.ExpiresOn;
                 await _refreshTokenRepository.AddAsync(refreshToken);
-                var saveingResult = await _unitOfWork.SaveChangesAsync();
+                var saveingResult = await _unitOfWork.SaveChangesAsync(cancellationToken);
 
-                if (saveingResult.IsFailure)
-                    return Result.Failure<AuthModel>(saveingResult.Error);
+                if (saveingResult <= 0)
+                    return Result.Failure<AuthModel>(Error.EFCore.CanNotSaveChanges);
             }
 
             return Result.Success(token);
@@ -116,7 +116,7 @@ namespace Drosy.Infrastructure.JWT
                 UserId = userId
             };
         }
-        public async Task<Result<AuthModel>> RefreshTokenAsync(string tokenString)
+        public async Task<Result<AuthModel>> RefreshTokenAsync(string tokenString, CancellationToken cancellationToken)
         {
 
             var refreshToken = await _refreshTokenRepository.GetByTokenAsync(tokenString);
@@ -138,10 +138,10 @@ namespace Drosy.Infrastructure.JWT
             var newRefreshToken = GenerateRefreshToken(refreshToken.UserId);
             await _refreshTokenRepository.AddAsync(newRefreshToken);
 
-            var savingResult = await _unitOfWork.SaveChangesAsync();
+            var savingResult = await _unitOfWork.SaveChangesAsync(cancellationToken);
 
-            if (savingResult.IsFailure)
-                return Result.Failure<AuthModel>(savingResult.Error);
+            if (savingResult <= 0)
+                return Result.Failure<AuthModel>(Error.EFCore.CanNotSaveChanges);
 
             var token = new AuthModel  {
                 UserId = refreshToken.User.Id,
