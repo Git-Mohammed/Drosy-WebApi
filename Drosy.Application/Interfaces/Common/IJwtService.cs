@@ -7,7 +7,7 @@ namespace Drosy.Application.Interfaces.Common
   
     public interface IJwtService
     {
-        Task<Result<AuthModel>> CreateTokenAsync(AppUser user);
-        Task<Result<AuthModel>> RefreshTokenAsync(string tokenString);
+        Task<Result<AuthModel>> CreateTokenAsync(AppUser user, CancellationToken cancellationToken);
+        Task<Result<AuthModel>> RefreshTokenAsync(string tokenString, CancellationToken cancellationToken);
     }
 }

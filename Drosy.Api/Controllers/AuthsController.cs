@@ -1,7 +1,5 @@
-﻿using Drosy.Application.UsesCases.Authentication.Interfaces;
+﻿using Drosy.Application.UseCases.Authentication.Interfaces;
 using Drosy.Application.UsesCases.Users.DTOs;
-using Drosy.Domain.Entities;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Drosy.Api.Controllers
@@ -21,7 +19,7 @@ namespace Drosy.Api.Controllers
         {
             
 
-            var result = await _authService.LoginAsync(user);
+            var result = await _authService.LoginAsync(user, CancellationToken.None);
 
             if (result.IsFailure) return BadRequest(result.Error);
 
@@ -33,7 +31,7 @@ namespace Drosy.Api.Controllers
         [HttpPost("refresh-token")]
         public async Task<IActionResult> RefreshTokenAsync([FromBody] string tokenString)
         {
-            var result = await _authService.RefreshTokenAsync(tokenString);
+            var result = await _authService.RefreshTokenAsync(tokenString, CancellationToken.None);
             if (result.IsFailure) return BadRequest(result.Error);
             SetRefreshTokenInCookie(result.Value.RefreshToken, result.Value.RefreshTokenExpiration);
             return Ok(new { token = result.Value });
