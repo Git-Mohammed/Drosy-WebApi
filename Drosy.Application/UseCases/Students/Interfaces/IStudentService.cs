@@ -1,12 +1,12 @@
-﻿using Drosy.Application.UsesCases.Authentication.DTOs;
-using Drosy.Application.UsesCases.Users.DTOs;
+﻿using Drosy.Application.UseCases.Students.DTOs;
+using Drosy.Domain.Entities;
 using Drosy.Domain.Shared.ResultPattern;
-using System.Security.Claims;
 
 namespace Drosy.Application.UseCases.Students.Interfaces
 {
     public interface IStudentService
     {
-      
+        Task<Result<StudentDTO>> AddAsync(AddStudentDTO dto);
+        Task<Result<StudentDTO>> GetByIdAsync(int id);
     }
 }

@@ -6,6 +6,6 @@
 
         public int CountryId { get; set; }
 
-       public Country Country { get; set; } = new Country();
+       public virtual Country Country { get; set; } = new Country();
     }
 }
