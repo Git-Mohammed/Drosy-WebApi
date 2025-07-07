@@ -18,12 +18,18 @@
             {
                 ["en"] = new Dictionary<string, string>
                 {
+
                     ["Error.NullValue"] = "A null value was provided.",
                     ["Error.NotFound"] = "The requested resource was not found.",
                     ["Error.Invalid"] = "The provided data is invalid.",
                     ["Error.Unauthorized"] = "Access denied. You are not authorized.",
                     ["Error.Conflict"] = "A conflict was detected with the current state of the resource.",
                     ["Error.Failure"] = "An internal failure occurred. Please try again later.",
+                    ["Error.EFCore.NoChanges"] = "No Change Has Been Made To The Server",
+                    ["Error.EFCore.FailedTransaction"] = "Faild To Start Trasnaction in the server.",
+                    ["Error.User.InvalidCredentials"] = "Username Or Password Invalid",
+                    ["Error.User.AttempExceeded"] = "Your Trails Has Been Exceeded Try Later"
+
                 },
                 ["pt"] = new Dictionary<string, string>
                 {
@@ -34,7 +40,20 @@
                     ["Error.Conflict"] = "Conflito detectado com o estado atual do recurso.",
                     ["Error.Failure"] = "Ocorreu uma falha interna. Tente novamente mais tarde.",
                 }
-                // Additional languages can be added here
+                ,
+                ["ar"] = new Dictionary<string, string>
+                {
+                    ["Error.NullValue"] = "تم تقديم قيمة فارغة.",
+                    ["Error.NotFound"] = "لم يتم العثور على المورد المطلوب.",
+                    ["Error.Invalid"] = "البيانات المقدمة غير صالحة.",
+                    ["Error.Unauthorized"] = "تم رفض الوصول. أنت غير مصرح لك.",
+                    ["Error.Conflict"] = "تم اكتشاف تعارض مع الحالة الحالية للمورد.",
+                    ["Error.Failure"] = "حدث خطأ داخلي. يرجى المحاولة مرة أخرى لاحقًا.",
+                    ["Error.EFCore.NoChanges"] = "لم يحدث اي تغير على السيرفر.",
+                    ["Error.EFCore.FailedTransaction"] = "فشل في بدأ عملية في السيرفر.",
+                    ["Error.User.InvalidCredentials"] = ".اسم المستخدم او كلمة المرور غير صحيح",
+                    ["Error.User.AttempExceeded"] = "لقد نفذة محاولاتك, رجاء حاول لاحقا"
+                },
             };
 
         /// <summary>

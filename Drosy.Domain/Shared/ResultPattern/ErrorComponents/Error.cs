@@ -13,5 +13,18 @@
         public static readonly Error Unauthorized = new(nameof(Unauthorized));
         public static readonly Error Conflict = new(nameof(Conflict));
         public static readonly Error Failure = new(nameof(Failure));
+
+        public record EFCore
+        {
+            public static readonly Error NoChanges = new(nameof(NoChanges));
+            public static readonly Error CanNotSaveChanges = new(nameof(CanNotSaveChanges));
+            public static readonly Error FailedTransaction = new(nameof(FailedTransaction));
+        }
+
+        public record User
+        {
+            public static Error InvalidCredentials = new(nameof(InvalidCredentials));
+            public static Error AttempExceeded = new(nameof(AttempExceeded));
+        }
     }
 }
