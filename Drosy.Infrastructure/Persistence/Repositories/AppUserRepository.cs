@@ -8,12 +8,10 @@ namespace Drosy.Infrastructure.Persistence.Repositories
 {
     public class AppUserRepository : BaseRepository<AppUser>, IAppUserRepository
     {
-        private readonly ApplicationDbContext _dbContext;
         private readonly DbSet<ApplicationUser> _dbSet;
         public AppUserRepository(ApplicationDbContext dbContext) : base(dbContext)
         {
-            _dbContext = dbContext;
-            _dbSet = _dbContext.AppUsers;
+            _dbSet = dbContext.AppUsers;
         }
 
         public async Task<AppUser?> FindByIdAsync(int id)

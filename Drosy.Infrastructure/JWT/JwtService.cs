@@ -2,17 +2,16 @@
 using System.Security.Claims;
 using System.Security.Cryptography;
 using System.Text;
-using Drosy.Application.UsesCases.Authentication.DTOs;
 using Drosy.Application.Interfaces.Common;
+using Drosy.Application.UsesCases.Authentication.DTOs;
 using Drosy.Domain.Entities;
-using Drosy.Domain.Shared.ResultPattern;
 using Drosy.Domain.Interfaces.Repository;
-using Microsoft.IdentityModel.Tokens;
+using Drosy.Domain.Interfaces.Uow;
+using Drosy.Domain.Shared.ResultPattern;
 using Drosy.Domain.Shared.ResultPattern.ErrorComponents;
+using Microsoft.IdentityModel.Tokens;
 
-
-
-namespace Drosy.Application.Interfaces
+namespace Drosy.Infrastructure.JWT
 {
     public class JwtService : IJwtService
     {
@@ -20,14 +19,14 @@ namespace Drosy.Application.Interfaces
         private readonly IIdentityService _identityService;
         private readonly IRefreshTokenRepository _refreshTokenRepository;
         private readonly IUnitOfWork _unitOfWork;
-        private readonly AuthOptions _JWToptions;
-        public JwtService(AuthOptions jWToptions, IUnitOfWork unitOfWork, IRefreshTokenRepository refreshTokenRepository, IIdentityService identityService)
+        private readonly AuthOptions _jwtOptions;
+        public JwtService(AuthOptions jWToptions, IUnitOfWork unitOfWork, IRefreshTokenRepository refreshTokenRepository, IIdentityService identityService, IAppUserRepository userRepository)
         {
-            _JWToptions = jWToptions;
+            _jwtOptions = jWToptions;
             _unitOfWork = unitOfWork;
             _refreshTokenRepository = refreshTokenRepository;
             _identityService = identityService;
-
+            _userRepository = userRepository;
         }
         private List<Claim> GenerateUserClaims(string userName, int userId)
         {
@@ -45,12 +44,12 @@ namespace Drosy.Application.Interfaces
             var tokenHandler = new JwtSecurityTokenHandler();
             var tokenDescriptor = new SecurityTokenDescriptor
             {
-                Issuer = _JWToptions.Issuer,
-                Audience = _JWToptions.Audience,
+                Issuer = _jwtOptions.Issuer,
+                Audience = _jwtOptions.Audience,
                 SigningCredentials = new SigningCredentials(
-                    new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_JWToptions.SigningKey)),
+                    new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_jwtOptions.SigningKey)),
                     SecurityAlgorithms.HmacSha256),
-                Expires = DateTime.Now.AddMinutes(_JWToptions.Lifetime),
+                Expires = DateTime.Now.AddMinutes(_jwtOptions.Lifetime),
                 Subject = new ClaimsIdentity(claims)
             };
 
@@ -64,7 +63,7 @@ namespace Drosy.Application.Interfaces
             var tokenHandler = new JwtSecurityTokenHandler();
             return tokenHandler.WriteToken(token);
         }
-        public async Task<Result<AuthModel>> CreateTokenAsync(AppUser user)
+        public async Task<Result<AuthModel>> CreateTokenAsync(AppUser user, CancellationToken cancellationToken)
         {
             if (user is null) return Result.Failure<AuthModel>(Error.NullValue);
 
@@ -93,10 +92,10 @@ namespace Drosy.Application.Interfaces
                 token.RefreshToken = refreshToken.Token;
                 token.RefreshTokenExpiration = refreshToken.ExpiresOn;
                 await _refreshTokenRepository.AddAsync(refreshToken);
-                var saveingResult = await _unitOfWork.SaveChangesAsync();
+                var saveingResult = await _unitOfWork.SaveChangesAsync(cancellationToken);
 
-                if (saveingResult.IsFailure)
-                    return Result.Failure<AuthModel>(saveingResult.Error);
+                if (saveingResult <= 0)
+                    return Result.Failure<AuthModel>(Error.EFCore.CanNotSaveChanges);
             }
 
             return Result.Success(token);
@@ -117,7 +116,7 @@ namespace Drosy.Application.Interfaces
                 UserId = userId
             };
         }
-        public async Task<Result<AuthModel>> RefreshTokenAsync(string tokenString)
+        public async Task<Result<AuthModel>> RefreshTokenAsync(string tokenString, CancellationToken cancellationToken)
         {
 
             var refreshToken = await _refreshTokenRepository.GetByTokenAsync(tokenString);
@@ -139,10 +138,10 @@ namespace Drosy.Application.Interfaces
             var newRefreshToken = GenerateRefreshToken(refreshToken.UserId);
             await _refreshTokenRepository.AddAsync(newRefreshToken);
 
-            var savingResult = await _unitOfWork.SaveChangesAsync();
+            var savingResult = await _unitOfWork.SaveChangesAsync(cancellationToken);
 
-            if (savingResult.IsFailure)
-                return Result.Failure<AuthModel>(savingResult.Error);
+            if (savingResult <= 0)
+                return Result.Failure<AuthModel>(Error.EFCore.CanNotSaveChanges);
 
             var token = new AuthModel  {
                 UserId = refreshToken.User.Id,
