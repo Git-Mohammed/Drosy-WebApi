@@ -5,6 +5,7 @@ using Drosy.Application.UsesCases.Users.DTOs;
 using Drosy.Domain.Interfaces.Repository;
 using Drosy.Domain.Shared.ResultPattern;
 using Drosy.Domain.Shared.ResultPattern.ErrorComponents;
+using System.Security.Claims;
 
 namespace Drosy.Application.UseCases.Authentication.Services
 {
@@ -43,6 +44,11 @@ namespace Drosy.Application.UseCases.Authentication.Services
         }
 
         public async Task<Result<AuthModel>> RefreshTokenAsync(string tokenString, CancellationToken cancellationToken)
+        public bool IsAuthorized(ClaimsPrincipal user, string requiredRole)
+        {
+            return user.IsInRole(requiredRole);
+        }
+        public async Task<Result<AuthModel>> RefreshTokenAsync(string tokenString)
         {
             if (string.IsNullOrEmpty(tokenString)) return Result.Failure<AuthModel>(Error.NullValue);
             return await _jwtService.RefreshTokenAsync(tokenString, cancellationToken);
