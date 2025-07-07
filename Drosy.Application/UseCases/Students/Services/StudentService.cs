@@ -26,6 +26,7 @@ namespace Drosy.Application.UseCases.Students.Services
                 var student = _mapper.Map<AddStudentDTO, Student>(dto);
 
                 await _studentRepository.AddAsync(student);
+                _studentRepository.SaveChanges();
 
                 var studentDto = _mapper.Map<Student, StudentDTO>(student);
 

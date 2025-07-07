@@ -17,7 +17,7 @@ namespace Drosy.Domain.Entities
         public int CityId { get; set; }
 
         #region Nav Properties
-        public AppUser? AppUser = new();
+        public AppUser? AppUser;
         public City City { get; set; } = null!;
        public Grade Grade { get; set; } = null!;
 
