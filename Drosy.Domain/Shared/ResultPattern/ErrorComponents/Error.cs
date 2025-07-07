@@ -17,6 +17,7 @@
         public record EFCore
         {
             public static readonly Error NoChanges = new(nameof(NoChanges));
+            public static readonly Error CanNotSaveChanges = new(nameof(CanNotSaveChanges));
             public static readonly Error FailedTransaction = new(nameof(FailedTransaction));
         }
 

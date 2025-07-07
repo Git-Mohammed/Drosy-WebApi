@@ -5,6 +5,7 @@ using Drosy.Application.UseCases.Students.DTOs;
 using Drosy.Domain.Shared.ResultPattern;
 using Drosy.Application.Interfaces.Common;
 using Drosy.Domain.Shared.ResultPattern.ErrorComponents;
+using Drosy.Domain.Interfaces.Uow;
 
 namespace Drosy.Application.UseCases.Students.Services
 {
@@ -12,11 +13,13 @@ namespace Drosy.Application.UseCases.Students.Services
     {
         private readonly IMapper _mapper;
         private readonly IStudentRepository _studentRepository;
+        private readonly IUnitOfWork _unitOfWork;
 
-        public StudentService(IStudentRepository studentRepository, IMapper mapper)
+        public StudentService(IStudentRepository studentRepository, IMapper mapper, IUnitOfWork unitOfWork)
         {
             _studentRepository = studentRepository;
             _mapper = mapper;
+            _unitOfWork = unitOfWork;
         }
 
         public async Task<Result<StudentDTO>> AddAsync(AddStudentDTO dto)
@@ -26,7 +29,7 @@ namespace Drosy.Application.UseCases.Students.Services
                 var student = _mapper.Map<AddStudentDTO, Student>(dto);
 
                 await _studentRepository.AddAsync(student);
-                _studentRepository.SaveChanges();
+               await _unitOfWork.SaveChangesAsync(CancellationToken.None);
 
                 var studentDto = _mapper.Map<Student, StudentDTO>(student);
 

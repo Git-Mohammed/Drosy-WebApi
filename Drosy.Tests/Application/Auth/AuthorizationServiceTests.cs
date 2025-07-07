@@ -1,10 +1,10 @@
 ﻿using Xunit;
 using System.Security.Claims;
 using Drosy.Domain.Shared.System;
-using Drosy.Application.UsesCases.Authentication.Services;
 using Drosy.Application.Interfaces.Common;
 using Drosy.Domain.Interfaces.Repository;
 using Moq;
+using Drosy.Application.UseCases.Authentication.Services;
 
 namespace Drosy.Tests.Application.Auth
 {
