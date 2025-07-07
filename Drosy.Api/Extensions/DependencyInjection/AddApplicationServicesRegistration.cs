@@ -8,6 +8,7 @@ using Microsoft.IdentityModel.Tokens;
 using Drosy.Application.UsesCases.Authentication.Interfaces;
 using Drosy.Application.UsesCases.Authentication.Services;
 using Drosy.Domain.Interfaces.Repository;
+using Drosy.Infrastructure.JWT;
 using Drosy.Infrastructure.Persistence.Repositories;
 
 namespace Drosy.Api.Extensions.DependencyInjection

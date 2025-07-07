@@ -1,11 +1,12 @@
 ﻿using Drosy.Application.Interfaces.Common;
 using Drosy.Domain.Interfaces.Repository;
+using Drosy.Domain.Interfaces.Uow;
 using Drosy.Infrastructure.Identity.Entities;
 using Drosy.Infrastructure.Logging;
 using Drosy.Infrastructure.Mapping.Configs;
 using Drosy.Infrastructure.Persistence.DbContexts;
 using Drosy.Infrastructure.Persistence.Repositories;
-using Drosy.Infrastructure.Persistence.UnitOfWork;
+using Drosy.Infrastructure.Persistence.Uow;
 using Drosy.Infrastructure.Validators;
 using FluentValidation;
 using Mapster;

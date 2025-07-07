@@ -2,17 +2,16 @@
 using System.Security.Claims;
 using System.Security.Cryptography;
 using System.Text;
-using Drosy.Application.UsesCases.Authentication.DTOs;
 using Drosy.Application.Interfaces.Common;
+using Drosy.Application.UsesCases.Authentication.DTOs;
 using Drosy.Domain.Entities;
-using Drosy.Domain.Shared.ResultPattern;
 using Drosy.Domain.Interfaces.Repository;
-using Microsoft.IdentityModel.Tokens;
+using Drosy.Domain.Interfaces.Uow;
+using Drosy.Domain.Shared.ResultPattern;
 using Drosy.Domain.Shared.ResultPattern.ErrorComponents;
+using Microsoft.IdentityModel.Tokens;
 
-
-
-namespace Drosy.Application.Interfaces
+namespace Drosy.Infrastructure.JWT
 {
     public class JwtService : IJwtService
     {
@@ -20,14 +19,14 @@ namespace Drosy.Application.Interfaces
         private readonly IIdentityService _identityService;
         private readonly IRefreshTokenRepository _refreshTokenRepository;
         private readonly IUnitOfWork _unitOfWork;
-        private readonly AuthOptions _JWToptions;
-        public JwtService(AuthOptions jWToptions, IUnitOfWork unitOfWork, IRefreshTokenRepository refreshTokenRepository, IIdentityService identityService)
+        private readonly AuthOptions _jwtOptions;
+        public JwtService(AuthOptions jWToptions, IUnitOfWork unitOfWork, IRefreshTokenRepository refreshTokenRepository, IIdentityService identityService, IAppUserRepository userRepository)
         {
-            _JWToptions = jWToptions;
+            _jwtOptions = jWToptions;
             _unitOfWork = unitOfWork;
             _refreshTokenRepository = refreshTokenRepository;
             _identityService = identityService;
-
+            _userRepository = userRepository;
         }
         private List<Claim> GenerateUserClaims(string userName, int userId)
         {
@@ -45,12 +44,12 @@ namespace Drosy.Application.Interfaces
             var tokenHandler = new JwtSecurityTokenHandler();
             var tokenDescriptor = new SecurityTokenDescriptor
             {
-                Issuer = _JWToptions.Issuer,
-                Audience = _JWToptions.Audience,
+                Issuer = _jwtOptions.Issuer,
+                Audience = _jwtOptions.Audience,
                 SigningCredentials = new SigningCredentials(
-                    new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_JWToptions.SigningKey)),
+                    new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_jwtOptions.SigningKey)),
                     SecurityAlgorithms.HmacSha256),
-                Expires = DateTime.Now.AddMinutes(_JWToptions.Lifetime),
+                Expires = DateTime.Now.AddMinutes(_jwtOptions.Lifetime),
                 Subject = new ClaimsIdentity(claims)
             };
 
