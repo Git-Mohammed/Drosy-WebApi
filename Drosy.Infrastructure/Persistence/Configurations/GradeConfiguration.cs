@@ -18,6 +18,18 @@ namespace Drosy.Infrastructure.Persistence.Configurations
              .WithOne(x => x.Grade)
              .HasForeignKey(x => x.GradeId)
              .IsRequired();
+
+
+            builder.HasData(LoadGrades());
         }
+
+        private List<Grade> LoadGrades()
+        {
+            return new List<Grade>() {
+                new Grade { Id = 1, Name = "اول ثانوي" },
+                new Grade { Id = 2, Name = "ثاني ثانوي" },
+                new Grade { Id = 3, Name = "ثالث ثانوي" }
+            };
+         }  
     }
 }

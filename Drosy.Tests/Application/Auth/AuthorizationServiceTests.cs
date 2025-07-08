@@ -1,5 +1,5 @@
 ﻿using System.Security.Claims;
-using System.Threading.Tasks;
+using Drosy.Domain.Shared.System;
 using Drosy.Application.Interfaces.Common;
 using Drosy.Application.UsesCases.Authentication.DTOs;
 using Drosy.Application.UsesCases.Authentication.Services;
@@ -10,7 +10,7 @@ using Drosy.Domain.Shared.ResultPattern;
 using Drosy.Domain.Shared.ResultPattern.ErrorComponents;
 using Drosy.Domain.Shared.System;
 using Moq;
-using Xunit;
+using Drosy.Application.UseCases.Authentication.Services;
 
 namespace Drosy.Tests.Application.Auth
 {
