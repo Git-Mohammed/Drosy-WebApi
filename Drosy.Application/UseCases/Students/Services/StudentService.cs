@@ -27,7 +27,7 @@ namespace Drosy.Application.UseCases.Students.Services
             try
             {
                 var student = _mapper.Map<AddStudentDTO, Student>(dto);
-
+                
                 await _studentRepository.AddAsync(student);
                await _unitOfWork.SaveChangesAsync(CancellationToken.None);
 
@@ -48,7 +48,6 @@ namespace Drosy.Application.UseCases.Students.Services
         {
             try
             {
-
                 var student = await _studentRepository.GetByIdAsync(id);
 
                 if (student == null)
