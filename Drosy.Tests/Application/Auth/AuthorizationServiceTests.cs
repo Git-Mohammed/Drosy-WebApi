@@ -1,14 +1,12 @@
-﻿using System.Security.Claims;
+using System.Security.Claims;
 using Drosy.Domain.Shared.System;
 using Drosy.Application.Interfaces.Common;
 using Drosy.Application.UsesCases.Authentication.DTOs;
-using Drosy.Application.UsesCases.Authentication.Services;
 using Drosy.Application.UsesCases.Users.DTOs;
 using Drosy.Domain.Entities;
 using Drosy.Domain.Interfaces.Repository;
 using Drosy.Domain.Shared.ResultPattern;
 using Drosy.Domain.Shared.ResultPattern.ErrorComponents;
-using Drosy.Domain.Shared.System;
 using Moq;
 using Drosy.Application.UseCases.Authentication.Services;
 
@@ -69,14 +67,14 @@ namespace Drosy.Tests.Application.Auth
                 var user = new AppUser { UserName = "khaled" };
 
                 _userRepoMock.Setup(r => r.FindByUsernameAsync("khaled"))
-                             .ReturnsAsync(user);
+                             .ReturnsAsync(user, default);
 
                 if (password == "correctpass")
                 {
                     _identityServiceMock.Setup(i => i.PasswordSignInAsync("khaled", "correctpass", true, true))
                                         .ReturnsAsync(Result.Success());
 
-                    _jwtServiceMock.Setup(j => j.CreateTokenAsync(user))
+                    _jwtServiceMock.Setup(j => j.CreateTokenAsync(user, default))
                                    .ReturnsAsync(Result.Success(new AuthModel()));
                 }
                 else
@@ -92,7 +90,7 @@ namespace Drosy.Tests.Application.Auth
             }
 
             // Act
-            var result = await _authService.LoginAsync(input);
+            var result = await _authService.LoginAsync(input, default);
 
             // Assert
             Assert.Equal(shouldSucceed, result.IsSuccess);
@@ -112,17 +110,17 @@ namespace Drosy.Tests.Application.Auth
             else if (isValid)
             {
                 var authModel = new AuthModel { UserName = "khaled", AccessToken = "newAccessToken" };
-                _jwtServiceMock.Setup(j => j.RefreshTokenAsync(tokenString))
+                _jwtServiceMock.Setup(j => j.RefreshTokenAsync(tokenString, default))
                     .ReturnsAsync(Result.Success(authModel));
             }
             else if (isFailure)
             {
-                _jwtServiceMock.Setup(j => j.RefreshTokenAsync(tokenString))
+                _jwtServiceMock.Setup(j => j.RefreshTokenAsync(tokenString, default))
                     .ReturnsAsync(Result.Failure<AuthModel>(Error.Unauthorized));
             }
 
             // Act
-            var result = await _authService.RefreshTokenAsync(tokenString);
+            var result = await _authService.RefreshTokenAsync(tokenString, default);
 
             // Assert
             if (string.IsNullOrEmpty(tokenString))
