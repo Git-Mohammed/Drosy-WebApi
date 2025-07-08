@@ -1,10 +1,16 @@
-﻿using Xunit;
-using System.Security.Claims;
-using Drosy.Domain.Shared.System;
-using Drosy.Application.UsesCases.Authentication.Services;
+﻿using System.Security.Claims;
+using System.Threading.Tasks;
 using Drosy.Application.Interfaces.Common;
+using Drosy.Application.UsesCases.Authentication.DTOs;
+using Drosy.Application.UsesCases.Authentication.Services;
+using Drosy.Application.UsesCases.Users.DTOs;
+using Drosy.Domain.Entities;
 using Drosy.Domain.Interfaces.Repository;
+using Drosy.Domain.Shared.ResultPattern;
+using Drosy.Domain.Shared.ResultPattern.ErrorComponents;
+using Drosy.Domain.Shared.System;
 using Moq;
+using Xunit;
 
 namespace Drosy.Tests.Application.Auth
 {
@@ -46,6 +52,95 @@ namespace Drosy.Tests.Application.Auth
             // Assert
             Assert.Equal(expected, result);
         }
-    }
 
+
+        [Theory]
+        [InlineData("khaled", "correctpass", true)]
+        [InlineData("khaled", "wrongpass", false)]
+        [InlineData("unknown", "any", false)]
+        public async Task LoginAsync_ShouldReturnExpectedResult(string username, string password, bool shouldSucceed)
+        {
+            // Arrange
+            var input = new UserLoginDTO { UserName = username, Password = password };
+
+            // حالة: المستخدم موجود
+            if (username == "khaled")
+            {
+                var user = new AppUser { UserName = "khaled" };
+
+                _userRepoMock.Setup(r => r.FindByUsernameAsync("khaled"))
+                             .ReturnsAsync(user);
+
+                if (password == "correctpass")
+                {
+                    _identityServiceMock.Setup(i => i.PasswordSignInAsync("khaled", "correctpass", true, true))
+                                        .ReturnsAsync(Result.Success());
+
+                    _jwtServiceMock.Setup(j => j.CreateTokenAsync(user))
+                                   .ReturnsAsync(Result.Success(new AuthModel()));
+                }
+                else
+                {
+                    _identityServiceMock.Setup(i => i.PasswordSignInAsync("khaled", password, true, true))
+                                        .ReturnsAsync(Result.Failure(Error.User.InvalidCredentials));
+                }
+            }
+            else
+            {
+                _userRepoMock.Setup(r => r.FindByUsernameAsync(username))
+                             .ReturnsAsync((AppUser)null);
+            }
+
+            // Act
+            var result = await _authService.LoginAsync(input);
+
+            // Assert
+            Assert.Equal(shouldSucceed, result.IsSuccess);
+        }
+
+        [Theory]
+        [InlineData("correctToken", true, false)]
+        [InlineData("unCorrectToken", false, true)]
+        [InlineData("", false, false)]
+        public async Task RefreshTokenAsync_ShouldReturnExpectedResult(string tokenString, bool isValid, bool isFailure)
+        {
+            // Arrange
+            if (string.IsNullOrEmpty(tokenString))
+            {
+                // No setup needed, will return Error.NullValue
+            }
+            else if (isValid)
+            {
+                var authModel = new AuthModel { UserName = "khaled", AccessToken = "newAccessToken" };
+                _jwtServiceMock.Setup(j => j.RefreshTokenAsync(tokenString))
+                    .ReturnsAsync(Result.Success(authModel));
+            }
+            else if (isFailure)
+            {
+                _jwtServiceMock.Setup(j => j.RefreshTokenAsync(tokenString))
+                    .ReturnsAsync(Result.Failure<AuthModel>(Error.Unauthorized));
+            }
+
+            // Act
+            var result = await _authService.RefreshTokenAsync(tokenString);
+
+            // Assert
+            if (string.IsNullOrEmpty(tokenString))
+            {
+                Assert.False(result.IsSuccess);
+                Assert.Equal(Error.NullValue, result.Error);
+            }
+            else if (isValid)
+            {
+                Assert.True(result.IsSuccess);
+                Assert.NotNull(result.Value);
+                Assert.Equal("khaled", result.Value.UserName);
+            }
+            else if (isFailure)
+            {
+                Assert.False(result.IsSuccess);
+                Assert.Equal(Error.Unauthorized, result.Error);
+            }
+        }
+    }
 }
