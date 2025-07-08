@@ -23,7 +23,7 @@ namespace Drosy.Infrastructure.Persistence.Repositories
 
         public async Task<Student?> GetByIdAsync(int id)
         {
-            return await _dbSet.FirstOrDefaultAsync(x => x.Id == id);
+            return await _dbSet.Include(x => x.City).Include(x => x.Grade).FirstOrDefaultAsync(x => x.Id == id);
         }
     }
 }
