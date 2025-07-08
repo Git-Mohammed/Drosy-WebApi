@@ -7,7 +7,8 @@ namespace Drosy.Application.UseCases.Authentication.Interfaces
 {
     public interface IAuthService
     {
-        Task<Result<AuthModel>> LoginAsync(UserLoginDTO user);
-        Task<Result<AuthModel>> RefreshTokenAsync(string tokenString);
+        Task<Result<AuthModel>> LoginAsync(UserLoginDTO user, CancellationToken cancellationToken);
+        Task<Result<AuthModel>> RefreshTokenAsync(string tokenString, CancellationToken cancellationToken);
+        bool IsAuthorized(ClaimsPrincipal user, string requiredRole);
     }
 }
