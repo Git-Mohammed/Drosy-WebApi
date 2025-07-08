@@ -10,6 +10,7 @@ using Drosy.Infrastructure.Persistence.DbContexts;
 using Drosy.Infrastructure.Persistence.Repositories;
 using Drosy.Infrastructure.Persistence.Uow;
 using Drosy.Infrastructure.Validators;
+using Drosy.Infrastructure.Validators.StudentValidator;
 using FluentValidation;
 using Mapster;
 using Microsoft.AspNetCore.Identity;
