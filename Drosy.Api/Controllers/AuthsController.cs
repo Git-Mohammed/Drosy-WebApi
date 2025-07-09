@@ -1,5 +1,7 @@
-﻿using Drosy.Application.UseCases.Authentication.Interfaces;
+﻿using System.Security.Claims;
+using Drosy.Application.UseCases.Authentication.Interfaces;
 using Drosy.Application.UsesCases.Users.DTOs;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Drosy.Api.Controllers
@@ -36,6 +38,22 @@ namespace Drosy.Api.Controllers
             SetRefreshTokenInCookie(result.Value.RefreshToken, result.Value.RefreshTokenExpiration);
             return Ok(new { token = result.Value });
         }
+
+        [HttpPost("logout")]
+        [Authorize]
+        public async Task<IActionResult> Logout(CancellationToken cancellationToken)
+        {
+            if (!int.TryParse(User.FindFirstValue(ClaimTypes.NameIdentifier), out int userId) || userId <= 0)
+                return Unauthorized();
+
+            var result = await _authService.LogoutAsync(userId, cancellationToken);
+
+            if (result.IsFailure)
+                return StatusCode(500, new { message = "An error occurred during logout" });
+
+            return Ok(new { message = "Logged out successfully" });
+        }
+
 
 
         private void SetRefreshTokenInCookie(string refreshToken, DateTime expires)

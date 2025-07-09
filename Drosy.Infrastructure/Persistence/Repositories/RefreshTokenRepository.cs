@@ -37,6 +37,11 @@ namespace Drosy.Infrastructure.Persistence.Repositories
             return await DbSet.FirstOrDefaultAsync(x => x.UserId == userId && x.IsActive);
         }
 
+        public async Task<IEnumerable<RefreshToken>> GetAllByUserIdAsync(int userId)
+        {
+            return await DbSet.Where(x => x.UserId == userId&& !x.IsActive).ToListAsync();
+        }
+
         public Task UpdateAsync(RefreshToken entity)
         {
             return Task.FromResult(DbSet.Update(entity));

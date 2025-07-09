@@ -47,6 +47,12 @@ namespace Drosy.Application.UseCases.Authentication.Services
         {
             return user.IsInRole(requiredRole);
         }
+
+        public async Task<Result> LogoutAsync(int userId, CancellationToken cancellationToken)
+        {
+            return await _jwtService.RevokeRefreshTokensAsync(userId, cancellationToken);
+        }
+
         public async Task<Result<AuthModel>> RefreshTokenAsync(string tokenString, CancellationToken cancellationToken)
         {
             if (string.IsNullOrEmpty(tokenString)) return Result.Failure<AuthModel>(Error.NullValue);
