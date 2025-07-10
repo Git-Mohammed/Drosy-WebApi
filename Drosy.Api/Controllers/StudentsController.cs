@@ -1,7 +1,7 @@
-﻿using Drosy.Application.UseCases.Students.DTOs;
+﻿using Drosy.Api.Commons.Responses;
+using Drosy.Application.UseCases.Students.DTOs;
 using Drosy.Application.UseCases.Students.Interfaces;
 using Drosy.Domain.Shared.ResultPattern.ErrorComponents;
-using Drosy.Api.Commons.Models;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Drosy.Api.Controllers

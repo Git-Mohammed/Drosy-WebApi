@@ -10,5 +10,6 @@ namespace Drosy.Application.UseCases.Authentication.Interfaces
         Task<Result<AuthModel>> LoginAsync(UserLoginDTO user, CancellationToken cancellationToken);
         Task<Result<AuthModel>> RefreshTokenAsync(string tokenString, CancellationToken cancellationToken);
         bool IsAuthorized(ClaimsPrincipal user, string requiredRole);
+        Task<Result>  LogoutAsync(int userId,CancellationToken cancellationToken);
     }
 }

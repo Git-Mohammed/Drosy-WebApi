@@ -140,5 +140,6 @@ namespace Drosy.Tests.Application.Auth
                 Assert.Equal(Error.Unauthorized, result.Error);
             }
         }
+        
     }
 }

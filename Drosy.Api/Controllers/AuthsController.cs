@@ -1,5 +1,8 @@
-﻿using Drosy.Application.UseCases.Authentication.Interfaces;
+﻿using System.Security.Claims;
+using Drosy.Application.UseCases.Authentication.Interfaces;
 using Drosy.Application.UsesCases.Users.DTOs;
+using Drosy.Api.Commons.Responses;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Drosy.Api.Controllers
@@ -17,26 +20,48 @@ namespace Drosy.Api.Controllers
         [HttpPost("login")]
         public async Task<IActionResult> LoginAsync(UserLoginDTO user)
         {
-            
-
             var result = await _authService.LoginAsync(user, CancellationToken.None);
 
-            if (result.IsFailure) return BadRequest(result.Error);
+            if (result.IsFailure)
+                return ResponseHandler.UnauthorizedResponse("login", result.Error.Message);
 
             SetRefreshTokenInCookie(result.Value.RefreshToken, result.Value.RefreshTokenExpiration);
 
-            return Ok(new { token = result.Value });
+            return ResponseHandler.SuccessResponse(result.Value, "Login successful");
         }
 
         [HttpPost("refresh-token")]
         public async Task<IActionResult> RefreshTokenAsync([FromBody] string tokenString)
         {
             var result = await _authService.RefreshTokenAsync(tokenString, CancellationToken.None);
-            if (result.IsFailure) return BadRequest(result.Error);
+
+            if (result.IsFailure)
+            {
+                if (result.Error.Code == "NullValue")
+                    return ResponseHandler.BadRequestResponse("token", result.Error.Message);
+
+                return ResponseHandler.UnauthorizedResponse("token", result.Error.Message);
+            }
+
             SetRefreshTokenInCookie(result.Value.RefreshToken, result.Value.RefreshTokenExpiration);
-            return Ok(new { token = result.Value });
+
+            return ResponseHandler.SuccessResponse(result.Value, "Token refreshed successfully");
         }
 
+        [HttpPost("logout")]
+        [Authorize]
+        public async Task<IActionResult> Logout(CancellationToken cancellationToken)
+        {
+            if (!int.TryParse(User.FindFirstValue(ClaimTypes.NameIdentifier), out int userId) || userId <= 0)
+                return ResponseHandler.UnauthorizedResponse("user", "Invalid or missing user ID");
+
+            var result = await _authService.LogoutAsync(userId, cancellationToken);
+
+            if (result.IsFailure)
+                return ResponseHandler.StatusCodeResponse(500, "logout", "An error occurred during logout");
+
+            return ResponseHandler.SuccessResponse("Logged out successfully");
+        }
 
         private void SetRefreshTokenInCookie(string refreshToken, DateTime expires)
         {

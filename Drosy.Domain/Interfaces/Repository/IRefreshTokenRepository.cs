@@ -8,5 +8,6 @@ namespace Drosy.Domain.Interfaces.Repository
         Task UpdateAsync(RefreshToken entity);
         Task<RefreshToken?> GetByTokenAsync(string tokenString);
         Task<RefreshToken?> GetByUserIdAsync(int userId);
+        Task<IEnumerable<RefreshToken>> GetAllByUserIdAsync(int  userId);
     }
 }
