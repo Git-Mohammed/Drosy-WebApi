@@ -5,6 +5,9 @@ namespace Drosy.Infrastructure.Validators.StudentValidator
 {
     public class AddStudentValidator : AbstractValidator<AddStudentDTO>
     {
+
+        // TODO:
+        // 1- Validation Duplication in PhoneNumber and EmergencyNumber
         public AddStudentValidator()
         {
             RuleFor(x => x.FirstName)
