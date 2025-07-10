@@ -26,7 +26,7 @@ namespace Drosy.Infrastructure.Persistence.Repositories
             if (string.IsNullOrEmpty(tokenString))
                 return null;
 
-            return await DbSet.FirstOrDefaultAsync(x => x.Token == tokenString && x.RevokedOn == null && DateTime.UtcNow >= x.ExpiresOn);
+            return await DbSet.FirstOrDefaultAsync(x => x.Token == tokenString && x.RevokedOn == null && DateTime.UtcNow <= x.ExpiresOn);
         }
 
         public async Task<RefreshToken?> GetByUserIdAsync(int userId)
@@ -34,12 +34,12 @@ namespace Drosy.Infrastructure.Persistence.Repositories
             if (userId <= 0)
                 return null;
 
-            return await DbSet.FirstOrDefaultAsync(x => x.UserId == userId && x.RevokedOn == null && DateTime.UtcNow >= x.ExpiresOn);
+            return await DbSet.FirstOrDefaultAsync(x => x.UserId == userId && x.RevokedOn == null && DateTime.UtcNow <= x.ExpiresOn);
         }
 
         public async Task<IEnumerable<RefreshToken>> GetAllByUserIdAsync(int userId)
         {
-            return await DbSet.Where(x => x.UserId == userId && x.RevokedOn == null && DateTime.UtcNow >= x.ExpiresOn ).ToListAsync();
+            return await DbSet.Where(x => x.UserId == userId && x.RevokedOn == null && DateTime.UtcNow <= x.ExpiresOn ).ToListAsync();
         }
 
         public Task UpdateAsync(RefreshToken entity)

@@ -26,16 +26,11 @@ namespace Drosy.Application.UseCases.Authentication.Services
         {
             if (user is null) return Result.Failure<AuthModel>(Error.NullValue);
 
-            var existingUser = await _userRepository.FindByUsernameAsync(user.UserName);
-
-            if (existingUser is null)
-                return Result.Failure<AuthModel>(Error.User.InvalidCredentials);
-
-            var result = await _identityService.PasswordSignInAsync(existingUser.UserName, user.Password, true, true);
+            var result = await _identityService.PasswordSignInAsync(user.UserName, user.Password, true, true);
             if (result.IsFailure) 
                 return Result.Failure<AuthModel>(result.Error);
 
-            var tokenResult = await _jwtService.CreateTokenAsync(existingUser, cancellationToken);
+            var tokenResult = await _jwtService.CreateTokenAsync(result.Value, cancellationToken);
 
             if (tokenResult.IsFailure)
                 return Result.Failure<AuthModel>(tokenResult.Error);

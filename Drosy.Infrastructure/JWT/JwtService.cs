@@ -67,7 +67,6 @@ namespace Drosy.Infrastructure.JWT
         {
             if (user is null) return Result.Failure<AuthModel>(Error.NullValue);
 
-            var applicationUser = await _userRepository.FindByIdAsync(user.Id);
 
             var tokenString = GenerateTokenString(user.UserName, user.Id);
             
@@ -81,7 +80,7 @@ namespace Drosy.Infrastructure.JWT
 
             var existingRefreshToken = await _refreshTokenRepository.GetByUserIdAsync(user.Id);
 
-            if (existingRefreshToken != null)
+            if (existingRefreshToken != null && existingRefreshToken.IsActive)
             {
                 token.RefreshToken = existingRefreshToken.Token;
                 token.RefreshTokenExpiration = existingRefreshToken.ExpiresOn;
