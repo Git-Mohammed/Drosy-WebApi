@@ -9,6 +9,7 @@ namespace Drosy.Api.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
+    [Authorize]
     public class AuthsController : ControllerBase
     {
         private readonly IAuthService _authService;
@@ -17,6 +18,7 @@ namespace Drosy.Api.Controllers
             _authService = authService;
         }
 
+        [AllowAnonymous]
         [HttpPost("login")]
         public async Task<IActionResult> LoginAsync(UserLoginDTO user)
         {
@@ -48,13 +50,15 @@ namespace Drosy.Api.Controllers
             return ResponseHandler.SuccessResponse(result.Value, "Token refreshed successfully");
         }
 
+
         [HttpPost("logout")]
-        [Authorize]
         public async Task<IActionResult> Logout(CancellationToken cancellationToken)
         {
             if (!int.TryParse(User.FindFirstValue(ClaimTypes.NameIdentifier), out int userId) || userId <= 0)
                 return ResponseHandler.UnauthorizedResponse("user", "Invalid or missing user ID");
-
+            
+            string? refreshToken = Request.Cookies["refreshToken"];
+            
             var result = await _authService.LogoutAsync(userId, cancellationToken);
 
             if (result.IsFailure)

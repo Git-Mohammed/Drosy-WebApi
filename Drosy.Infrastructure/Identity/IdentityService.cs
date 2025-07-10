@@ -1,7 +1,9 @@
 ﻿using Drosy.Application.Interfaces.Common;
+using Drosy.Domain.Entities;
 using Drosy.Domain.Shared.ResultPattern;
 using Drosy.Domain.Shared.ResultPattern.ErrorComponents;
 using Drosy.Infrastructure.Identity.Entities;
+using Mapster;
 using Microsoft.AspNetCore.Identity;
 
 namespace Drosy.Infrastructure.Identity
@@ -23,20 +25,20 @@ namespace Drosy.Infrastructure.Identity
             return Task.FromResult(true);
         }
 
-        public async Task<Result> PasswordSignInAsync(string username, string password, bool isPersistent, bool lockoutOnFailure)
+        public async Task<Result<AppUser>> PasswordSignInAsync(string username, string password, bool isPersistent, bool lockoutOnFailure)
         {
             var user = await _userManager.FindByNameAsync(username);
             if (user is null)
-                return Result.Failure(Error.User.InvalidCredentials);
+                return Result.Failure<AppUser>(Error.User.InvalidCredentials);
 
             var result = await _signInManager.PasswordSignInAsync(user, password, isPersistent, lockoutOnFailure);
             if (result.IsLockedOut)
-                return Result.Failure(Error.User.AttempExceeded);
+                return Result.Failure<AppUser>(Error.User.AttempExceeded);
                     
             if (!result.Succeeded)
-                return Result.Failure(Error.User.InvalidCredentials);
-
-            return Result.Success();
+                return Result.Failure<AppUser>(Error.User.InvalidCredentials);
+            
+            return Result.Success(user.Adapt<AppUser>());
         }
     }
 }

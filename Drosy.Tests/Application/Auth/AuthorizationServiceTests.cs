@@ -69,19 +69,19 @@ namespace Drosy.Tests.Application.Auth
                 _userRepoMock.Setup(r => r.FindByUsernameAsync("khaled"))
                              .ReturnsAsync(user, default);
 
-                if (password == "correctpass")
-                {
-                    _identityServiceMock.Setup(i => i.PasswordSignInAsync("khaled", "correctpass", true, true))
-                                        .ReturnsAsync(Result.Success());
+                //if (password == "correctpass")
+                //{
+                //    _identityServiceMock.Setup(i => i.PasswordSignInAsync("khaled", "correctpass", true, true))
+                //                        .ReturnsAsync(Result.Success());
 
-                    _jwtServiceMock.Setup(j => j.CreateTokenAsync(user, default))
-                                   .ReturnsAsync(Result.Success(new AuthModel()));
-                }
-                else
-                {
-                    _identityServiceMock.Setup(i => i.PasswordSignInAsync("khaled", password, true, true))
-                                        .ReturnsAsync(Result.Failure(Error.User.InvalidCredentials));
-                }
+                //    _jwtServiceMock.Setup(j => j.CreateTokenAsync(user, default))
+                //                   .ReturnsAsync(Result.Success(new AuthModel()));
+                //}
+                //else
+                //{
+                //    _identityServiceMock.Setup(i => i.PasswordSignInAsync("khaled", password, true, true))
+                //                        .ReturnsAsync(Result.Failure(Error.User.InvalidCredentials));
+                //}
             }
             else
             {

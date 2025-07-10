@@ -7,6 +7,6 @@ namespace Drosy.Application.Interfaces.Common
     {
     
         Task<bool> CreateUserAsync(string username, string password);
-        Task<Result> PasswordSignInAsync(string username, string password, bool isPersistent, bool lockoutOnFailure);   
+        Task<Result<AppUser>> PasswordSignInAsync(string username, string password, bool isPersistent, bool lockoutOnFailure);   
     }
 }
