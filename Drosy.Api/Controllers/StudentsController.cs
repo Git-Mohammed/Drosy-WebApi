@@ -11,44 +11,13 @@ namespace Drosy.Api.Controllers
     public class StudentsController : ControllerBase
     {
         private readonly IStudentService _studentService;
-
         public StudentsController(IStudentService studentService)
         {
             _studentService = studentService;
         }
 
-        [HttpPost]
-        public async Task<IActionResult> AddAsync([FromBody] AddStudentDTO dto)
-        {
-            try
-            {
-                if (dto == null)
-                {
-                    var error = new ApiError("dto", ErrorMessagesRepository.GetMessage(Error.NullValue.Message, Error.CurrentLanguage));
-                    return BadRequest(ApiResponse<StudentDTO>.Failure(new List<ApiError> { error }, "Invalid student data."));
-                }
-
-                var result = await _studentService.AddAsync(dto);
-                if (result.IsFailure)
-                {
-                    var error = new ApiError("AddAsync", result.Error.Message);
-                    return BadRequest(ApiResponse<StudentDTO>.Failure(new List<ApiError> { error }, "Failed to add student."));
-                }
-
-                return CreatedAtAction(
-                    nameof(GetByIdAsync),
-                    new { id = result.Value.Id },
-                    ApiResponse<StudentDTO>.Success(result.Value, "Student added successfully.")
-                );
-            }
-            catch (Exception)
-            {
-                var error = new ApiError("Exception", ErrorMessagesRepository.GetMessage("Error.Failure", Error.CurrentLanguage));
-                return StatusCode(500, ApiResponse<StudentDTO>.Failure(new List<ApiError> { error }, "Internal server error."));
-            }
-        }
-
-        [HttpGet("{id}")]
+        #region Read
+        [HttpGet("{id:int}", Name = "GetStudentByIdAsync")]
         public async Task<IActionResult> GetByIdAsync(int id)
         {
             try
@@ -57,19 +26,48 @@ namespace Drosy.Api.Controllers
 
                 if (result.IsFailure)
                 {
-                    var code = result.Error.Code == Error.NotFound.Code ? "Error.NotFound" : "Error.Failure";
-                    var error = new ApiError("GetByIdAsync", ErrorMessagesRepository.GetMessage(code, Error.CurrentLanguage));
-                    var status = result.Error == Error.NotFound ? 404 : 500;
-                    return StatusCode(status, ApiResponse<StudentDTO>.Failure(new List<ApiError> { error }, "Could not retrieve student."));
+                    return ResponseHandler.HandleFailure(result, nameof(GetByIdAsync));
                 }
 
-                return Ok(ApiResponse<StudentDTO>.Success(result.Value, "Student retrieved successfully."));
+                return ResponseHandler.SuccessResponse(result.Value, "Student retrieved successfully.");
             }
-            catch (Exception)
+            catch (Exception ex)
             {
-                var error = new ApiError("Exception", ErrorMessagesRepository.GetMessage("Error.Failure", Error.CurrentLanguage));
-                return StatusCode(500, ApiResponse<StudentDTO>.Failure(new List<ApiError> { error }, "Internal server error."));
+                return ResponseHandler.HandleException(ex);
             }
         }
+        #endregion
+
+        #region Create
+        [HttpPost(Name = "AddStudentAsync")]
+        public async Task<IActionResult> AddAsync([FromBody] AddStudentDTO dto)
+        {
+            try
+            {
+                if (dto == null)
+                {
+                    var error = new ApiError("dto", ErrorMessagesRepository.GetMessage(Error.NullValue.Message, Error.CurrentLanguage));
+                    return ResponseHandler.BadRequestResponse("dto", "Invalid student data.", error.Message);
+                }
+                
+                var result = await _studentService.AddAsync(dto);
+
+                if (result.IsFailure)
+                {
+                    return ResponseHandler.HandleFailure(result, nameof(AddAsync), "Student");
+                }
+
+                return ResponseHandler.CreatedResponse(
+                   "GetStudentByIdAsync",
+                    new { id = result.Value.Id },
+                    result.Value, "Student added successfully."
+                );
+            }
+            catch (Exception ex)
+            {
+                return ResponseHandler.HandleException(ex);
+            }
+        }
+        #endregion
     }
 }
