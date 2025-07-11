@@ -7,7 +7,7 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace Drosy.Api.Controllers
 {
-    [Route("api/[controller]")]
+    [Route("api/auths")]
     [ApiController]
     [Authorize]
     public class AuthsController : ControllerBase
