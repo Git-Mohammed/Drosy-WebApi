@@ -9,6 +9,9 @@ using Drosy.Domain.Interfaces.Uow;
 
 namespace Drosy.Application.UseCases.Students.Services
 {
+    // TODO:
+    // 1- Add logging and exception handling as needed
+    // 2- See AddStudentValidator for validation logic
     public class StudentService : IStudentService
     {
         private readonly IMapper _mapper;
