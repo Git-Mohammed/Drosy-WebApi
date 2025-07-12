@@ -19,6 +19,11 @@ namespace Drosy.Infrastructure.Mapping.StudentConfigs
                   .Map(dest => dest.Grade, src => src.Grade)
                   .Map(dest => dest.City, src => src.City);
 
+            config.NewConfig<UpdateStudentDTO, Student>()
+              .Ignore(dest => dest.Id)
+              .Map(des => des.GradeId, src => src.GradeId)
+              .Map(des => des.CityId, src => src.CityId);
+
             // Optional: Reverse mappings
             config.NewConfig<StudentDTO, Student>()
                   .Map(dest => dest.Grade, src => src.Grade)

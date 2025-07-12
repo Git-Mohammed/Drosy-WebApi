@@ -1,6 +1,7 @@
-﻿using Microsoft.EntityFrameworkCore.Metadata.Builders;
+﻿using Drosy.Domain.Entities;
+using Drosy.Infrastructure.Identity.Entities;
 using Microsoft.EntityFrameworkCore;
-using Drosy.Domain.Entities;
+using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
 namespace Drosy.Infrastructure.Persistence.Configurations
 {
@@ -24,11 +25,10 @@ namespace Drosy.Infrastructure.Persistence.Configurations
             builder.Property(x => x.UserId)
                 .IsRequired(true);
 
-
-            builder.HasOne(x => x.AppUser)
-                .WithMany()
-                .HasForeignKey(x => x.UserId)
-                .IsRequired(true);
+            builder.HasOne<ApplicationUser>()
+                   .WithOne(x => x.Assistant)
+                   .HasForeignKey<Assistant>(x => x.UserId)
+                   .IsRequired();
         }
     }
 }

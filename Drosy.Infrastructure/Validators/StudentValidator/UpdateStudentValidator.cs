@@ -3,12 +3,12 @@ using FluentValidation;
 
 namespace Drosy.Infrastructure.Validators.StudentValidator
 {
-    public class AddStudentValidator : AbstractValidator<AddStudentDTO>
+    public class UpdateStudentValidator : AbstractValidator<UpdateStudentDTO>
     {
 
         // TODO:
         // 1- Validation Duplication in PhoneNumber and EmergencyNumber
-        public AddStudentValidator()
+        public UpdateStudentValidator()
         {
             RuleFor(x => x.FirstName)
                 .NotEmpty().WithMessage("First name is required.")
