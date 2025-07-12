@@ -3,6 +3,8 @@
     public interface ICommandRepository<in TEntity> where TEntity : class
     {
         #region Add
+        Task AddAsync(TEntity entity, CancellationToken ct);
+        Task AddRangeAsync(IEnumerable<TEntity> entities, CancellationToken ct);
         Task AddAsync(TEntity entity);
         Task AddRangeAsync(IEnumerable<TEntity> entities);
         #endregion

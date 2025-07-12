@@ -12,6 +12,15 @@ namespace Drosy.Infrastructure.Persistence.Repositories
         {
             DbSet = dbContext.Set<TEntity>();
         }
+        public virtual async Task AddAsync(TEntity entity, CancellationToken ct)
+        {
+            await DbSet.AddAsync(entity);
+        }
+
+        public virtual async Task AddRangeAsync(IEnumerable<TEntity> entities, CancellationToken ct)
+        {
+            await DbSet.AddRangeAsync(entities);
+        }
 
         public virtual async Task AddAsync(TEntity entity)
         {
