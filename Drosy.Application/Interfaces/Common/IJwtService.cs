@@ -9,6 +9,6 @@ namespace Drosy.Application.Interfaces.Common
     {
         Task<Result<AuthModel>> CreateTokenAsync(AppUser user, CancellationToken cancellationToken);
         Task<Result<AuthModel>> RefreshTokenAsync(string tokenString, CancellationToken cancellationToken);
-        Task<Result> RevokeRefreshTokensAsync(int userId, CancellationToken cancellationToken);
+        Task<Result> RevokeRefreshTokensAsync(string refreshToken, CancellationToken cancellationToken);
     }
 }
