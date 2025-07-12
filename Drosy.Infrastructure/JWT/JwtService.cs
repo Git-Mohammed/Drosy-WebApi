@@ -67,7 +67,6 @@ namespace Drosy.Infrastructure.JWT
         {
             if (user is null) return Result.Failure<AuthModel>(Error.NullValue);
 
-            var applicationUser = await _userRepository.FindByIdAsync(user.Id);
 
             var tokenString = GenerateTokenString(user.UserName, user.Id);
             
@@ -81,7 +80,7 @@ namespace Drosy.Infrastructure.JWT
 
             var existingRefreshToken = await _refreshTokenRepository.GetByUserIdAsync(user.Id);
 
-            if (existingRefreshToken != null)
+            if (existingRefreshToken != null && existingRefreshToken.IsActive)
             {
                 token.RefreshToken = existingRefreshToken.Token;
                 token.RefreshTokenExpiration = existingRefreshToken.ExpiresOn;
@@ -154,6 +153,18 @@ namespace Drosy.Infrastructure.JWT
             return Result.Success(token);
         }
 
-     
+        public async Task<Result> RevokeRefreshTokensAsync(string refreshToken, CancellationToken cancellationToken)
+        {
+            var token = await _refreshTokenRepository.GetByTokenAsync(refreshToken);
+            if (token is null)
+                return Result.Success();
+            token.RevokedOn = DateTime.UtcNow;
+            token.ExpiresOn = DateTime.Now;
+            
+            var result = await _unitOfWork.SaveChangesAsync(cancellationToken);
+            if (result <= 0)
+                return Result.Failure(Error.EFCore.CanNotSaveChanges);
+            return Result.Success();
+        }
     }
 }

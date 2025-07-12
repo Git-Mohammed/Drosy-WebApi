@@ -26,16 +26,11 @@ namespace Drosy.Application.UseCases.Authentication.Services
         {
             if (user is null) return Result.Failure<AuthModel>(Error.NullValue);
 
-            var existingUser = await _userRepository.FindByUsernameAsync(user.UserName);
-
-            if (existingUser is null)
-                return Result.Failure<AuthModel>(Error.User.InvalidCredentials);
-
-            var result = await _identityService.PasswordSignInAsync(existingUser.UserName, user.Password, true, true);
+            var result = await _identityService.PasswordSignInAsync(user.UserName, user.Password, true, true);
             if (result.IsFailure) 
                 return Result.Failure<AuthModel>(result.Error);
 
-            var tokenResult = await _jwtService.CreateTokenAsync(existingUser, cancellationToken);
+            var tokenResult = await _jwtService.CreateTokenAsync(result.Value, cancellationToken);
 
             if (tokenResult.IsFailure)
                 return Result.Failure<AuthModel>(tokenResult.Error);
@@ -43,15 +38,22 @@ namespace Drosy.Application.UseCases.Authentication.Services
             return Result.Success(tokenResult.Value);
         }
 
-        public async Task<Result<AuthModel>> RefreshTokenAsync(string tokenString, CancellationToken cancellationToken)
         public bool IsAuthorized(ClaimsPrincipal user, string requiredRole)
         {
             return user.IsInRole(requiredRole);
         }
-        public async Task<Result<AuthModel>> RefreshTokenAsync(string tokenString)
+
+        public async Task<Result> LogoutAsync(string refreshToken, CancellationToken cancellationToken)
+        {
+            return await _jwtService.RevokeRefreshTokensAsync(refreshToken,cancellationToken);
+        }
+
+        public async Task<Result<AuthModel>> RefreshTokenAsync(string tokenString, CancellationToken cancellationToken)
         {
             if (string.IsNullOrEmpty(tokenString)) return Result.Failure<AuthModel>(Error.NullValue);
             return await _jwtService.RefreshTokenAsync(tokenString, cancellationToken);
         }
+
+      
     }
 }

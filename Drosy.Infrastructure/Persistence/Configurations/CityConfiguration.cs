@@ -14,10 +14,18 @@ namespace Drosy.Infrastructure.Persistence.Configurations
                 .IsRequired()
                 .HasMaxLength(100);
 
-            builder.HasOne(x => x.Country)
-             .WithMany(x => x.Cities)
-             .HasForeignKey(x => x.CountryId)
-             .IsRequired();
+          
+
+            builder.HasData(LoadCities());
+        }
+
+        private List<City> LoadCities()
+        {
+            return new List<City>() {
+                new City { Id = 1, Name = "صنعاء", CountryId = 1 },
+                new City { Id = 2, Name = "الرياض", CountryId = 2 }
+            };
         }
     }
+    
 }

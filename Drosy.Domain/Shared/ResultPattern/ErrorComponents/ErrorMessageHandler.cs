@@ -13,7 +13,7 @@
         /// <returns>The localized error message.</returns>
         public static string GetMessage(string code, string language = "en")
         {
-            return ErrorMessageHandler.GetMessage(code, language);
+            return ErrorMessagesRepository.GetMessage(code, language);
         }
 
         /// <summary>
@@ -24,7 +24,7 @@
         public static string GetMessage(string code)
         {
             // Hardcoding default language here (could be modified to pull from configuration or culture info)
-            return ErrorMessageHandler.GetMessage(code, "en");
+            return ErrorMessagesRepository.GetMessage(code, "en");
         }
     }
 }

@@ -1,4 +1,4 @@
-﻿namespace Drosy.Api.Commons.Models
+﻿namespace Drosy.Api.Commons.Responses
 {
     public class ApiResponse<T>
     {
