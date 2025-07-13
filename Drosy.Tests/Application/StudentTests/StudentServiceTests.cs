@@ -1,6 +1,4 @@
-﻿using Drosy.Application.Interfaces.Common;
-using Drosy.Domain.Interfaces.Repository;
-using Moq;
+﻿using Moq;
 using Drosy.Application.UseCases.Students.Interfaces;
 using Drosy.Application.UseCases.Students.DTOs;
 using Drosy.Domain.Shared.ResultPattern;

@@ -4,6 +4,6 @@ namespace Drosy.Domain.Interfaces.Uow
 {
     public interface IUnitOfWork
     {
-        Task<int> SaveChangesAsync(CancellationToken  cancellationToken);
+        Task<bool> SaveChangesAsync(CancellationToken  cancellationToken);
     }
 }

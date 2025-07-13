@@ -31,11 +31,11 @@ namespace Drosy.Api.Controllers
         /// otherwise, an appropriate error response.
         /// </returns>
         [HttpGet("{id:int}", Name = "GetStudentByIdAsync")]
-        public async Task<IActionResult> GetByIdAsync(int id, CancellationToken  cancellationToken)
+        public async Task<IActionResult> GetByIdAsync(int id, CancellationToken ct)
         {
             try
             {
-                var result = await _studentService.GetByIdAsync(id, cancellationToken);
+                var result = await _studentService.GetByIdAsync(id, ct);
 
                 if (result.IsFailure)
                 {
@@ -61,7 +61,7 @@ namespace Drosy.Api.Controllers
         /// An <see cref="IActionResult"/> indicating success with the new student's ID or failure details.
         /// </returns>
         [HttpPost(Name = "AddStudentAsync")]
-        public async Task<IActionResult> AddAsync([FromBody] AddStudentDTO dto, CancellationToken cancellationToken)
+        public async Task<IActionResult> AddAsync([FromBody] AddStudentDTO dto, CancellationToken ct)
         {
             try
             {
@@ -71,7 +71,7 @@ namespace Drosy.Api.Controllers
                     return ResponseHandler.BadRequestResponse("dto", "Invalid student data.", error.Message);
                 }
                 
-                var result = await _studentService.AddAsync(dto, cancellationToken);
+                var result = await _studentService.AddAsync(dto,ct);
 
                 if (result.IsFailure)
                 {

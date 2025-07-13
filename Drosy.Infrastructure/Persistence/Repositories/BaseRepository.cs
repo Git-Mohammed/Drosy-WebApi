@@ -1,4 +1,4 @@
-﻿using Drosy.Domain.Interfaces.Repository;
+﻿using Drosy.Domain.Interfaces.Common.Repository;
 using Drosy.Infrastructure.Persistence.DbContexts;
 using Microsoft.EntityFrameworkCore;
 
@@ -13,43 +13,40 @@ namespace Drosy.Infrastructure.Persistence.Repositories
             DbSet = dbContext.Set<TEntity>();
         }
 
-        public virtual async Task AddAsync(TEntity entity)
+        public virtual async Task AddAsync(TEntity entity,CancellationToken cancellationToken)
         {
-            await DbSet.AddAsync(entity);
+            await DbSet.AddAsync(entity, cancellationToken);
         }
 
-        public virtual async Task AddRangeAsync(IEnumerable<TEntity> entities)
+        public virtual async Task AddRangeAsync(IEnumerable<TEntity> entities, CancellationToken cancellationToken)
         {
-            await DbSet.AddRangeAsync(entities);
+            await DbSet.AddRangeAsync(entities, cancellationToken);
         }
 
-        public virtual async Task UpdateAsync(TEntity entity)
+        public virtual async Task UpdateAsync(TEntity entity,  CancellationToken cancellationToken)
         {
-            DbSet.Update(entity);
-            await Task.CompletedTask;
+            await Task.Run(() => DbSet.Update(entity), cancellationToken);
         }
 
-        public virtual async Task UpdateRangeAsync(IEnumerable<TEntity> entities)
+        public virtual async Task UpdateRangeAsync(IEnumerable<TEntity> entities, CancellationToken cancellationToken)
         {
-            DbSet.UpdateRange(entities);
-            await Task.CompletedTask;
+            await Task.Run(() => DbSet.UpdateRange(entities), cancellationToken);
         }
 
-        public virtual async Task DeleteAsync(TEntity entity)
+        public virtual async Task DeleteAsync(TEntity entity, CancellationToken cancellationToken)
         {
-            DbSet.Remove(entity);
-            await Task.CompletedTask;
+
+            await Task.Run(() => DbSet.Remove(entity), cancellationToken);
         }
 
-        public virtual async Task DeleteRangeAsync(IEnumerable<TEntity> entities)
+        public virtual async Task DeleteRangeAsync(IEnumerable<TEntity> entities, CancellationToken cancellationToken)
         {
-            DbSet.RemoveRange(entities);
-            await Task.CompletedTask;
+            await Task.Run(() => DbSet.RemoveRange(entities), cancellationToken);
         }
 
-        public virtual async Task<IEnumerable<TEntity>> GetAllAsync()
+        public virtual async Task<IEnumerable<TEntity>> GetAllAsync(CancellationToken cancellationToken)
         {
-            return await DbSet.ToListAsync();
+            return await DbSet.ToListAsync(cancellationToken);
         }
     }
 }

@@ -29,6 +29,7 @@ namespace Drosy.Application.UseCases.Students.Services
         }
 
         public async Task<Result<StudentDTO>> GetByIdAsync(int id, CancellationToken cancellationToken)
+        public async Task<Result<StudentDTO>> AddAsync(AddStudentDTO dto, CancellationToken ct)
         {
             try
             {
@@ -38,6 +39,10 @@ namespace Drosy.Application.UseCases.Students.Services
                 {
                     return Result.Failure<StudentDTO>(Error.NotFound);
                 }
+                var student = _mapper.Map<AddStudentDTO, Student>(dto);
+                
+                await _studentRepository.AddAsync(student, ct);
+               await _unitOfWork.SaveChangesAsync(CancellationToken.None);
 
                 var studentDto = _mapper.Map<Student, StudentDTO>(student);
 
@@ -53,10 +58,14 @@ namespace Drosy.Application.UseCases.Students.Services
             
         }
         public async Task<Result<StudentDTO>> AddAsync(AddStudentDTO dto, CancellationToken cancellationToken)
+        }
+
+        public async Task<Result<StudentDTO>> GetByIdAsync(int id,CancellationToken ct)
         {
             try
             {
                 var student = _mapper.Map<AddStudentDTO, Student>(dto);
+                var student = await _studentRepository.GetByIdAsync(id,ct);
 
                 await _studentRepository.AddAsync(student);
                 await _unitOfWork.SaveChangesAsync(cancellationToken);
