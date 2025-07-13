@@ -33,6 +33,11 @@ namespace Drosy.Api.Controllers
         [HttpGet("{id:int}", Name = "GetStudentByIdAsync")]
         public async Task<IActionResult> GetByIdAsync(int id, CancellationToken ct)
         {
+            if(id < 1)
+            {
+                var error = new ApiError("id", ErrorMessagesRepository.GetMessage(Error.Invalid.Message, Error.CurrentLanguage));
+                return ResponseHandler.BadRequestResponse("id", "Invalid student ID.", error.Message);
+            }
             try
             {
                 var result = await _studentService.GetByIdAsync(id, ct);
@@ -63,14 +68,14 @@ namespace Drosy.Api.Controllers
         [HttpPost(Name = "AddStudentAsync")]
         public async Task<IActionResult> AddAsync([FromBody] AddStudentDTO dto, CancellationToken ct)
         {
-            try
+            if (dto == null)
             {
-                if (dto == null)
-                {
-                    var error = new ApiError("dto", ErrorMessagesRepository.GetMessage(Error.NullValue.Message, Error.CurrentLanguage));
-                    return ResponseHandler.BadRequestResponse("dto", "Invalid student data.", error.Message);
-                }
-                
+                var error = new ApiError("dto", ErrorMessagesRepository.GetMessage(Error.NullValue.Message, Error.CurrentLanguage));
+                return ResponseHandler.BadRequestResponse("dto", "Invalid student data.", error.Message);
+            }
+
+            try
+            { 
                 var result = await _studentService.AddAsync(dto,ct);
 
                 if (result.IsFailure)
@@ -101,7 +106,7 @@ namespace Drosy.Api.Controllers
         [HttpPut("{id:int}",Name = "UpdateStudentAsync")]
         public async Task<IActionResult> UpdateAsync([FromBody] UpdateStudentDTO dto, int id, CancellationToken cancellationToken)
         {
-            if(id <= 0)
+            if(id < 1)
             {
                 var error = new ApiError("id", ErrorMessagesRepository.GetMessage(Error.Invalid.Message, Error.CurrentLanguage));
                 return ResponseHandler.BadRequestResponse("id", "Invalid student ID.", error.Message);
@@ -115,7 +120,6 @@ namespace Drosy.Api.Controllers
 
             try
             {
-
                 var result = await _studentService.UpdateAsync(dto, id, cancellationToken);
 
                 if (result.IsFailure)
