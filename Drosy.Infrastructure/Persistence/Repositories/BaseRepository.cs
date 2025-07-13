@@ -12,7 +12,7 @@ namespace Drosy.Infrastructure.Persistence.Repositories
         {
             DbSet = dbContext.Set<TEntity>();
         }
-
+       
         public virtual async Task AddAsync(TEntity entity,CancellationToken cancellationToken)
         {
             await DbSet.AddAsync(entity, cancellationToken);

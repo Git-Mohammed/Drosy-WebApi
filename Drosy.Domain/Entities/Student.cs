@@ -20,6 +20,7 @@ namespace Drosy.Domain.Entities
         public AppUser? AppUser;
         public City City { get; set; } = null!;
        public Grade Grade { get; set; } = null!;
+        public List<PlanStudent> Plans { get; set; } = new();
 
         #endregion
     }

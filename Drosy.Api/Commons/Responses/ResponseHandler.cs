@@ -99,6 +99,8 @@ namespace Drosy.Api.Commons.Responses
                 nameof(Error.Invalid) => 422,
                 nameof(Error.Unauthorized) => 401,
                 nameof(Error.Conflict) => 409,
+                nameof(Error.OperationCancelled) => 202,
+                nameof(Error.BusinessRule) => 422,
                 _ => 400
             };
 
@@ -110,6 +112,8 @@ namespace Drosy.Api.Commons.Responses
                 nameof(Error.Invalid) => "Validation failed.",
                 nameof(Error.Unauthorized) => "Unauthorized access.",
                 nameof(Error.Conflict) => "Conflict detected.",
+                nameof(Error.OperationCancelled) => "Operation cancelled.",
+                nameof(Error.BusinessRule) => "Business Rule Violation.",
                 _ => "Unknown error occurred."
             };
 
