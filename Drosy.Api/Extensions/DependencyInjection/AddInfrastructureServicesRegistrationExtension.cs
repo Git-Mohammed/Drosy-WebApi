@@ -59,6 +59,7 @@ namespace Drosy.Api.Extensions.DependencyInjection
             #region Custom Repostiories
             services.AddScoped<IUnitOfWork, UnitOfWork>();
             services.AddScoped<IStudentRepository, StudentRepository>();
+            services.AddScoped<IPlanStudentsRepository, PlanStudentsRepository>();
             services.AddScoped<IRefreshTokenRepository, RefreshTokenRepository>();
             services.AddScoped<IAppUserRepository, AppUserRepository>();
             #endregion 

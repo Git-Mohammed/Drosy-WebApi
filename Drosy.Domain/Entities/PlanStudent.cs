@@ -6,7 +6,7 @@ namespace Drosy.Domain.Entities
     {
         public int PlanId { get; set; }
         public int StudentId { get; set; }
-        public string Fee { get; set; } = null!;
+        public decimal Fee { get; set; }
         public string Notes { get; set; } = null!;
         public DateTime CreatedAt { get; set; } 
 

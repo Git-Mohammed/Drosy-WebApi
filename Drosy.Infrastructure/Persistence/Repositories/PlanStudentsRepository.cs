@@ -2,6 +2,7 @@
 using Drosy.Domain.Interfaces.Repository;
 using Drosy.Infrastructure.Persistence.DbContexts;
 using Microsoft.EntityFrameworkCore;
+using System.Linq.Expressions;
 
 namespace Drosy.Infrastructure.Persistence.Repositories
 {
@@ -14,6 +15,19 @@ namespace Drosy.Infrastructure.Persistence.Repositories
         {
             _dbContext = dbContext;
             _dbSet = _dbContext.PlanStudents;
+        }
+
+        public async Task<bool> ExistsAsync(Expression<Func<PlanStudent, bool>> predicate, CancellationToken cancellationToken)
+        {
+            return await _dbSet.AnyAsync(predicate, cancellationToken);
+        }
+
+        public async Task<List<int>> GetStudentIdsInPlanAsync(int planId, List<int> studentIds, CancellationToken ct)
+        {
+            return await _dbSet
+                .Where(ps => ps.PlanId == planId && studentIds.Contains(ps.StudentId))
+                .Select(ps => ps.StudentId)
+                .ToListAsync(ct);
         }
 
 

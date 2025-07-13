@@ -23,16 +23,16 @@ namespace Drosy.Infrastructure.Persistence.Configurations
                 .IsRequired();
 
             builder.HasOne(x => x.Student)
-                .WithMany()
+                .WithMany(s => s.Plans)
                 .HasForeignKey(x => x.StudentId)
                 .IsRequired();
 
             builder.HasOne(x => x.Plan)
-              .WithMany()
+              .WithMany(p => p.Students)
               .HasForeignKey(x => x.PlanId)
               .IsRequired();
 
-            builder.ToTable("PlanStudents");
+            builder.ToTable("PlanStudents","EduManagement");
         }
 
     }

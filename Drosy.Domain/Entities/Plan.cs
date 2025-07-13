@@ -13,6 +13,6 @@ public class Plan : BaseEntity<int>
     public DateTime EndDate { get; set; }
 
     #region Navigation Properties
-    // relation with StudentsPlan
+    public List<PlanStudent> Students { get; set; } = new();
     #endregion
 }

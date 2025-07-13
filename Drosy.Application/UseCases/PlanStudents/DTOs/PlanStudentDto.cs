@@ -7,7 +7,7 @@ namespace Drosy.Application.UseCases.PlanStudents.DTOs
         public int PlanId { get; set; }
         public int StudentId { get; set; }
         public string Notes { get; set; } = null!;
-        public string Fee { get; set; } = null!;
+        public decimal Fee { get; set; }
         public DateTime CreatedAt { get; set; }
 
         #region Nav Properties
