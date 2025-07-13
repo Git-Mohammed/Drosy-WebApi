@@ -93,7 +93,7 @@ namespace Drosy.Infrastructure.JWT
                 await _refreshTokenRepository.AddAsync(refreshToken);
                 var saveingResult = await _unitOfWork.SaveChangesAsync(cancellationToken);
 
-                if (saveingResult <= 0)
+                if (saveingResult)
                     return Result.Failure<AuthModel>(Error.EFCore.CanNotSaveChanges);
             }
 
@@ -139,7 +139,7 @@ namespace Drosy.Infrastructure.JWT
 
             var savingResult = await _unitOfWork.SaveChangesAsync(cancellationToken);
 
-            if (savingResult <= 0)
+            if (savingResult)
                 return Result.Failure<AuthModel>(Error.EFCore.CanNotSaveChanges);
 
             var token = new AuthModel  {
@@ -162,7 +162,7 @@ namespace Drosy.Infrastructure.JWT
             token.ExpiresOn = DateTime.Now;
             
             var result = await _unitOfWork.SaveChangesAsync(cancellationToken);
-            if (result <= 0)
+            if (result)
                 return Result.Failure(Error.EFCore.CanNotSaveChanges);
             return Result.Success();
         }

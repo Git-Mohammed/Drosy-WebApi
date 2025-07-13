@@ -18,11 +18,11 @@ namespace Drosy.Api.Controllers
 
         #region Read
         [HttpGet("{id:int}", Name = "GetStudentByIdAsync")]
-        public async Task<IActionResult> GetByIdAsync(int id)
+        public async Task<IActionResult> GetByIdAsync(int id, CancellationToken ct)
         {
             try
             {
-                var result = await _studentService.GetByIdAsync(id);
+                var result = await _studentService.GetByIdAsync(id, ct);
 
                 if (result.IsFailure)
                 {
@@ -40,7 +40,7 @@ namespace Drosy.Api.Controllers
 
         #region Create
         [HttpPost(Name = "AddStudentAsync")]
-        public async Task<IActionResult> AddAsync([FromBody] AddStudentDTO dto)
+        public async Task<IActionResult> AddAsync([FromBody] AddStudentDTO dto, CancellationToken ct)
         {
             try
             {
@@ -50,7 +50,7 @@ namespace Drosy.Api.Controllers
                     return ResponseHandler.BadRequestResponse("dto", "Invalid student data.", error.Message);
                 }
                 
-                var result = await _studentService.AddAsync(dto);
+                var result = await _studentService.AddAsync(dto,ct);
 
                 if (result.IsFailure)
                 {

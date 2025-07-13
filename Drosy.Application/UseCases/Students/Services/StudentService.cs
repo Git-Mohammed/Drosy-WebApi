@@ -25,13 +25,13 @@ namespace Drosy.Application.UseCases.Students.Services
             _unitOfWork = unitOfWork;
         }
 
-        public async Task<Result<StudentDTO>> AddAsync(AddStudentDTO dto)
+        public async Task<Result<StudentDTO>> AddAsync(AddStudentDTO dto, CancellationToken ct)
         {
             try
             {
                 var student = _mapper.Map<AddStudentDTO, Student>(dto);
                 
-                await _studentRepository.AddAsync(student);
+                await _studentRepository.AddAsync(student, ct);
                await _unitOfWork.SaveChangesAsync(CancellationToken.None);
 
                 var studentDto = _mapper.Map<Student, StudentDTO>(student);
@@ -47,11 +47,11 @@ namespace Drosy.Application.UseCases.Students.Services
             }
         }
 
-        public async Task<Result<StudentDTO>> GetByIdAsync(int id)
+        public async Task<Result<StudentDTO>> GetByIdAsync(int id,CancellationToken ct)
         {
             try
             {
-                var student = await _studentRepository.GetByIdAsync(id);
+                var student = await _studentRepository.GetByIdAsync(id,ct);
 
                 if (student == null)
                 {

@@ -1,6 +1,5 @@
 ﻿using Drosy.Domain.Entities;
 using Drosy.Domain.Interfaces.Repository;
-using Drosy.Infrastructure.Identity.Entities;
 using Drosy.Infrastructure.Persistence.DbContexts;
 using Microsoft.EntityFrameworkCore;
 
@@ -21,9 +20,9 @@ namespace Drosy.Infrastructure.Persistence.Repositories
            return _dbSet.FirstOrDefault(x => x.Id ==  id);
         }
 
-        public async Task<Student?> GetByIdAsync(int id)
+        public async Task<Student?> GetByIdAsync(int id, CancellationToken cancellationToken)
         {
-            return await _dbSet.Include(x => x.City).Include(x => x.Grade).FirstOrDefaultAsync(x => x.Id == id);
+            return await _dbSet.Include(x => x.City).Include(x => x.Grade).FirstOrDefaultAsync(x => x.Id == id, cancellationToken);
         }
     }
 }
