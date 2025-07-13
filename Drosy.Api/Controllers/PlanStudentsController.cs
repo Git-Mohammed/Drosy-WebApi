@@ -6,7 +6,7 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace Drosy.Api.Controllers
 {
-    [Route("api/plans/{planId:int}/planstudents")]
+    [Route("api/plans/{planId:int}/students")]
     [ApiController]
     public class PlanStudentsController : ControllerBase
     {
@@ -31,6 +31,7 @@ namespace Drosy.Api.Controllers
             }
         }
         #endregion
+
         #region Create
         [HttpPost(Name = "AddStudentToPlan")]
         public async Task<IActionResult> AddAsync(int planId, [FromBody] AddStudentToPlanDto dto, CancellationToken ct)
@@ -61,6 +62,7 @@ namespace Drosy.Api.Controllers
                 return ResponseHandler.HandleException(ex);
             }
         }
+
 
         [HttpPost("batch" ,Name = "AddRangeOfStudentToPlan")]
         public async Task<IActionResult> AddRangeAsync(int planId, [FromBody] IEnumerable<AddStudentToPlanDto> dtos, CancellationToken ct)
