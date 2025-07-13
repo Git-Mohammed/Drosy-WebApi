@@ -1,6 +1,4 @@
-﻿using Drosy.Application.Interfaces.Common;
-using Drosy.Domain.Interfaces.Repository;
-using Moq;
+﻿using Moq;
 using Drosy.Application.UseCases.Students.Interfaces;
 using Drosy.Application.UseCases.Students.DTOs;
 using Drosy.Domain.Shared.ResultPattern;
@@ -61,11 +59,11 @@ namespace Drosy.Tests.Application.StudentTests
             };
 
             _studentService
-                .Setup(s => s.AddAsync(addDto))
+                .Setup(s => s.AddAsync(addDto,CancellationToken.None))
                 .ReturnsAsync(Result.Success(studentDto));
 
             // Act
-            var result = await _studentService.Object.AddAsync(addDto);
+            var result = await _studentService.Object.AddAsync(addDto,CancellationToken.None);
 
             // Assert
             Assert.True(result.IsSuccess);
@@ -93,11 +91,11 @@ namespace Drosy.Tests.Application.StudentTests
             };
 
             _studentService
-                .Setup(s => s.GetByIdAsync(studentId))
+                .Setup(s => s.GetByIdAsync(studentId,CancellationToken.None))
                 .ReturnsAsync(Result.Success(studentDto));
 
             // Act
-            var result = await _studentService.Object.GetByIdAsync(studentId);
+            var result = await _studentService.Object.GetByIdAsync(studentId,CancellationToken.None);
 
             // Assert
             Assert.True(result.IsSuccess);
@@ -173,7 +171,7 @@ namespace Drosy.Tests.Application.StudentTests
                         d.PhoneNumber == phoneNumber &&
                         d.EmergencyNumber == emergencyNumber &&
                         d.GradeId == gradeId &&
-                        d.CityId == cityId)))
+                        d.CityId == cityId),CancellationToken.None))
                     .ReturnsAsync(Result.Success(studentDto));
             }
             else
@@ -188,12 +186,12 @@ namespace Drosy.Tests.Application.StudentTests
                         d.PhoneNumber == phoneNumber &&
                         d.EmergencyNumber == emergencyNumber &&
                         d.GradeId == gradeId &&
-                        d.CityId == cityId)))
+                        d.CityId == cityId),CancellationToken.None))
                     .ReturnsAsync(Result.Failure<StudentDTO>(Error.Invalid));
             }
 
             // Act
-            var result = await _studentService.Object.AddAsync(addDto);
+            var result = await _studentService.Object.AddAsync(addDto,CancellationToken.None);
 
             // Assert
             if (isValid)
