@@ -10,7 +10,7 @@ using Drosy.Domain.Interfaces.Uow;
 namespace Drosy.Application.UseCases.Students.Services
 {
     // TODO:
-    // 1- Add logging and exception handling as needed
+    // 1- Add logging  
     // 2- See AddStudentValidator for validation logic
     public class StudentService : IStudentService
     {
@@ -52,8 +52,6 @@ namespace Drosy.Application.UseCases.Students.Services
             }
             
         }
-
-
         public async Task<Result<StudentDTO>> AddAsync(AddStudentDTO dto, CancellationToken cancellationToken)
         {
             try
@@ -100,6 +98,5 @@ namespace Drosy.Application.UseCases.Students.Services
                 return Result.Failure(Error.Failure);
             }
         }
-                  
     }
 }

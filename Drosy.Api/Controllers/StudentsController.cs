@@ -6,6 +6,10 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace Drosy.Api.Controllers
 {
+    // TODO:
+    // - Athourization
+    // - add canclelation token to all async methods
+
     [ApiController]
     [Route("api/students")]
     public class StudentsController : ControllerBase
@@ -27,11 +31,11 @@ namespace Drosy.Api.Controllers
         /// otherwise, an appropriate error response.
         /// </returns>
         [HttpGet("{id:int}", Name = "GetStudentByIdAsync")]
-        public async Task<IActionResult> GetByIdAsync(int id)
+        public async Task<IActionResult> GetByIdAsync(int id, CancellationToken  cancellationToken)
         {
             try
             {
-                var result = await _studentService.GetByIdAsync(id, CancellationToken.None);
+                var result = await _studentService.GetByIdAsync(id, cancellationToken);
 
                 if (result.IsFailure)
                 {
@@ -45,10 +49,10 @@ namespace Drosy.Api.Controllers
                 return ResponseHandler.HandleException(ex);
             }
         }
+
         #endregion
 
         #region Write
-
         /// <summary>
         /// Adds a new student using the provided data transfer object.
         /// </summary>
@@ -57,7 +61,7 @@ namespace Drosy.Api.Controllers
         /// An <see cref="IActionResult"/> indicating success with the new student's ID or failure details.
         /// </returns>
         [HttpPost(Name = "AddStudentAsync")]
-        public async Task<IActionResult> AddAsync([FromBody] AddStudentDTO dto)
+        public async Task<IActionResult> AddAsync([FromBody] AddStudentDTO dto, CancellationToken cancellationToken)
         {
             try
             {
@@ -67,7 +71,7 @@ namespace Drosy.Api.Controllers
                     return ResponseHandler.BadRequestResponse("dto", "Invalid student data.", error.Message);
                 }
                 
-                var result = await _studentService.AddAsync(dto, CancellationToken.None);
+                var result = await _studentService.AddAsync(dto, cancellationToken);
 
                 if (result.IsFailure)
                 {
@@ -95,7 +99,7 @@ namespace Drosy.Api.Controllers
         /// An <see cref="IActionResult"/> indicating the result of the update operation.
         /// </returns>
         [HttpPut("{id:int}",Name = "UpdateStudentAsync")]
-        public async Task<IActionResult> UpdateAsync([FromBody] UpdateStudentDTO dto, int id)
+        public async Task<IActionResult> UpdateAsync([FromBody] UpdateStudentDTO dto, int id, CancellationToken cancellationToken)
         {
             if(id <= 0)
             {
@@ -112,7 +116,7 @@ namespace Drosy.Api.Controllers
             try
             {
 
-                var result = await _studentService.UpdateAsync(dto, id, CancellationToken.None);
+                var result = await _studentService.UpdateAsync(dto, id, cancellationToken);
 
                 if (result.IsFailure)
                 {

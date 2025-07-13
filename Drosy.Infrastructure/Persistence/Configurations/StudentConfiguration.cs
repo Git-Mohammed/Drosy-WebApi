@@ -38,9 +38,6 @@ namespace Drosy.Infrastructure.Persistence.Configurations
                 .IsRequired()
                 .HasMaxLength(20);
 
-            builder.Property(x => x.UserId)
-                .IsRequired(false);
-
             builder.HasOne(x => x.City)
                 .WithMany()
                 .HasForeignKey(x => x.CityId)
@@ -50,7 +47,6 @@ namespace Drosy.Infrastructure.Persistence.Configurations
                    .WithOne(x => x.Student)
                    .HasForeignKey<Student>(x => x.UserId)
                    .IsRequired(false);
-
 
         }
 
