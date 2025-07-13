@@ -59,11 +59,11 @@ namespace Drosy.Tests.Application.StudentTests
             };
 
             _studentService
-                .Setup(s => s.AddAsync(addDto,CancellationToken.None))
+                .Setup(s => s.AddAsync(addDto, CancellationToken.None))
                 .ReturnsAsync(Result.Success(studentDto));
 
             // Act
-            var result = await _studentService.Object.AddAsync(addDto,CancellationToken.None);
+            var result = await _studentService.Object.AddAsync(addDto, CancellationToken.None);
 
             // Assert
             Assert.True(result.IsSuccess);
@@ -91,11 +91,11 @@ namespace Drosy.Tests.Application.StudentTests
             };
 
             _studentService
-                .Setup(s => s.GetByIdAsync(studentId,CancellationToken.None))
+                .Setup(s => s.GetByIdAsync(studentId, CancellationToken.None))
                 .ReturnsAsync(Result.Success(studentDto));
 
             // Act
-            var result = await _studentService.Object.GetByIdAsync(studentId,CancellationToken.None);
+            var result = await _studentService.Object.GetByIdAsync(studentId, CancellationToken.None);
 
             // Assert
             Assert.True(result.IsSuccess);
@@ -171,7 +171,7 @@ namespace Drosy.Tests.Application.StudentTests
                         d.PhoneNumber == phoneNumber &&
                         d.EmergencyNumber == emergencyNumber &&
                         d.GradeId == gradeId &&
-                        d.CityId == cityId),CancellationToken.None))
+                        d.CityId == cityId), CancellationToken.None))
                     .ReturnsAsync(Result.Success(studentDto));
             }
             else
@@ -191,7 +191,7 @@ namespace Drosy.Tests.Application.StudentTests
             }
 
             // Act
-            var result = await _studentService.Object.AddAsync(addDto,CancellationToken.None);
+            var result = await _studentService.Object.AddAsync(addDto, CancellationToken.None);
 
             // Assert
             if (isValid)
@@ -207,6 +207,86 @@ namespace Drosy.Tests.Application.StudentTests
         }
 
 
+        [Theory]
+        [InlineData(null, "A.", "B.", "Doe", "123 Main St", "1234567890", "0987654321", 1, 2, 1, false)] // FirstName null
+        [InlineData("", "A.", "B.", "Doe", "123 Main St", "1234567890", "0987654321", 1, 2, 1, false)]  // FirstName empty
+        [InlineData("John", null, "B.", "Doe", "123 Main St", "1234567890", "0987654321", 1, 2, 1, false)] // SecondName null
+        [InlineData("John", "", "B.", "Doe", "123 Main St", "1234567890", "0987654321", 1, 2, 1, false)] // SecondName empty
+        [InlineData("John", "A.", "B.", null, "123 Main St", "1234567890", "0987654321", 1, 2, 1, false)] // LastName null
+        [InlineData("John", "A.", "B.", "", "123 Main St", "1234567890", "0987654321", 1, 2, 1, false)]  // LastName empty
+        [InlineData("John", "A.", "B.", "Doe", null, "1234567890", "0987654321", 1, 2, 1, false)]        // Address null
+        [InlineData("John", "A.", "B.", "Doe", "", "1234567890", "0987654321", 1, 2, 1, false)]         // Address empty
+        [InlineData("John", "A.", "B.", "Doe", "123 Main St", null, "0987654321", 1, 2, 1, false)]      // PhoneNumber null
+        [InlineData("John", "A.", "B.", "Doe", "123 Main St", "", "0987654321", 1, 2, 1, false)]        // PhoneNumber empty
+        [InlineData("John", "A.", "B.", "Doe", "123 Main St", "1234567890", null, 1, 2, 1, false)]      // EmergencyNumber null
+        [InlineData("John", "A.", "B.", "Doe", "123 Main St", "1234567890", "", 1, 2, 1, false)]        // EmergencyNumber empty
+        [InlineData("John", "A.", "B.", "Doe", "123 Main St", "1234567890", "0987654321", 0, 2, 1, false)] // GradeId invalid
+        [InlineData("John", "A.", "B.", "Doe", "123 Main St", "1234567890", "0987654321", 1, 0, 1, false)] // CityId invalid
+        [InlineData("John", "A.", "B.", "Doe", "123 Main St", "1234567890", "0987654321", 1, 2, 0, false)] // ID invalid
+        [InlineData("John", "A.", "B.", "Doe", "123 Main St", "1234567890", "0987654321", 1, 2, 1, true)] // All valid
+        public async Task UpdateAsync_ValidationTheory(
+    string firstName,
+    string secondName,
+    string thirdName,
+    string lastName,
+    string address,
+    string phoneNumber,
+    string emergencyNumber,
+    int gradeId,
+    int cityId,
+    int studentId,
+    bool isValid)
+        {
+            // Arrange
+            var updateDto = new UpdateStudentDTO
+            {
+                FirstName = firstName,
+                SecondName = secondName,
+                ThirdName = thirdName,
+                LastName = lastName,
+                Address = address,
+                PhoneNumber = phoneNumber,
+                EmergencyNumber = emergencyNumber,
+                GradeId = gradeId,
+                CityId = cityId
+            };
+
+            if (isValid)
+            {
+                _studentService
+                    .Setup(s => s.UpdateAsync(It.Is<UpdateStudentDTO>(d =>
+                        d.FirstName == firstName &&
+                        d.SecondName == secondName &&
+                        d.ThirdName == thirdName &&
+                        d.LastName == lastName &&
+                        d.Address == address &&
+                        d.PhoneNumber == phoneNumber &&
+                        d.EmergencyNumber == emergencyNumber &&
+                        d.GradeId == gradeId &&
+                        d.CityId == cityId), studentId, CancellationToken.None))
+                    .ReturnsAsync(Result.Success());
+            }
+            else
+            {
+                _studentService
+                    .Setup(s => s.UpdateAsync(It.IsAny<UpdateStudentDTO>(), studentId, CancellationToken.None))
+                    .ReturnsAsync(Result.Failure(Error.Invalid));
+            }
+
+            // Act
+            var result = await _studentService.Object.UpdateAsync(updateDto, studentId, CancellationToken.None);
+
+            // Assert
+            if (isValid)
+            {
+                Assert.True(result.IsSuccess);
+            }
+            else
+            {
+                Assert.False(result.IsSuccess);
+                Assert.NotNull(result.Error);
+            }
+        }
 
     }
 

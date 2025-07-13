@@ -10,5 +10,10 @@ namespace Drosy.Infrastructure.Mapping.Configs
         {
             return _mapper.Map<TDestination>(source);
         }
+
+        public void Map<TSource, TDestination>(TSource source, TDestination destination)
+        {
+            _mapper.Map(source, destination);
+        }
     }
 }
