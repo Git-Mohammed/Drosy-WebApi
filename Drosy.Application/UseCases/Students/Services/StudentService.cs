@@ -14,7 +14,6 @@ namespace Drosy.Application.UseCases.Students.Services
     // 2- See AddStudentValidator for validation logic
     public class StudentService : IStudentService
     {
-
         private readonly IMapper _mapper;
         private readonly IStudentRepository _studentRepository;
         private readonly IUnitOfWork _unitOfWork;
@@ -28,47 +27,16 @@ namespace Drosy.Application.UseCases.Students.Services
             _logger = logger;
         }
 
-        public async Task<Result<StudentDTO>> GetByIdAsync(int id, CancellationToken cancellationToken)
-        public async Task<Result<StudentDTO>> AddAsync(AddStudentDTO dto, CancellationToken ct)
+        public async Task<Result<StudentDTO>> GetByIdAsync(int id, CancellationToken ct)
         {
             try
             {
-                var student = await _studentRepository.GetByIdAsync(id);
+                var student = await _studentRepository.GetByIdAsync(id, ct);
 
                 if (student == null)
                 {
                     return Result.Failure<StudentDTO>(Error.NotFound);
                 }
-                var student = _mapper.Map<AddStudentDTO, Student>(dto);
-                
-                await _studentRepository.AddAsync(student, ct);
-               await _unitOfWork.SaveChangesAsync(CancellationToken.None);
-
-                var studentDto = _mapper.Map<Student, StudentDTO>(student);
-
-                return Result.Success(studentDto);
-
-            }
-            catch (Exception ex)
-            {
-                // Log the exception
-                return Result.Failure<StudentDTO>(Error.Failure);
-
-            }
-            
-        }
-        public async Task<Result<StudentDTO>> AddAsync(AddStudentDTO dto, CancellationToken cancellationToken)
-        }
-
-        public async Task<Result<StudentDTO>> GetByIdAsync(int id,CancellationToken ct)
-        {
-            try
-            {
-                var student = _mapper.Map<AddStudentDTO, Student>(dto);
-                var student = await _studentRepository.GetByIdAsync(id,ct);
-
-                await _studentRepository.AddAsync(student);
-                await _unitOfWork.SaveChangesAsync(cancellationToken);
 
                 var studentDto = _mapper.Map<Student, StudentDTO>(student);
 
@@ -82,11 +50,41 @@ namespace Drosy.Application.UseCases.Students.Services
 
             }
         }
-        public async Task<Result> UpdateAsync(UpdateStudentDTO dto, int id, CancellationToken cancellationToken)
+
+        public async Task<Result<StudentDTO>> AddAsync(AddStudentDTO dto, CancellationToken ct)
+        {
+            try
+            { 
+                var student = _mapper.Map<AddStudentDTO, Student>(dto);
+                
+                await _studentRepository.AddAsync(student, ct);
+
+                bool isSuccess =  await _unitOfWork.SaveChangesAsync(ct);
+
+                if(!isSuccess)
+                {
+                    return Result.Failure<StudentDTO>(Error.EFCore.CanNotSaveChanges);
+                }
+
+                var studentDto = _mapper.Map<Student, StudentDTO>(student);
+
+                return Result.Success(studentDto);
+            }
+            catch (Exception ex)
+            {
+                // Log the exception
+                _logger.LogError("Error adding student: {Message}", ex.Message);
+                return Result.Failure<StudentDTO>(Error.Failure);
+
+            }
+            
+        }
+  
+        public async Task<Result> UpdateAsync(UpdateStudentDTO dto, int id, CancellationToken ct)
         {
             try
             {
-                var student = await _studentRepository.GetByIdAsync(id);
+                var student = await _studentRepository.GetByIdAsync(id, ct);
                 if (student == null)
                 {
                     return Result.Failure(Error.NotFound);
@@ -95,9 +93,9 @@ namespace Drosy.Application.UseCases.Students.Services
                 // Map the DTO to the entity
                 _mapper.Map(dto, student);
 
-                await _studentRepository.UpdateAsync(student);
+                await _studentRepository.UpdateAsync(student, ct);
 
-                bool isSuccess = await _unitOfWork.SaveChangesAsync(cancellationToken) > 0;
+                bool isSuccess = await _unitOfWork.SaveChangesAsync(ct);
 
                 return isSuccess ? Result.Success() : Result.Failure(Error.EFCore.CanNotSaveChanges);
             }
