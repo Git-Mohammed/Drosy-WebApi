@@ -13,6 +13,10 @@ namespace Drosy.Infrastructure.Validators.PlanStudentsValidator
             RuleFor(x => x.Notes)
                 .MaximumLength(500)
                 .WithMessage("Notes cannot exceed 500 characters.");
+
+            RuleFor(x => x.Fee)
+       .GreaterThanOrEqualTo(0)
+       .WithMessage("Fee must be zero or a positive amount.");
         }
     }
 }

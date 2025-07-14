@@ -6,6 +6,7 @@ using Drosy.Application.UseCases.Students.Interfaces;
 using Drosy.Domain.Entities;
 using Drosy.Domain.Interfaces.Repository;
 using Drosy.Domain.Interfaces.Uow;
+using Drosy.Domain.Shared.DataDTOs;
 using Drosy.Domain.Shared.ResultPattern;
 using Drosy.Domain.Shared.ResultPattern.ErrorComponents;
 
@@ -71,7 +72,7 @@ namespace Drosy.Application.UseCases.PlanStudents.Services
             }
         }
 
-        public async Task<Result> AddRangeOfStudentToPlanAsync(int planId, IEnumerable<AddStudentToPlanDto> dtos, CancellationToken ct)
+        public async Task<Result<DataResult<PlanStudentDto>>> AddRangeOfStudentToPlanAsync(int planId, IEnumerable<AddStudentToPlanDto> dtos, CancellationToken ct)
         {
             try
             {
@@ -88,7 +89,7 @@ namespace Drosy.Application.UseCases.PlanStudents.Services
                 {
                     var student = await _studentService.GetByIdAsync(dto.StudentId, ct);
                     if (student is null)
-                        return Result.Failure(Error.NotFound, new Exception($"Student with ID {dto.StudentId} not found."));
+                        return Result.Failure<DataResult<PlanStudentDto>>(Error.NotFound, new Exception($"Student with ID {dto.StudentId} not found."));
                 }
 
 
@@ -104,7 +105,7 @@ namespace Drosy.Application.UseCases.PlanStudents.Services
                     .ToList();
 
                 if (!newDtos.Any())
-                    return Result.Failure(Error.Conflict, new Exception("All students are already assigned to this plan."));
+                    return Result.Failure<DataResult<PlanStudentDto>>(Error.Conflict, new Exception("All students are already assigned to this plan."));
 
                 #endregion
 
@@ -116,16 +117,23 @@ namespace Drosy.Application.UseCases.PlanStudents.Services
 
                 var resultDtos = _mapper.Map<List<PlanStudent>, List<PlanStudentDto>>(planStudents);
 
-                return isSaved ? Result.Success(resultDtos) : Result.Failure<PlanStudentDto>(Error.EFCore.CanNotSaveChanges);
+                return isSaved 
+                    ? Result<DataResult<PlanStudentDto>>.Success(new DataResult<PlanStudentDto>
+                    {
+                        Data = resultDtos ?? Enumerable.Empty<PlanStudentDto>(),
+                        TotalRecordsCount = resultDtos!.Count
+                    })
+                    : Result.Failure<DataResult<PlanStudentDto>>(Error.EFCore.CanNotSaveChanges);
+
             }
             catch (OperationCanceledException)
             {
-                return Result.Failure<PlanStudentDto>(Error.OperationCancelled);
+                return Result.Failure<DataResult<PlanStudentDto>>(Error.OperationCancelled);
             }
             catch (Exception)
             {
                 // Log the exception
-                return Result.Failure<PlanStudentDto>(Error.Failure);
+                return Result.Failure<DataResult<PlanStudentDto>>(Error.Failure);
             }
         }
 
