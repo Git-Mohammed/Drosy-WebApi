@@ -46,7 +46,7 @@ namespace Drosy.Application.UseCases.PlanStudents.Services
                     return Result.Failure<PlanStudentDto>(Error.NotFound, new Exception("Student not find for assining it to a plan."));
 
                 //3) No duplicate
-                bool alreadyInPlan = await _planStudentRepository.ExistsAsync(ps => ps.PlanId == planId && ps.StudentId == dto.StudentId, ct);
+                bool alreadyInPlan = await _planStudentRepository.ExistsAsync(planId , dto.StudentId, ct);
                 if (alreadyInPlan)
                     return Result.Failure<PlanStudentDto>(Error.Conflict, new Exception("Student is already assigned to this plan."));
                 #endregion

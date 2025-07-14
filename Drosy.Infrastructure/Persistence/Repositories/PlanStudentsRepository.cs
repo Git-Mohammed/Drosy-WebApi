@@ -10,9 +10,9 @@ namespace Drosy.Infrastructure.Persistence.Repositories
     {
         public PlanStudentsRepository(ApplicationDbContext dbContext) : base(dbContext) {}
 
-        public async Task<bool> ExistsAsync(Expression<Func<PlanStudent, bool>> predicate, CancellationToken cancellationToken)
+        public async Task<bool> ExistsAsync(int planId, int studentId, CancellationToken cancellationToken)
         {
-            return await DbSet.AnyAsync(predicate, cancellationToken);
+            return await DbSet.AnyAsync(ps => ps.PlanId == planId & ps.StudentId == studentId, cancellationToken);
         }
 
         public async Task<List<int>> GetStudentIdsInPlanAsync(int planId, List<int> studentIds, CancellationToken ct)
