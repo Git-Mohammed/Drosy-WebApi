@@ -54,12 +54,14 @@ namespace Drosy.Api.Controllers
         [HttpPost("logout")]
         public async Task<IActionResult> Logout(CancellationToken cancellationToken)
         {
-            if (!int.TryParse(User.FindFirstValue(ClaimTypes.NameIdentifier), out int userId) || userId <= 0)
-                return ResponseHandler.UnauthorizedResponse("user", "Invalid or missing user ID");
+            // if (!int.TryParse(User.FindFirstValue(ClaimTypes.NameIdentifier), out int userId) || userId <= 0)
+            //     return ResponseHandler.UnauthorizedResponse("user", "Invalid or missing user ID");
             
             string? refreshToken = Request.Cookies["refreshToken"];
+            if(string.IsNullOrEmpty(refreshToken))
+                return ResponseHandler.UnauthorizedResponse("Access Token", "Unauthorized");
             
-            var result = await _authService.LogoutAsync(userId, cancellationToken);
+            var result = await _authService.LogoutAsync(refreshToken, cancellationToken);
 
             if (result.IsFailure)
                 return ResponseHandler.StatusCodeResponse(500, "logout", "An error occurred during logout");

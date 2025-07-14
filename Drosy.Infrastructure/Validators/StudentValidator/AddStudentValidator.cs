@@ -44,6 +44,8 @@ namespace Drosy.Infrastructure.Validators.StudentValidator
                 .GreaterThan(0).WithMessage("CityId must be greater than 0.");
 
             // UserId is optional, so no validation required
+            RuleFor(x => x.UserId).GreaterThan(0).WithMessage("UserId must be null or grater than 0.")
+                .When(x => x.UserId.HasValue, ApplyConditionTo.CurrentValidator);
         }
     }
 }

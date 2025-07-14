@@ -93,7 +93,7 @@ namespace Drosy.Infrastructure.JWT
                 await _refreshTokenRepository.AddAsync(refreshToken);
                 var saveingResult = await _unitOfWork.SaveChangesAsync(cancellationToken);
 
-                if (saveingResult <= 0)
+                if (saveingResult)
                     return Result.Failure<AuthModel>(Error.EFCore.CanNotSaveChanges);
             }
 
@@ -139,7 +139,7 @@ namespace Drosy.Infrastructure.JWT
 
             var savingResult = await _unitOfWork.SaveChangesAsync(cancellationToken);
 
-            if (savingResult <= 0)
+            if (savingResult)
                 return Result.Failure<AuthModel>(Error.EFCore.CanNotSaveChanges);
 
             var token = new AuthModel  {
@@ -153,20 +153,16 @@ namespace Drosy.Infrastructure.JWT
             return Result.Success(token);
         }
 
-        public async Task<Result> RevokeRefreshTokensAsync(int userId, CancellationToken cancellationToken)
+        public async Task<Result> RevokeRefreshTokensAsync(string refreshToken, CancellationToken cancellationToken)
         {
-            var tokens = await _refreshTokenRepository.GetAllByUserIdAsync(userId);
-            if (!tokens.Any())
+            var token = await _refreshTokenRepository.GetByTokenAsync(refreshToken);
+            if (token is null)
                 return Result.Success();
-            
-            foreach (var token in tokens)
-            {
-                token.ExpiresOn = DateTime.UtcNow;
-                token.RevokedOn = DateTime.UtcNow;
-            }
+            token.RevokedOn = DateTime.UtcNow;
+            token.ExpiresOn = DateTime.Now;
             
             var result = await _unitOfWork.SaveChangesAsync(cancellationToken);
-            if (result <= 0)
+            if (result)
                 return Result.Failure(Error.EFCore.CanNotSaveChanges);
             return Result.Success();
         }

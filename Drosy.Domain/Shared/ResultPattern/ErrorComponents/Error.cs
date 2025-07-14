@@ -13,6 +13,8 @@
         public static readonly Error Unauthorized = new(nameof(Unauthorized));
         public static readonly Error Conflict = new(nameof(Conflict));
         public static readonly Error Failure = new(nameof(Failure));
+        public static readonly Error OperationCancelled = new(nameof(OperationCancelled));
+        public static readonly Error BusinessRule = new(nameof(BusinessRule));
 
         public record EFCore
         {

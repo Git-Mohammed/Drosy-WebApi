@@ -13,13 +13,14 @@ namespace Drosy.Domain.Entities
         public string EmergencyNumber { get; set; } = null!;
 
         public int GradeId { get; set; }
-        public int? UserId { get; set; } = default;
+        public int? UserId { get; set; } 
         public int CityId { get; set; }
 
         #region Nav Properties
         public AppUser? AppUser;
         public City City { get; set; } = null!;
        public Grade Grade { get; set; } = null!;
+        public List<PlanStudent> Plans { get; set; } = new();
 
         #endregion
     }
