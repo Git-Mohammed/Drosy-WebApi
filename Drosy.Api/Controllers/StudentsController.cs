@@ -21,7 +21,6 @@ namespace Drosy.Api.Controllers
         }
 
         #region Read
-
         /// <summary>
         /// Retrieves the student entity with the specified ID.
         /// </summary>
@@ -54,7 +53,6 @@ namespace Drosy.Api.Controllers
                 return ResponseHandler.HandleException(ex);
             }
         }
-
         #endregion
 
         #region Write
@@ -134,7 +132,6 @@ namespace Drosy.Api.Controllers
                 return ResponseHandler.HandleException(ex);
             }
         }
-
         #endregion
     }
 }

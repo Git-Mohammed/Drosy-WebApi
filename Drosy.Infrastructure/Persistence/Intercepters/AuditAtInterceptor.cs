@@ -12,13 +12,13 @@ namespace Drosy.Infrastructure.Persistence.Intercepters
             return base.SavingChanges(eventData, result);
         }
 
-        public override ValueTask<InterceptionResult<int>> SavingChangesAsync(
+        public override async ValueTask<InterceptionResult<int>> SavingChangesAsync(
             DbContextEventData eventData,
             InterceptionResult<int> result,
             CancellationToken cancellationToken = default)
         {
-            SetAuditFields(eventData.Context);
-            return base.SavingChangesAsync(eventData, result, cancellationToken);
+            await Task.Run(() => SetAuditFields(eventData.Context));
+            return result;
         }
 
         private void SetAuditFields(DbContext? context)

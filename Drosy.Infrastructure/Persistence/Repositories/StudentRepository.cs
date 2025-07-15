@@ -7,22 +7,20 @@ namespace Drosy.Infrastructure.Persistence.Repositories
 {
     public class StudentRepository : BaseRepository<Student>, IStudentRepository
     {
-        private readonly ApplicationDbContext _dbContext;
-        private readonly DbSet<Student> _dbSet;
-        public StudentRepository(ApplicationDbContext dbContext) : base(dbContext)
-        {
-            _dbContext = dbContext;
-            _dbSet = _dbContext.Students;
-        }
-
+        public StudentRepository(ApplicationDbContext dbContext) : base(dbContext) { }
         public Student? GetById(int id)
         {
-           return _dbSet.FirstOrDefault(x => x.Id ==  id);
+           return DbSet.FirstOrDefault(x => x.Id ==  id);
         }
 
         public async Task<Student?> GetByIdAsync(int id, CancellationToken cancellationToken)
         {
-            return await _dbSet.Include(x => x.City).Include(x => x.Grade).FirstOrDefaultAsync(x => x.Id == id, cancellationToken);
+            return await DbSet.Include(x => x.City).Include(x => x.Grade).FirstOrDefaultAsync(x => x.Id == id, cancellationToken);
+        }
+
+        public async Task<bool> ExistsAsync(int id, CancellationToken cancellationToken)
+        {
+            return await DbSet.AnyAsync(x => x.Id == id, cancellationToken);
         }
     }
 }
