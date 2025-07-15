@@ -2,8 +2,8 @@
 using Drosy.Application.UseCases.Plans.DTOs;
 using Drosy.Application.UseCases.Plans.Interfaces;
 using Drosy.Domain.Entities;
+using Drosy.Domain.Interfaces.Common.Uow;
 using Drosy.Domain.Interfaces.Repository;
-using Drosy.Domain.Interfaces.Uow;
 using Drosy.Domain.Shared.ResultPattern;
 using Drosy.Domain.Shared.ResultPattern.ErrorComponents;
 
