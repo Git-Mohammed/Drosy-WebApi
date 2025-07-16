@@ -1,11 +1,14 @@
-﻿using Drosy.Application.Interfaces.Common;
+﻿using System.Security.Claims;
+using System.Xml.XPath;
+using Drosy.Application.Interfaces.Common;
 using Drosy.Application.UseCases.Authentication.Interfaces;
 using Drosy.Application.UsesCases.Authentication.DTOs;
 using Drosy.Application.UsesCases.Users.DTOs;
+using Drosy.Domain.Entities;
 using Drosy.Domain.Interfaces.Repository;
 using Drosy.Domain.Shared.ResultPattern;
 using Drosy.Domain.Shared.ResultPattern.ErrorComponents;
-using System.Security.Claims;
+using static Drosy.Domain.Shared.ResultPattern.ErrorComponents.Error;
 
 namespace Drosy.Application.UseCases.Authentication.Services
 {
@@ -14,28 +17,40 @@ namespace Drosy.Application.UseCases.Authentication.Services
         private readonly IIdentityService _identityService;
         private readonly IAppUserRepository _userRepository;
         private readonly IJwtService _jwtService;
+        private readonly ILogger<AuthService> _logger;
 
-        public AuthService(IJwtService jwtService, IAppUserRepository userRepository, IIdentityService identity)
+        public AuthService(IJwtService jwtService, IAppUserRepository userRepository, IIdentityService identity, ILogger<AuthService> logger)
         {
             _jwtService = jwtService;
             _userRepository = userRepository;
             _identityService = identity;
+            _logger = logger;
         }
 
         public async Task<Result<AuthModel>> LoginAsync(UserLoginDTO user, CancellationToken token)
         {
-            if (user is null) return Result.Failure<AuthModel>(Error.NullValue);
-            
-            var result = await _identityService.PasswordSignInAsync(user.UserName, user.Password, true, true);
-            if (result.IsFailure) 
-                return Result.Failure<AuthModel>(result.Error);
+            try
+            {
+                token.ThrowIfCancellationRequested();
 
-            var tokenResult = await _jwtService.CreateTokenAsync(result.Value, token);
+                if (user is null) return Result.Failure<AuthModel>(Error.NullValue);
 
-            if (tokenResult.IsFailure)
-                return Result.Failure<AuthModel>(tokenResult.Error);
+                var result = await _identityService.PasswordSignInAsync(user.UserName, user.Password, true, true);
+                if (result.IsFailure)
+                    return Result.Failure<AuthModel>(result.Error);
 
-            return Result.Success(tokenResult.Value);
+                var tokenResult = await _jwtService.CreateTokenAsync(result.Value, token);
+
+                if (tokenResult.IsFailure)
+                    return Result.Failure<AuthModel>(tokenResult.Error);
+
+                return Result.Success(tokenResult.Value);
+            }
+            catch (OperationCanceledException) 
+            {
+                _logger.LogWarning(Error.OperationCancelled.Message, "Operation Canceld While logging the user with userName {userName}", user.UserName);
+                return Result.Failure<AuthModel>(Error.OperationCancelled);
+            }
         }
 
         public bool IsAuthorized(ClaimsPrincipal user, string requiredRole)
@@ -51,7 +66,16 @@ namespace Drosy.Application.UseCases.Authentication.Services
         public async Task<Result<AuthModel>> RefreshTokenAsync(string tokenString, CancellationToken cancellationToken)
         {
             if (string.IsNullOrEmpty(tokenString)) return Result.Failure<AuthModel>(Error.NullValue);
-            return await _jwtService.RefreshTokenAsync(tokenString, cancellationToken);
+
+            try
+            {
+                return await _jwtService.RefreshTokenAsync(tokenString, cancellationToken);
+            }
+            catch (OperationCanceledException)
+            {
+                _logger.LogWarning(Error.OperationCancelled.Message, "Operation Canceld While Resfreshing the token {tokenString}", tokenString);
+                return Result.Failure<AuthModel>(Error.OperationCancelled);
+            }
         }
 
       

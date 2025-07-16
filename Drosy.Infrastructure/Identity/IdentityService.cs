@@ -11,13 +11,13 @@ namespace Drosy.Infrastructure.Identity
     public class IdentityService(
         UserManager<ApplicationUser> userManager,
         SignInManager<ApplicationUser> signInManager,
-        RoleManager<ApplicationRole> roleManager)
+        RoleManager<ApplicationRole> roleManager, IMapper mapper)
         : IIdentityService
     {
         private readonly UserManager<ApplicationUser> _userManager = userManager;
         private readonly SignInManager<ApplicationUser> _signInManager = signInManager;
         private readonly RoleManager<ApplicationRole> _roleManager = roleManager;
-
+        private readonly IMapper _mapper = mapper;
 
         public Task<bool> CreateUserAsync(string username, string password)
         {
@@ -38,7 +38,7 @@ namespace Drosy.Infrastructure.Identity
             if (!result.Succeeded)
                 return Result.Failure<AppUser>(Error.User.InvalidCredentials);
             
-            return Result.Success(user.Adapt<AppUser>());
+            return Result.Success(_mapper.Map<ApplicationUser, AppUser>(user));
         }
     }
 }
