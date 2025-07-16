@@ -78,7 +78,7 @@ namespace Drosy.Infrastructure.JWT
             };
 
 
-            var existingRefreshToken = await _refreshTokenRepository.GetByUserIdAsync(user.Id);
+            var existingRefreshToken = await _refreshTokenRepository.GetByUserIdAsync(user.Id, cancellationToken);
 
             if (existingRefreshToken != null && existingRefreshToken.IsActive)
             {
@@ -90,7 +90,7 @@ namespace Drosy.Infrastructure.JWT
                 var refreshToken = GenerateRefreshToken(user.Id);
                 token.RefreshToken = refreshToken.Token;
                 token.RefreshTokenExpiration = refreshToken.ExpiresOn;
-                await _refreshTokenRepository.AddAsync(refreshToken);
+                await _refreshTokenRepository.AddAsync(refreshToken, cancellationToken);
                 var saveingResult = await _unitOfWork.SaveChangesAsync(cancellationToken);
 
                 if (saveingResult)
@@ -118,7 +118,7 @@ namespace Drosy.Infrastructure.JWT
         public async Task<Result<AuthModel>> RefreshTokenAsync(string tokenString, CancellationToken cancellationToken)
         {
 
-            var refreshToken = await _refreshTokenRepository.GetByTokenAsync(tokenString);
+            var refreshToken = await _refreshTokenRepository.GetByTokenAsync(tokenString, cancellationToken);
 
             if (refreshToken is null)
                 return Result.Failure<AuthModel>(Error.Failure);
@@ -132,10 +132,10 @@ namespace Drosy.Infrastructure.JWT
 
 
             refreshToken.RevokedOn = DateTime.UtcNow;
-            await _refreshTokenRepository.UpdateAsync(refreshToken);
+            await _refreshTokenRepository.UpdateAsync(refreshToken, cancellationToken);
 
             var newRefreshToken = GenerateRefreshToken(refreshToken.UserId);
-            await _refreshTokenRepository.AddAsync(newRefreshToken);
+            await _refreshTokenRepository.AddAsync(newRefreshToken, cancellationToken);
 
             var savingResult = await _unitOfWork.SaveChangesAsync(cancellationToken);
 
@@ -155,7 +155,7 @@ namespace Drosy.Infrastructure.JWT
 
         public async Task<Result> RevokeRefreshTokensAsync(string refreshToken, CancellationToken cancellationToken)
         {
-            var token = await _refreshTokenRepository.GetByTokenAsync(refreshToken);
+            var token = await _refreshTokenRepository.GetByTokenAsync(refreshToken, cancellationToken);
             if (token is null)
                 return Result.Success();
             token.RevokedOn = DateTime.UtcNow;

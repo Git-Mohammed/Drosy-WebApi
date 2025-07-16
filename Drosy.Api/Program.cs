@@ -1,6 +1,5 @@
 using Drosy.Api.Extensions.DependencyInjection;
 using Drosy.Api.Filters;
-using Drosy.Api.Middlewares;
 using Drosy.Application.Interfaces.Common;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -52,6 +51,6 @@ app.MapControllers();
 
 app.setupDBInitializer();
 
-app.UseMiddleware<CancellationHandlingMiddleware>();
+
 
 app.Run();
