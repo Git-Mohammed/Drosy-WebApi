@@ -30,7 +30,7 @@ public class PlanService(
         if (!result)
         {
             _logger.LogError("Error creating plan", newPlan);
-            return Result.Failure<PlanDto>(Error.EFCore.CanNotSaveChanges);
+            return Result.Failure<PlanDto>(Error.CanNotSaveChanges);
         }
         var planDto = _mapper.Map<Plan, PlanDto>(plan);
         return Result.Success(planDto);

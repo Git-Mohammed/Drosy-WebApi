@@ -63,7 +63,7 @@ namespace Drosy.Application.UseCases.Students.Services
 
                 if(!isSuccess)
                 {
-                    return Result.Failure<StudentDTO>(Error.EFCore.CanNotSaveChanges);
+                    return Result.Failure<StudentDTO>(Error.CanNotSaveChanges);
                 }
 
                 var studentDto = _mapper.Map<Student, StudentDTO>(student);
@@ -97,7 +97,7 @@ namespace Drosy.Application.UseCases.Students.Services
 
                 bool isSuccess = await _unitOfWork.SaveChangesAsync(ct);
 
-                return isSuccess ? Result.Success() : Result.Failure(Error.EFCore.CanNotSaveChanges);
+                return isSuccess ? Result.Success() : Result.Failure(Error.CanNotSaveChanges);
             }
             catch (Exception ex)
             {

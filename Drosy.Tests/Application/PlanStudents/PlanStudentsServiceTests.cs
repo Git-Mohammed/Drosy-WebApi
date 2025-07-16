@@ -135,7 +135,7 @@ namespace Drosy.Tests.Application.PlanStudents
 
             // Assert
             Assert.True(result.IsFailure);
-            Assert.Equal(Error.EFCore.CanNotSaveChanges, result.Error);
+            Assert.Equal(Error.CanNotSaveChanges, result.Error);
         }
 
         [Fact]
@@ -292,7 +292,7 @@ namespace Drosy.Tests.Application.PlanStudents
 
             // Assert
             Assert.True(result.IsFailure);
-            Assert.Equal(Error.EFCore.CanNotSaveChanges, result.Error);
+            Assert.Equal(Error.CanNotSaveChanges, result.Error);
         }
 
         [Fact]

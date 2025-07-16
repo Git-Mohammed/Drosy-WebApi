@@ -94,7 +94,7 @@ namespace Drosy.Infrastructure.JWT
                 var saveingResult = await _unitOfWork.SaveChangesAsync(cancellationToken);
 
                 if (saveingResult)
-                    return Result.Failure<AuthModel>(Error.EFCore.CanNotSaveChanges);
+                    return Result.Failure<AuthModel>(Error.CanNotSaveChanges);
             }
 
             return Result.Success(token);
@@ -140,7 +140,7 @@ namespace Drosy.Infrastructure.JWT
             var savingResult = await _unitOfWork.SaveChangesAsync(cancellationToken);
 
             if (savingResult)
-                return Result.Failure<AuthModel>(Error.EFCore.CanNotSaveChanges);
+                return Result.Failure<AuthModel>(Error.CanNotSaveChanges);
 
             var token = new AuthModel  {
                 UserId = refreshToken.User.Id,
@@ -163,7 +163,7 @@ namespace Drosy.Infrastructure.JWT
             
             var result = await _unitOfWork.SaveChangesAsync(cancellationToken);
             if (result)
-                return Result.Failure(Error.EFCore.CanNotSaveChanges);
+                return Result.Failure(Error.CanNotSaveChanges);
             return Result.Success();
         }
     }
