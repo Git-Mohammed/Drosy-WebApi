@@ -7,43 +7,6 @@
     </PropertyGroup>
 
     <ItemGroup>
-      <Compile Update="Shared\ErrorComponents\EFCore\Resources\ErrorMessages.EFCore.Designer.cs">
-        <DependentUpon>ErrorMessages.EFCore.resx</DependentUpon>
-        <DesignTime>True</DesignTime>
-        <AutoGen>True</AutoGen>
-      </Compile>
-      <Compile Update="Shared\ErrorComponents\Common\Resources\ErrorMessages.Common.Designer.cs">
-        <DesignTime>True</DesignTime>
-        <AutoGen>True</AutoGen>
-        <DependentUpon>ErrorMessages.Common.resx</DependentUpon>
-      </Compile>
-      <Compile Update="Shared\ErrorComponents\User\Resources\ErrorMessages.User.Designer.cs">
-        <DesignTime>True</DesignTime>
-        <AutoGen>True</AutoGen>
-        <DependentUpon>ErrorMessages.User.resx</DependentUpon>
-      </Compile>
-    </ItemGroup>
-
-    <ItemGroup>
-      <EmbeddedResource Update="Shared\ErrorComponents\EFCore\Resources\ErrorMessages.EFCore.resx">
-        <LastGenOutput>ErrorMessages.EFCore.Designer.cs</LastGenOutput>
-        <Generator>ResXFileCodeGenerator</Generator>
-      </EmbeddedResource>
-      <EmbeddedResource Update="Shared\ErrorComponents\Common\Resources\ErrorMessages.Common.ar.resx">
-        <Generator>ResXFileCodeGenerator</Generator>
-        <LastGenOutput>ErrorMessages.Common.ar.Designer.cs</LastGenOutput>
-      </EmbeddedResource>
-      <EmbeddedResource Update="Shared\ErrorComponents\Common\Resources\ErrorMessages.Common.resx">
-        <Generator>ResXFileCodeGenerator</Generator>
-        <LastGenOutput>ErrorMessages.Common.Designer.cs</LastGenOutput>
-      </EmbeddedResource>
-      <EmbeddedResource Update="Shared\ErrorComponents\User\Resources\ErrorMessages.User.resx">
-        <Generator>ResXFileCodeGenerator</Generator>
-        <LastGenOutput>ErrorMessages.User.Designer.cs</LastGenOutput>
-      </EmbeddedResource>
-    </ItemGroup>
-
-    <ItemGroup>
       <PackageReference Include="Microsoft.AspNetCore.Http.Features" Version="2.3.0" />
     </ItemGroup>
 

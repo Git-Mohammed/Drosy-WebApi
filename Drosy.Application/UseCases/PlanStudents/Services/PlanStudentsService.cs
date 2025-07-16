@@ -7,11 +7,9 @@ using Drosy.Application.UseCases.Students.Services;
 using Drosy.Domain.Entities;
 using Drosy.Domain.Interfaces.Common.Uow;
 using Drosy.Domain.Interfaces.Repository;
-using Drosy.Domain.Shared.ApplicationResults;
 using Drosy.Domain.Shared.DataDTOs;
-using Drosy.Domain.Shared.ErrorComponents;
-using Drosy.Domain.Shared.ErrorComponents.EFCoreErrors;
-using Drosy.Domain.Shared.ResultPattern.ErrorComponents.Common;
+using Drosy.Domain.Shared.ResultPattern;
+using Drosy.Domain.Shared.ResultPattern.ErrorComponents;
 
 namespace Drosy.Application.UseCases.PlanStudents.Services
 {
@@ -51,7 +49,7 @@ namespace Drosy.Application.UseCases.PlanStudents.Services
                 if (!studentResult.IsSuccess)
                 {
                     _logger.LogWarning("Student not found: {StudentId}", dto.StudentId);
-                    return Result.Failure<PlanStudentDto>(CommonErrors.NotFound, new Exception("Student not find for assining it to a plan."));
+                    return Result.Failure<PlanStudentDto>(Error.NotFound, new Exception("Student not find for assining it to a plan."));
                 }
 
                 //3) No duplicate
@@ -59,7 +57,7 @@ namespace Drosy.Application.UseCases.PlanStudents.Services
                 if (alreadyInPlan)
                 {
                     _logger.LogWarning("Student {StudentId} already assigned to Plan {PlanId}", dto.StudentId, planId);
-                    return Result.Failure<PlanStudentDto>(CommonErrors.Conflict, new Exception("Student is already assigned to this plan."));
+                    return Result.Failure<PlanStudentDto>(Error.Conflict, new Exception("Student is already assigned to this plan."));
                 }
                 #endregion
 
@@ -71,7 +69,7 @@ namespace Drosy.Application.UseCases.PlanStudents.Services
                 if (!isSaved)
                 {
                     _logger.LogError("Failed to save changes when adding Student {StudentId} to Plan {PlanId}", dto.StudentId, planId);
-                    return Result.Failure<PlanStudentDto>(EFCoreErrors.CanNotSaveChanges);
+                    return Result.Failure<PlanStudentDto>(Error.CanNotSaveChanges);
                 }
 
                 var planStudentDto = _mapper.Map<PlanStudent, PlanStudentDto>(planStudent);
@@ -83,12 +81,12 @@ namespace Drosy.Application.UseCases.PlanStudents.Services
             catch (OperationCanceledException)
             {
                 _logger.LogWarning("Operation canceled in AddStudentToPlanAsync for PlanId={PlanId}", planId);
-                return Result.Failure<PlanStudentDto>(CommonErrors.OperationCancelled);
+                return Result.Failure<PlanStudentDto>(Error.OperationCancelled);
             }
             catch (Exception ex)
             {
                 _logger.LogError(ex.Message, "Unexpected error in AddStudentToPlanAsync for PlanId={PlanId}, StudentId={StudentId}", planId, dto.StudentId);
-                return Result.Failure<PlanStudentDto>(AppError.Failure);
+                return Result.Failure<PlanStudentDto>(Error.Failure);
             }
         }
 
@@ -112,7 +110,7 @@ namespace Drosy.Application.UseCases.PlanStudents.Services
                     if (student is null)
                     {
                         _logger.LogWarning("Student not found in range: {StudentId}", dto.StudentId);
-                        return Result.Failure<DataResult<PlanStudentDto>>(CommonErrors.NotFound, new Exception($"Student with ID {dto.StudentId} not found."));
+                        return Result.Failure<DataResult<PlanStudentDto>>(Error.NotFound, new Exception($"Student with ID {dto.StudentId} not found."));
                     }
                 }
 
@@ -131,7 +129,7 @@ namespace Drosy.Application.UseCases.PlanStudents.Services
                 if (!newDtos.Any())
                 {
                     _logger.LogWarning("All students already assigned to Plan {PlanId}", planId);
-                    return Result.Failure<DataResult<PlanStudentDto>>(CommonErrors.Conflict, new Exception("All students are already assigned to this plan."));
+                    return Result.Failure<DataResult<PlanStudentDto>>(Error.Conflict, new Exception("All students are already assigned to this plan."));
                 }
 
                 #endregion
@@ -144,7 +142,7 @@ namespace Drosy.Application.UseCases.PlanStudents.Services
                 if (!isSaved)
                 {
                     _logger.LogError("Failed to save batch add for PlanId={PlanId}", planId);
-                    return Result.Failure<DataResult<PlanStudentDto>>(EFCoreErrors.CanNotSaveChanges);
+                    return Result.Failure<DataResult<PlanStudentDto>>(Error.CanNotSaveChanges);
                 }
 
                 var mappedDtos = _mapper.Map<List<PlanStudent>, List<PlanStudentDto>>(planStudents);
@@ -161,12 +159,12 @@ namespace Drosy.Application.UseCases.PlanStudents.Services
             catch (OperationCanceledException)
             {
                 _logger.LogWarning("Operation canceled in AddRangeOfStudentToPlanAsync for PlanId={PlanId}", planId);
-                return Result.Failure<DataResult<PlanStudentDto>>(CommonErrors.OperationCancelled);
+                return Result.Failure<DataResult<PlanStudentDto>>(Error.OperationCancelled);
             }
             catch (Exception ex)
             {
                 _logger.LogError(ex.Message, "Unexpected error in AddRangeOfStudentToPlanAsync for PlanId={PlanId}", planId);
-                return Result.Failure<DataResult<PlanStudentDto>>(CommonErrors.Failure);
+                return Result.Failure<DataResult<PlanStudentDto>>(Error.Failure);
             }
         }
 

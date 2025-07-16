@@ -1,10 +1,10 @@
 ﻿using Moq;
 using Drosy.Application.UseCases.Students.Interfaces;
 using Drosy.Application.UseCases.Students.DTOs;
+using Drosy.Domain.Shared.ResultPattern;
 using Drosy.Application.UseCases.Grades.DTOs;
 using Drosy.Application.UseCases.Cities.DTOs;
-using Drosy.Domain.Shared.ErrorComponents;
-using Drosy.Domain.Shared.ApplicationResults;
+using Drosy.Domain.Shared.ResultPattern.ErrorComponents;
 
 namespace Drosy.Tests.Application.StudentTests
 {
@@ -187,7 +187,7 @@ namespace Drosy.Tests.Application.StudentTests
                         d.EmergencyNumber == emergencyNumber &&
                         d.GradeId == gradeId &&
                         d.CityId == cityId),CancellationToken.None))
-                    .ReturnsAsync(Result.Failure<StudentDTO>(AppError.Invalid));
+                    .ReturnsAsync(Result.Failure<StudentDTO>(Error.Invalid));
             }
 
             // Act
@@ -270,7 +270,7 @@ namespace Drosy.Tests.Application.StudentTests
             {
                 _studentService
                     .Setup(s => s.UpdateAsync(It.IsAny<UpdateStudentDTO>(), studentId, CancellationToken.None))
-                    .ReturnsAsync(Result.Failure(AppError.Invalid));
+                    .ReturnsAsync(Result.Failure(Error.Invalid));
             }
 
             // Act

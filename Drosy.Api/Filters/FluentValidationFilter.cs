@@ -36,7 +36,7 @@ namespace Drosy.Api.Filters
                             .Select(error => new ApiError(error.PropertyName, error.ErrorMessage))
                             .ToList();
 
-                        context.Result = ApiResponseFactory.BadRequestResponse(errors, "Validation failed");
+                        context.Result = ResponseHandler.BadRequestResponse(errors, "Validation failed");
                         return;
                     }
 
