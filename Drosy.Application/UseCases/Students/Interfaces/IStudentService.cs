@@ -46,5 +46,10 @@ namespace Drosy.Application.UseCases.Students.Interfaces
         Task<Result> UpdateAsync(UpdateStudentDTO dto, int id, CancellationToken cancellationToken);
 
         #endregion
+
+        #region Checks
+        public Task<Result> ExistsAsync(int id, CancellationToken cancellationToken);
+
+        #endregion
     }
 }

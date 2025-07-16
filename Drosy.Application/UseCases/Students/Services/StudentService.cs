@@ -105,5 +105,20 @@ namespace Drosy.Application.UseCases.Students.Services
                 return Result.Failure(Error.Failure);
             }
         }
+
+        public  async Task<Result> ExistsAsync(int id, CancellationToken cancellationToken)
+        {
+            try
+            {
+                var isExists = await _studentRepository.ExistsAsync(id, cancellationToken);
+
+                return isExists ? Result.Success() : Result.Failure(Error.NotFound);
+            } 
+            catch (Exception ex)
+            {
+                _logger.LogError(ex.Message, ex);
+                return Result.Failure(Error.Failure);
+            }
+        }
     }
 }
