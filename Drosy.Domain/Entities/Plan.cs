@@ -11,6 +11,9 @@ public class Plan : BaseEntity<int>
     
     public DateTime StartDate { get; set; }
     public DateTime EndDate { get; set; }
+    
+    public TimeSpan StartSession {get; set;}
+    public TimeSpan EndSession { get; set; }
 
     #region Navigation Properties
     public List<PlanStudent> Students { get; set; } = new();
