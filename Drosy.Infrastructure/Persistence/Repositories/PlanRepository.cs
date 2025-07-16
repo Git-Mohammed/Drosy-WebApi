@@ -1,43 +1,28 @@
 ﻿using Drosy.Domain.Entities;
+using Drosy.Domain.Enums;
 using Drosy.Domain.Interfaces.Repository;
 using Drosy.Infrastructure.Persistence.DbContexts;
+using Microsoft.EntityFrameworkCore;
 
 namespace Drosy.Infrastructure.Persistence.Repositories;
 
-public class PlanRepository : IPlanRepository
+public class PlanRepository(ApplicationDbContext dbContext) : BaseRepository<Plan>(dbContext), IPlanRepository
 {
-    public Task AddAsync(Plan entity, CancellationToken cancellationToken)
+    public async Task<bool> ExistsAsync(int id,CancellationToken cancellationToken)
     {
-        throw new NotImplementedException();
+        return await DbSet.AnyAsync(p => p.Id == id && p.Status == PlanStatus.Active, cancellationToken);
     }
 
-    public Task AddRangeAsync(IEnumerable<Plan> entities, CancellationToken cancellationToken)
+    public async Task<bool> ExistsAsync(TimeSpan startSession, TimeSpan endSession, CancellationToken cancellationToken)
     {
-        throw new NotImplementedException();
+        return await DbSet.AnyAsync(p => 
+            p.Status == PlanStatus.Active 
+            && p.StartSession < endSession && p.EndSession > startSession,
+            cancellationToken);
     }
 
-    public Task UpdateAsync(Plan entity, CancellationToken cancellationToken)
+    public async Task<Plan?> GetByIdAsync(int id, CancellationToken cancellationToken)
     {
-        throw new NotImplementedException();
-    }
-
-    public Task UpdateRangeAsync(IEnumerable<Plan> entities, CancellationToken cancellationToken)
-    {
-        throw new NotImplementedException();
-    }
-
-    public Task DeleteAsync(Plan entity, CancellationToken cancellationToken)
-    {
-        throw new NotImplementedException();
-    }
-
-    public Task DeleteRangeAsync(IEnumerable<Plan> entities, CancellationToken cancellationToken)
-    {
-        throw new NotImplementedException();
-    }
-
-    public Task<IEnumerable<Plan>> GetAllAsync(CancellationToken cancellationToken)
-    {
-        throw new NotImplementedException();
+        return await DbSet.FirstOrDefaultAsync(p => p.Id == id, cancellationToken);
     }
 }

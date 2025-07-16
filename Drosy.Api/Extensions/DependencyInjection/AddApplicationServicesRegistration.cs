@@ -15,6 +15,8 @@ using Drosy.Infrastructure.Persistence.Repositories;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
 using System.Text;
+using Drosy.Application.UseCases.Plans.Interfaces;
+using Drosy.Application.UseCases.Plans.Services;
 
 namespace Drosy.Api.Extensions.DependencyInjection
 {
@@ -31,6 +33,7 @@ namespace Drosy.Api.Extensions.DependencyInjection
             services.AddScoped<IJwtService, JwtService>();
             services.AddScoped<IStudentService, StudentService>();
             services.AddScoped<IPlanStudentsService, PlanStudentsService>();
+            services.AddScoped<IPlanService, PlanService>();
             #endregion
 
             #region JWT Registration

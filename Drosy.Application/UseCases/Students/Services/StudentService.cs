@@ -4,8 +4,8 @@ using Drosy.Domain.Entities;
 using Drosy.Application.UseCases.Students.DTOs;
 using Drosy.Domain.Shared.ResultPattern;
 using Drosy.Application.Interfaces.Common;
+using Drosy.Domain.Interfaces.Common.Uow;
 using Drosy.Domain.Shared.ResultPattern.ErrorComponents;
-using Drosy.Domain.Interfaces.Uow;
 
 namespace Drosy.Application.UseCases.Students.Services
 {
