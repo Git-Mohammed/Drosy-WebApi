@@ -1,6 +1,6 @@
 ﻿namespace Drosy.Domain.Enums;
 
-public enum MediaType
+public enum MediaType : byte
 {
     Image = 1,
     Audio,
