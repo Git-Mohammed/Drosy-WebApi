@@ -1,13 +1,11 @@
-﻿using Drosy.Application.Interfaces.Common;
-using Drosy.Application.UseCases.Students.DTOs;
+﻿using Drosy.Domain.Interfaces.Repository;
 using Drosy.Application.UseCases.Students.Interfaces;
 using Drosy.Domain.Entities;
+using Drosy.Application.UseCases.Students.DTOs;
+using Drosy.Domain.Shared.ResultPattern;
+using Drosy.Application.Interfaces.Common;
 using Drosy.Domain.Interfaces.Common.Uow;
-using Drosy.Domain.Interfaces.Repository;
-using Drosy.Domain.Shared.ApplicationResults;
-using Drosy.Domain.Shared.ErrorComponents;
-using Drosy.Domain.Shared.ErrorComponents.EFCoreErrors;
-using Drosy.Domain.Shared.ResultPattern.ErrorComponents.Common;
+using Drosy.Domain.Shared.ResultPattern.ErrorComponents;
 
 namespace Drosy.Application.UseCases.Students.Services
 {
@@ -37,7 +35,7 @@ namespace Drosy.Application.UseCases.Students.Services
 
                 if (student == null)
                 {
-                    return Result.Failure<StudentDTO>(CommonErrors.NotFound);
+                    return Result.Failure<StudentDTO>(Error.NotFound);
                 }
 
                 var studentDto = _mapper.Map<Student, StudentDTO>(student);
@@ -48,7 +46,7 @@ namespace Drosy.Application.UseCases.Students.Services
             catch (Exception ex)
             {
                 _logger.LogError("Error adding student: {Message}", ex.Message);
-                return Result.Failure<StudentDTO>(CommonErrors.Failure);
+                return Result.Failure<StudentDTO>(Error.Failure);
 
             }
         }
@@ -65,7 +63,7 @@ namespace Drosy.Application.UseCases.Students.Services
 
                 if(!isSuccess)
                 {
-                    return Result.Failure<StudentDTO>(EFCoreErrors.CanNotSaveChanges);
+                    return Result.Failure<StudentDTO>(Error.CanNotSaveChanges);
                 }
 
                 var studentDto = _mapper.Map<Student, StudentDTO>(student);
@@ -76,7 +74,7 @@ namespace Drosy.Application.UseCases.Students.Services
             {
                 // Log the exception
                 _logger.LogError("Error adding student: {Message}", ex.Message);
-                return Result.Failure<StudentDTO>(AppError.Failure);
+                return Result.Failure<StudentDTO>(Error.Failure);
 
             }
             
@@ -89,7 +87,7 @@ namespace Drosy.Application.UseCases.Students.Services
                 var student = await _studentRepository.GetByIdAsync(id, ct);
                 if (student == null)
                 {
-                    return Result.Failure(CommonErrors.NotFound);
+                    return Result.Failure(Error.NotFound);
                 }
 
                 // Map the DTO to the entity
@@ -99,12 +97,12 @@ namespace Drosy.Application.UseCases.Students.Services
 
                 bool isSuccess = await _unitOfWork.SaveChangesAsync(ct);
 
-                return isSuccess ? Result.Success() : Result.Failure(EFCoreErrors.CanNotSaveChanges);
+                return isSuccess ? Result.Success() : Result.Failure(Error.CanNotSaveChanges);
             }
             catch (Exception ex)
             {
                 _logger.LogError("Error updating student: {Message}", ex.Message);
-                return Result.Failure(AppError.Failure);
+                return Result.Failure(Error.Failure);
             }
         }
 
@@ -114,12 +112,12 @@ namespace Drosy.Application.UseCases.Students.Services
             {
                 var isExists = await _studentRepository.ExistsAsync(id, cancellationToken);
 
-                return isExists ? Result.Success() : Result.Failure(CommonErrors.NotFound);
+                return isExists ? Result.Success() : Result.Failure(Error.NotFound);
             } 
             catch (Exception ex)
             {
                 _logger.LogError(ex.Message, ex);
-                return Result.Failure(AppError.Failure);
+                return Result.Failure(Error.Failure);
             }
         }
 

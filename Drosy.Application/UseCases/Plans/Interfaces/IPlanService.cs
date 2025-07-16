@@ -1,5 +1,5 @@
 ﻿using Drosy.Application.UseCases.Plans.DTOs;
-using Drosy.Domain.Shared.ApplicationResults;
+using Drosy.Domain.Shared.ResultPattern;
 
 namespace Drosy.Application.UseCases.Plans.Interfaces;
 

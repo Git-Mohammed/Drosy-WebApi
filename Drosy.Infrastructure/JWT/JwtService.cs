@@ -1,17 +1,15 @@
-﻿using Drosy.Application.Interfaces.Common;
+﻿using System.IdentityModel.Tokens.Jwt;
+using System.Security.Claims;
+using System.Security.Cryptography;
+using System.Text;
+using Drosy.Application.Interfaces.Common;
 using Drosy.Application.UsesCases.Authentication.DTOs;
 using Drosy.Domain.Entities;
 using Drosy.Domain.Interfaces.Common.Uow;
 using Drosy.Domain.Interfaces.Repository;
-using Drosy.Domain.Shared.ApplicationResults;
-using Drosy.Domain.Shared.ErrorComponents;
-using Drosy.Domain.Shared.ErrorComponents.EFCoreErrors;
-using Drosy.Domain.Shared.ResultPattern.ErrorComponents.Common;
+using Drosy.Domain.Shared.ResultPattern;
+using Drosy.Domain.Shared.ResultPattern.ErrorComponents;
 using Microsoft.IdentityModel.Tokens;
-using System.IdentityModel.Tokens.Jwt;
-using System.Security.Claims;
-using System.Security.Cryptography;
-using System.Text;
 
 namespace Drosy.Infrastructure.JWT
 {
@@ -67,7 +65,7 @@ namespace Drosy.Infrastructure.JWT
         }
         public async Task<Result<AuthModel>> CreateTokenAsync(AppUser user, CancellationToken cancellationToken)
         {
-            if (user is null) return Result.Failure<AuthModel>(CommonErrors.NullValue);
+            if (user is null) return Result.Failure<AuthModel>(Error.NullValue);
 
 
             var tokenString = GenerateTokenString(user.UserName, user.Id);
@@ -96,7 +94,7 @@ namespace Drosy.Infrastructure.JWT
                 var saveingResult = await _unitOfWork.SaveChangesAsync(cancellationToken);
 
                 if (saveingResult)
-                    return Result.Failure<AuthModel>(EFCoreErrors.CanNotSaveChanges);
+                    return Result.Failure<AuthModel>(Error.CanNotSaveChanges);
             }
 
             return Result.Success(token);
@@ -123,13 +121,13 @@ namespace Drosy.Infrastructure.JWT
             var refreshToken = await _refreshTokenRepository.GetByTokenAsync(tokenString, cancellationToken);
 
             if (refreshToken is null)
-                return Result.Failure<AuthModel>(AppError.Failure);
+                return Result.Failure<AuthModel>(Error.Failure);
 
 
 
             if (refreshToken is null || refreshToken.User == null)
             {
-                return Result.Failure<AuthModel>(AppError.Failure);
+                return Result.Failure<AuthModel>(Error.Failure);
             }
 
 
@@ -142,7 +140,7 @@ namespace Drosy.Infrastructure.JWT
             var savingResult = await _unitOfWork.SaveChangesAsync(cancellationToken);
 
             if (savingResult)
-                return Result.Failure<AuthModel>(EFCoreErrors.CanNotSaveChanges);
+                return Result.Failure<AuthModel>(Error.CanNotSaveChanges);
 
             var token = new AuthModel  {
                 UserId = refreshToken.User.Id,
@@ -165,7 +163,7 @@ namespace Drosy.Infrastructure.JWT
             
             var result = await _unitOfWork.SaveChangesAsync(cancellationToken);
             if (result)
-                return Result.Failure(EFCoreErrors.CanNotSaveChanges);
+                return Result.Failure(Error.CanNotSaveChanges);
             return Result.Success();
         }
     }

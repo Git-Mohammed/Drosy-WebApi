@@ -1,8 +1,7 @@
 ﻿using Drosy.Api.Commons.Responses;
 using Drosy.Application.UseCases.Students.DTOs;
 using Drosy.Application.UseCases.Students.Interfaces;
-using Drosy.Domain.Shared.ErrorComponents;
-using Drosy.Domain.Shared.ResultPattern.ErrorComponents.Common;
+using Drosy.Domain.Shared.ResultPattern.ErrorComponents;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Drosy.Api.Controllers
@@ -35,8 +34,8 @@ namespace Drosy.Api.Controllers
         {
             if(id < 1)
             {
-                var error = new ApiError("id", ErrorMessageResourceRepository.GetMessage(CommonErrors.Invalid.Message, AppError.CurrentLanguage));
-                return ApiResponseFactory.BadRequestResponse("id", "Invalid student ID.", error.Message);
+                var error = new ApiError("id", ErrorMessagesRepository.GetMessage(Error.Invalid.Message, Error.CurrentLanguage));
+                return ResponseHandler.BadRequestResponse("id", "Invalid student ID.", error.Message);
             }
             try
             {
@@ -44,14 +43,14 @@ namespace Drosy.Api.Controllers
 
                 if (result.IsFailure)
                 {
-                    return ApiResponseFactory.FromFailure(result, nameof(GetByIdAsync));
+                    return ResponseHandler.HandleFailure(result, nameof(GetByIdAsync));
                 }
 
-                return ApiResponseFactory.SuccessResponse(result.Value, "Student retrieved successfully.");
+                return ResponseHandler.SuccessResponse(result.Value, "Student retrieved successfully.");
             }
             catch (Exception ex)
             {
-                return ApiResponseFactory.FromException(ex);
+                return ResponseHandler.HandleException(ex);
             }
         }
 
@@ -76,8 +75,8 @@ namespace Drosy.Api.Controllers
         {
             if (dto == null)
             {
-                var error = new ApiError("dto", ErrorMessageResourceRepository.GetMessage(CommonErrors.NullValue.Message, AppError.CurrentLanguage));
-                return ApiResponseFactory.BadRequestResponse("dto", "Invalid student data.", error.Message);
+                var error = new ApiError("dto", ErrorMessagesRepository.GetMessage(Error.NullValue.Message, Error.CurrentLanguage));
+                return ResponseHandler.BadRequestResponse("dto", "Invalid student data.", error.Message);
             }
 
             try
@@ -86,10 +85,10 @@ namespace Drosy.Api.Controllers
 
                 if (result.IsFailure)
                 {
-                    return ApiResponseFactory.FromFailure(result, nameof(AddAsync), "Student");
+                    return ResponseHandler.HandleFailure(result, nameof(AddAsync), "Student");
                 }
 
-                return ApiResponseFactory.CreatedResponse(
+                return ResponseHandler.CreatedResponse(
                    "GetStudentByIdAsync",
                     new { id = result.Value.Id },
                     result.Value, "Student added successfully."
@@ -97,7 +96,7 @@ namespace Drosy.Api.Controllers
             }
             catch (Exception ex)
             {
-                return ApiResponseFactory.FromException(ex);
+                return ResponseHandler.HandleException(ex);
             }
         }
 
@@ -114,14 +113,14 @@ namespace Drosy.Api.Controllers
         {
             if(id < 1)
             {
-                var error = new ApiError("id", ErrorMessageResourceRepository.GetMessage(CommonErrors.Invalid.Message, AppError.CurrentLanguage));
-                return ApiResponseFactory.BadRequestResponse("id", "Invalid student ID.", error.Message);
+                var error = new ApiError("id", ErrorMessagesRepository.GetMessage(Error.Invalid.Message, Error.CurrentLanguage));
+                return ResponseHandler.BadRequestResponse("id", "Invalid student ID.", error.Message);
             }
 
             if (dto == null)
             {
-                var error = new ApiError("dto", ErrorMessageResourceRepository.GetMessage(CommonErrors.NullValue.Message, AppError.CurrentLanguage));
-                return ApiResponseFactory.BadRequestResponse("dto", "Invalid student data.", error.Message);
+                var error = new ApiError("dto", ErrorMessagesRepository.GetMessage(Error.NullValue.Message, Error.CurrentLanguage));
+                return ResponseHandler.BadRequestResponse("dto", "Invalid student data.", error.Message);
             }
 
             try
@@ -130,14 +129,14 @@ namespace Drosy.Api.Controllers
 
                 if (result.IsFailure)
                 {
-                    return ApiResponseFactory.FromFailure(result, nameof(UpdateAsync), "Student");
+                    return ResponseHandler.HandleFailure(result, nameof(UpdateAsync), "Student");
                 }
 
-                return ApiResponseFactory.SuccessResponse( "Student updated successfully.");
+                return ResponseHandler.SuccessResponse( "Student updated successfully.");
             }
             catch (Exception ex)
             {
-                return ApiResponseFactory.FromException(ex);
+                return ResponseHandler.HandleException(ex);
             }
         }
         #endregion
