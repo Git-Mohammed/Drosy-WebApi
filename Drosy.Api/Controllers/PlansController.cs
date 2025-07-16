@@ -27,9 +27,9 @@ public class PlansController(IPlanService planService, ILogger<PlansController> 
     {
         var result = await _planService.GetPlanByIdAsync(id, cancellationToken);
         const string operation = nameof(GetByIdAsync);
-        if (result.IsSuccess) return ResponseHandler.SuccessResponse(result.Value);
-        _logger.LogError("Error retrieving plan [{id}]: {Error}",id,result.Error);
-        return ResponseHandler.HandleFailure(result, operation, nameof(PlanDto));
+        if (result.IsSuccess) return ApiResponseFactory.SuccessResponse(result.Value);
+        _logger.LogError("Error retrieving plan [{id}]: {Error}", id, result.Error);
+        return ApiResponseFactory.FromFailure(result, operation, nameof(PlanDto));
     }
 
     /// <summary>
@@ -44,9 +44,9 @@ public class PlansController(IPlanService planService, ILogger<PlansController> 
         var result = await _planService.CreatePlanAsync(newPlan, cancellationToken);
         const string operation = nameof(CreateAsync);
         if (result.IsSuccess)
-            return ResponseHandler.CreatedResponse("GetPlanById", new { id = result.Value.Id }, result.Value);
-        _logger.LogError("Error creating new plan [{newPlan}]: {Error}",newPlan,result.Error);
-        return ResponseHandler.HandleFailure(result, operation, nameof(PlanDto));
+            return ApiResponseFactory.CreatedResponse("GetPlanById", new { id = result.Value.Id }, result.Value);
+        _logger.LogError("Error creating new plan [{newPlan}]: {Error}", newPlan, result.Error);
+        return ApiResponseFactory.FromFailure(result, operation, nameof(PlanDto));
 
     }
 }
