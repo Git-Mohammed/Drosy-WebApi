@@ -120,5 +120,18 @@ namespace Drosy.Application.UseCases.Students.Services
                 return Result.Failure(Error.Failure);
             }
         }
+
+        public Task<Result<List<StudentCardInfoDTO>>> GetAllStudentsInfoCardsAsync(int page, int size, CancellationToken cancellationToken)
+        {
+            //try
+            //{
+            //    cancellationToken.ThrowIfCancellationRequested();
+
+
+            //}
+            //catch() { }
+
+            throw new NotImplementedException();
+        }
     }
 }

@@ -20,6 +20,8 @@ namespace Drosy.Application.UseCases.Students.Interfaces
         /// </returns>
         Task<Result<StudentDTO>> GetByIdAsync(int id, CancellationToken cancellationToken);
 
+
+        Task<Result<List<StudentCardInfoDTO>>> GetAllStudentsInfoCardsAsync(int page, int size, CancellationToken cancellationToken);
         #endregion
 
         #region Write

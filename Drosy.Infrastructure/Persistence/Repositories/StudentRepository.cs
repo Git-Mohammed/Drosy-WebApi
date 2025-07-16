@@ -22,5 +22,10 @@ namespace Drosy.Infrastructure.Persistence.Repositories
         {
             return await DbSet.AnyAsync(x => x.Id == id, cancellationToken);
         }
+
+        public async Task<List<Student>> GetAllStudentsInfoCardsAsync(int page, int size, CancellationToken cancellationToken)
+        {
+            return await DbSet.Include(x => x.Grade).Include(x => x.Plans).ToListAsync(cancellationToken);
+        }
     }
 }
