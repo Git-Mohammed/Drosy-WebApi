@@ -22,15 +22,15 @@ namespace Drosy.Application.UseCases.Authentication.Services
             _identityService = identity;
         }
 
-        public async Task<Result<AuthModel>> LoginAsync(UserLoginDTO user, CancellationToken cancellationToken)
+        public async Task<Result<AuthModel>> LoginAsync(UserLoginDTO user, CancellationToken token)
         {
             if (user is null) return Result.Failure<AuthModel>(Error.NullValue);
-
+            
             var result = await _identityService.PasswordSignInAsync(user.UserName, user.Password, true, true);
             if (result.IsFailure) 
                 return Result.Failure<AuthModel>(result.Error);
 
-            var tokenResult = await _jwtService.CreateTokenAsync(result.Value, cancellationToken);
+            var tokenResult = await _jwtService.CreateTokenAsync(result.Value, token);
 
             if (tokenResult.IsFailure)
                 return Result.Failure<AuthModel>(tokenResult.Error);

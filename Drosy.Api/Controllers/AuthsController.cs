@@ -1,5 +1,4 @@
-﻿using System.Security.Claims;
-using Drosy.Application.UseCases.Authentication.Interfaces;
+﻿using Drosy.Application.UseCases.Authentication.Interfaces;
 using Drosy.Application.UsesCases.Users.DTOs;
 using Drosy.Api.Commons.Responses;
 using Microsoft.AspNetCore.Authorization;
@@ -20,22 +19,33 @@ namespace Drosy.Api.Controllers
 
         [AllowAnonymous]
         [HttpPost("login")]
-        public async Task<IActionResult> LoginAsync(UserLoginDTO user)
+        public async Task<IActionResult> LoginAsync(UserLoginDTO user, CancellationToken token)
         {
-            var result = await _authService.LoginAsync(user, CancellationToken.None);
+            try
+            {
 
-            if (result.IsFailure)
-                return ResponseHandler.UnauthorizedResponse("login", result.Error.Message);
+                await Task.Delay(1000000, token);
+                var result = await _authService.LoginAsync(user, token);
 
-            SetRefreshTokenInCookie(result.Value.RefreshToken, result.Value.RefreshTokenExpiration);
+                if (result.IsFailure)
+                    return ResponseHandler.UnauthorizedResponse("login", result.Error.Message);
 
-            return ResponseHandler.SuccessResponse(result.Value, "Login successful");
+                SetRefreshTokenInCookie(result.Value.RefreshToken, result.Value.RefreshTokenExpiration);
+
+                return ResponseHandler.SuccessResponse(result.Value, "Login successful");
+            }
+
+            catch (Exception ex)
+            {
+                Console.WriteLine(ex.Message);
+                return BadRequest();
+            }
         }
 
         [HttpPost("refresh-token")]
-        public async Task<IActionResult> RefreshTokenAsync([FromBody] string tokenString)
+        public async Task<IActionResult> RefreshTokenAsync([FromBody] string tokenString, CancellationToken token)
         {
-            var result = await _authService.RefreshTokenAsync(tokenString, CancellationToken.None);
+            var result = await _authService.RefreshTokenAsync(tokenString, token);
 
             if (result.IsFailure)
             {
