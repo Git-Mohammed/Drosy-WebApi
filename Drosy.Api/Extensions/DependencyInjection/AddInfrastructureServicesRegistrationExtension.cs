@@ -1,8 +1,8 @@
 ﻿using Drosy.Application.Interfaces.Common;
 using Drosy.Application.UseCases.Students.Interfaces;
 using Drosy.Application.UseCases.Students.Services;
+using Drosy.Domain.Interfaces.Common.Uow;
 using Drosy.Domain.Interfaces.Repository;
-using Drosy.Domain.Interfaces.Uow;
 using Drosy.Infrastructure.Identity.Entities;
 using Drosy.Infrastructure.Logging;
 using Drosy.Infrastructure.Mapping.Configs;
@@ -62,6 +62,7 @@ namespace Drosy.Api.Extensions.DependencyInjection
             services.AddScoped<IPlanStudentsRepository, PlanStudentsRepository>();
             services.AddScoped<IRefreshTokenRepository, RefreshTokenRepository>();
             services.AddScoped<IAppUserRepository, AppUserRepository>();
+            services.AddScoped<IPlanRepository, PlanRepository>();
             #endregion 
 
             return services;
