@@ -69,6 +69,7 @@ namespace Drosy.Application.UseCases.Authentication.Services
 
             try
             {
+                cancellationToken.ThrowIfCancellationRequested();
                 return await _jwtService.RefreshTokenAsync(tokenString, cancellationToken);
             }
             catch (OperationCanceledException)

@@ -6,6 +6,10 @@ using Microsoft.EntityFrameworkCore;
 
 namespace Drosy.Infrastructure.Persistence.Repositories
 {
+    /*
+     TODO:
+        - How to get the user while it's not in the database
+     */
     public class RefreshTokenRepository : IRefreshTokenRepository
     {
         private readonly ApplicationDbContext _dbContext;
@@ -27,7 +31,7 @@ namespace Drosy.Infrastructure.Persistence.Repositories
             if (string.IsNullOrEmpty(tokenString))
                 return null;
 
-            return await DbSet.FirstOrDefaultAsync(x => x.Token == tokenString && x.RevokedOn == null && DateTime.UtcNow <= x.ExpiresOn, cancellationToken);
+            return await DbSet.Include(x => x.User).FirstOrDefaultAsync(x => x.Token == tokenString && x.RevokedOn == null && DateTime.UtcNow <= x.ExpiresOn, cancellationToken);
         }
 
         public async Task<RefreshToken?> GetByUserIdAsync(int userId, CancellationToken cancellationToken)

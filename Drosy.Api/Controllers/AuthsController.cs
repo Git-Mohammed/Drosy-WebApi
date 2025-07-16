@@ -32,9 +32,13 @@ namespace Drosy.Api.Controllers
         }
 
         [HttpPost("refresh-token")]
-        public async Task<IActionResult> RefreshTokenAsync([FromBody] string tokenString, CancellationToken token)
+        public async Task<IActionResult> RefreshTokenAsync(CancellationToken token)
         {
-            var result = await _authService.RefreshTokenAsync(tokenString, token);
+            string? refreshToken = Request.Cookies["refreshToken"];
+            if (string.IsNullOrEmpty(refreshToken))
+                return ResponseHandler.UnauthorizedResponse("Access Token", "Unauthorized");
+
+            var result = await _authService.RefreshTokenAsync(refreshToken, token);
 
             if (result.IsFailure)
             {

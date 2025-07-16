@@ -8,6 +8,10 @@ using Microsoft.AspNetCore.Identity;
 
 namespace Drosy.Infrastructure.Identity
 {
+    /*
+     TODO:
+        - Check Password and Then Check LouckOut
+     */
     public class IdentityService(
         UserManager<ApplicationUser> userManager,
         SignInManager<ApplicationUser> signInManager,
