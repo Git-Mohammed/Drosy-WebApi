@@ -32,12 +32,11 @@ namespace Drosy.Infrastructure.Mapping.StudentConfigs
 
             config.NewConfig<Student, StudentCardInfoDTO>()
             .Map(dest => dest.FullName,
-                 src => $"{src.FirstName} {src.SecondName} {src.ThirdName} {src.LastName}".Trim())
+                 src => $"{src.FirstName} {src.ThirdName} {src.LastName}")
             .Map(dest => dest.Address, src => src.Address)
             .Map(dest => dest.PhoneNumber, src => src.PhoneNumber)
             .Map(dest => dest.Grade, src => src.Grade.Name)
             .Map(dest => dest.PlansCount, src => src.Plans.Count);
-            //.Map(dest => dest.SessionsCount, src => src.Plans.SelectMany(p => p.Sessions).Count()); 
 
 
         }

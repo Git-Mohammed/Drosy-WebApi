@@ -25,7 +25,7 @@
 
         public record User
         {
-            public static Error InvalidCredentials = new(nameof(InvalidCredentials));
+            public static Error InvalidCredentials = new("Error.User.InvalidCredentials");
             public static Error AttempExceeded = new(nameof(AttempExceeded));
         }
     }

@@ -121,7 +121,7 @@ namespace Drosy.Application.UseCases.Students.Services
             }
         }
 
-        public Task<Result<List<StudentCardInfoDTO>>> GetAllStudentsInfoCardsAsync(int page, int size, CancellationToken cancellationToken)
+        public async Task<Result<List<StudentCardInfoDTO>>> GetAllStudentsInfoCardsAsync(int page, int size, CancellationToken cancellationToken)
         {
             //try
             //{
@@ -131,7 +131,9 @@ namespace Drosy.Application.UseCases.Students.Services
             //}
             //catch() { }
 
-            throw new NotImplementedException();
+            var results = await _studentRepository.GetAllStudentsInfoCardsAsync(1, 1, cancellationToken);
+
+            return Result.Success(results.Select(x => _mapper.Map<Student, StudentCardInfoDTO>(x)).ToList());
         }
     }
 }
