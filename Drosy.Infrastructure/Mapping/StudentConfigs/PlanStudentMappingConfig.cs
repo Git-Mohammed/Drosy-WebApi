@@ -28,16 +28,16 @@ namespace Drosy.Infrastructure.Mapping.StudentConfigs
             // Map incoming DTO to domain entity for create/update operations
             config.NewConfig<AddStudentToPlanDto, PlanStudent>() ;
 
-            config.NewConfig<AddStudentToPlanDto, PlanStudent>()
-            // suppose you want to set `PlanId` from a parameter instead of from the DTO:
-            .Map((src, dest, ctx) =>
-            {
-                // read the parameter "planId" that we'll pass at call‐time:
-                dest.PlanId = (int)ctx.Parameters["planId"];
-                dest.StudentId = src.StudentId;
-                dest.Notes = src.Notes;
-                dest.Fee = src.Fee;
-    });
+            config.NewConfig<AddStudentToPlanDto, PlanStudent>();
+            //// suppose you want to set `PlanId` from a parameter instead of from the DTO:
+            //.Map((src, dest, ctx) =>
+            //{
+            //    // read the parameter "planId" that we'll pass at call‐time:
+            //    dest.PlanId = (int)ctx.Parameters["planId"];
+            //    dest.StudentId = src.StudentId;
+            //    dest.Notes = src.Notes;
+            //    dest.Fee = src.Fee;
+            //});
 
         }
     }
