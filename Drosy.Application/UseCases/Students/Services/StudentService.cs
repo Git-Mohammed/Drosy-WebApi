@@ -43,7 +43,6 @@ namespace Drosy.Application.UseCases.Students.Services
                 var studentDto = _mapper.Map<Student, StudentDTO>(student);
 
                 return Result.Success(studentDto);
-
             }
             catch (Exception ex)
             {
