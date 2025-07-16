@@ -8,23 +8,16 @@ namespace Drosy.Infrastructure.Persistence.Repositories
 {
     public class PlanStudentsRepository : BaseRepository<PlanStudent>, IPlanStudentsRepository
     {
-        private readonly ApplicationDbContext _dbContext;
-        private readonly DbSet<PlanStudent> _dbSet;
+        public PlanStudentsRepository(ApplicationDbContext dbContext) : base(dbContext) {}
 
-        public PlanStudentsRepository(ApplicationDbContext dbContext) : base(dbContext)
+        public async Task<bool> ExistsAsync(int planId, int studentId, CancellationToken cancellationToken)
         {
-            _dbContext = dbContext;
-            _dbSet = _dbContext.PlanStudents;
-        }
-
-        public async Task<bool> ExistsAsync(Expression<Func<PlanStudent, bool>> predicate, CancellationToken cancellationToken)
-        {
-            return await _dbSet.AnyAsync(predicate, cancellationToken);
+            return await DbSet.AnyAsync(ps => ps.PlanId == planId & ps.StudentId == studentId, cancellationToken);
         }
 
         public async Task<List<int>> GetStudentIdsInPlanAsync(int planId, List<int> studentIds, CancellationToken ct)
         {
-            return await _dbSet
+            return await DbSet
                 .Where(ps => ps.PlanId == planId && studentIds.Contains(ps.StudentId))
                 .Select(ps => ps.StudentId)
                 .ToListAsync(ct);
