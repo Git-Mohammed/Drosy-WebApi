@@ -1,7 +1,8 @@
 ﻿using System.Diagnostics.CodeAnalysis;
-using Drosy.Domain.Shared.ResultPattern.ErrorComponents;
+using Drosy.Domain.Shared.ErrorComponents;
+using Drosy.Domain.Shared.ResultPattern.ErrorComponents.Common;
 
-namespace Drosy.Domain.Shared.ResultPattern
+namespace Drosy.Domain.Shared.ApplicationResults
 {
     /// <summary>
     /// Represents the outcome of an operation, indicating success or failure.
@@ -16,17 +17,17 @@ namespace Drosy.Domain.Shared.ResultPattern
         /// <param name="isSuccess">True if the result represents success; otherwise, false.</param>
         /// <param name="error">
         /// The <see cref="Error"/>.
-        /// Must be <see cref="Error.None"/> if <paramref name="isSuccess"/> is true,
-        /// and must not be <see cref="Error.None"/> if <paramref name="isSuccess"/> is false.
+        /// Must be <see cref="AppError.None"/> if <paramref name="isSuccess"/> is true,
+        /// and must not be <see cref="AppError.None"/> if <paramref name="isSuccess"/> is false.
         /// </param>
         /// <param name="exception">Optional exception associated with a failed operation.</param>
-        protected Result(bool isSuccess, Error error, Exception? exception = null)
+        protected Result(bool isSuccess, AppError error, Exception? exception = null)
         {
             switch (isSuccess)
             {
-                case true when error != Error.None:
+                case true when error != AppError.None:
                     throw new InvalidOperationException("A successful result cannot have an error.");
-                case false when error == Error.None:
+                case false when error == AppError.None:
                     throw new InvalidOperationException("A failure result must have a valid error.");
                 default:
                     IsSuccess = isSuccess;
@@ -47,9 +48,9 @@ namespace Drosy.Domain.Shared.ResultPattern
         public bool IsFailure => !IsSuccess;
 
         /// <summary>
-        /// Gets the error associated with a failure. For a successful result, this is <see cref="Error.None"/>.
+        /// Gets the error associated with a failure. For a successful result, this is <see cref="AppError.None"/>.
         /// </summary>
-        public Error Error { get; }
+        public AppError Error { get; }
 
         /// <summary>
         /// Gets the exception associated with a failure, if provided.
@@ -59,40 +60,40 @@ namespace Drosy.Domain.Shared.ResultPattern
         /// <summary>
         /// Creates a successful result.
         /// </summary>
-        public static Result Success() => new(true, Error.None);
+        public static Result Success() => new(true, AppError.None);
 
         /// <summary>
         /// Creates a failure result with a given error.
         /// </summary>
-        public static Result Failure(Error error) => new(false, error);
+        public static Result Failure(AppError error) => new(false, error);
 
         /// <summary>
         /// Creates a failure result with a given error and exception.
         /// </summary>
-        public static Result Failure(Error error, Exception exception) => new(false, error, exception);
+        public static Result Failure(AppError error, Exception exception) => new(false, error, exception);
 
         /// <summary>
         /// Creates a successful result containing a value.
         /// </summary>
-        public static Result<T> Success<T>(T value) => new(value, true, Error.None);
+        public static Result<T> Success<T>(T value) => new(value, true, AppError.None);
 
         /// <summary>
         /// Creates a failure result containing a value with a given error.
         /// </summary>
-        public static Result<T> Failure<T>(Error error) => new(default, false, error);
+        public static Result<T> Failure<T>(AppError error) => new(default, false, error);
 
         /// <summary>
         /// Creates a failure result containing a value with a given error and exception.
         /// </summary>
-        public static Result<T> Failure<T>(Error error, Exception exception)
+        public static Result<T> Failure<T>(AppError error, Exception exception)
             => new(default, false, error, exception);
 
         /// <summary>
         /// Creates a result based on whether the provided value is null.
-        /// If non-null, a successful result is returned; otherwise, a failure result is returned with <see cref="Error.NullValue"/>.
+        /// If non-null, a successful result is returned; otherwise, a failure result is returned with <see cref="AppError.NullValue"/>.
         /// </summary>
         public static Result<T> Create<T>(T? value) =>
-            value is not null ? Success(value) : Failure<T>(Error.NullValue);
+            value is not null ? Success(value) : Failure<T>(CommonErrors.NullValue);
     }
 
     /// <summary>
@@ -109,10 +110,10 @@ namespace Drosy.Domain.Shared.ResultPattern
         /// <param name="isSuccess">Indicates whether the result represents a success.</param>
         /// <param name="error">
         /// The error associated with the result.
-        /// Must be <see cref="Error.None"/> if <paramref name="isSuccess"/> is true,
-        /// and must not be <see cref="Error.None"/> if <paramref name="isSuccess"/> is false.
+        /// Must be <see cref="AppError.None"/> if <paramref name="isSuccess"/> is true,
+        /// and must not be <see cref="AppError.None"/> if <paramref name="isSuccess"/> is false.
         /// </param>
-        protected internal Result(T? value, bool isSuccess, Error error)
+        protected internal Result(T? value, bool isSuccess, AppError error)
             : base(isSuccess, error)
         {
             _value = value;
@@ -125,11 +126,11 @@ namespace Drosy.Domain.Shared.ResultPattern
         /// <param name="isSuccess">Indicates whether the result represents a success.</param>
         /// <param name="error">
         /// The error associated with the result.
-        /// Must be <see cref="Error.None"/> if <paramref name="isSuccess"/> is true,
-        /// and must not be <see cref="Error.None"/> if <paramref name="isSuccess"/> is false.
+        /// Must be <see cref="AppError.None"/> if <paramref name="isSuccess"/> is true,
+        /// and must not be <see cref="AppError.None"/> if <paramref name="isSuccess"/> is false.
         /// </param>
         /// <param name="exception">The exception to associate with a failure result.</param>
-        protected internal Result(T? value, bool isSuccess, Error error, Exception? exception)
+        protected internal Result(T? value, bool isSuccess, AppError error, Exception? exception)
             : base(isSuccess, error, exception)
         {
             _value = value;

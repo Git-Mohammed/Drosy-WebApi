@@ -1,8 +1,8 @@
-﻿namespace Drosy.Domain.Shared.ResultPattern.ErrorComponents;
+﻿namespace Drosy.Domain.Shared.ErrorComponents;
 
 using global::System.Globalization;
 
-public static class ErrorMessageHandler
+public static class LocalizedErrorMessageProvider
 {
     public static string GetMessage(string code, string language = "en")
     {
@@ -10,7 +10,7 @@ public static class ErrorMessageHandler
         {
             language = "en"; // Fallback to default if invalid
         }
-        return ErrorMessagesRepository.GetMessage(code, language);
+        return ErrorMessageResourceRepository.GetMessage(code, language);
     }
 
     public static string GetMessage(string code)

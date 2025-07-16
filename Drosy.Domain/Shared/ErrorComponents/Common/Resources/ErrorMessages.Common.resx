@@ -117,16 +117,16 @@
   <resheader name="writer">
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
-  <data name="Error_Invalid" xml:space="preserve">
+  <data name="Error_Common_Invalid" xml:space="preserve">
     <value>البيانات المقدمة غير صالحة.</value>
   </data>
-  <data name="Error_NotFound" xml:space="preserve">
+  <data name="Error_Common_NotFound" xml:space="preserve">
     <value>لم يتم العثور على المورد المطلوب.</value>
   </data>
-  <data name="Error_NullValue" xml:space="preserve">
+  <data name="Error_Common_NullValue" xml:space="preserve">
     <value>تم تقديم قيمة فارغة.</value>
   </data>
-  <data name="Error_Unexpected" xml:space="preserve">
+  <data name="Error_Common_Unexpected" xml:space="preserve">
     <value>حدث خطأ غير متوقع.</value>
   </data>
 </root>

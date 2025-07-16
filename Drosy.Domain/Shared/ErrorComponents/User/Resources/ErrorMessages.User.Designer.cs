@@ -8,7 +8,7 @@
 // </auto-generated>
 //------------------------------------------------------------------------------
 
-namespace Drosy.Infrastructure.Persistence.Errors.Resources {
+namespace Drosy.Domain.Shared.ErrorComponents.User.Resources {
     using System;
     
     
@@ -22,14 +22,14 @@ namespace Drosy.Infrastructure.Persistence.Errors.Resources {
     [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Resources.Tools.StronglyTypedResourceBuilder", "17.0.0.0")]
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
     [global::System.Runtime.CompilerServices.CompilerGeneratedAttribute()]
-    internal class ErrorMessages_EFCore {
+    internal class ErrorMessages_User {
         
         private static global::System.Resources.ResourceManager resourceMan;
         
         private static global::System.Globalization.CultureInfo resourceCulture;
         
         [global::System.Diagnostics.CodeAnalysis.SuppressMessageAttribute("Microsoft.Performance", "CA1811:AvoidUncalledPrivateCode")]
-        internal ErrorMessages_EFCore() {
+        internal ErrorMessages_User() {
         }
         
         /// <summary>
@@ -39,7 +39,7 @@ namespace Drosy.Infrastructure.Persistence.Errors.Resources {
         internal static global::System.Resources.ResourceManager ResourceManager {
             get {
                 if (object.ReferenceEquals(resourceMan, null)) {
-                    global::System.Resources.ResourceManager temp = new global::System.Resources.ResourceManager("Drosy.Infrastructure.Persistence.Errors.Resources.ErrorMessages.EFCore", typeof(ErrorMessages_EFCore).Assembly);
+                    global::System.Resources.ResourceManager temp = new global::System.Resources.ResourceManager("Drosy.Domain.Shared.ErrorComponents.User.Resources.ErrorMessages.User", typeof(ErrorMessages_User).Assembly);
                     resourceMan = temp;
                 }
                 return resourceMan;
@@ -61,38 +61,20 @@ namespace Drosy.Infrastructure.Persistence.Errors.Resources {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to فشل حفظ التغييرات في قاعدة البيانات..
+        ///   Looks up a localized string similar to تجاوزت عدد محاولات تسجيل الدخول. يرجى المحاولة مرة أخرى لاحقًا..
         /// </summary>
-        internal static string Error_EFCore_CanNotSaveChanges {
+        internal static string Error_User_AttemptExceeded {
             get {
-                return ResourceManager.GetString("Error_EFCore_CanNotSaveChanges", resourceCulture);
+                return ResourceManager.GetString("Error_User_AttemptExceeded", resourceCulture);
             }
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to حدث تعارض في التزامن. تم تعديل البيانات التي تحاول حفظها بواسطة مستخدم آخر..
+        ///   Looks up a localized string similar to تجاوزت عدد محاولات تسجيل الدخول. يرجى المحاولة مرة أخرى لاحقًا..
         /// </summary>
-        internal static string Error_EFCore_ConcurrencyConflict {
+        internal static string Error_User_InvalidCredentials {
             get {
-                return ResourceManager.GetString("Error_EFCore_ConcurrencyConflict", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to فشل بدء أو إتمام عملية قاعدة البيانات..
-        /// </summary>
-        internal static string Error_EFCore_FailedTransaction {
-            get {
-                return ResourceManager.GetString("Error_EFCore_FailedTransaction", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to لم يتم إجراء أي تغيير على الخادم..
-        /// </summary>
-        internal static string Error_EFCore_NoChanges {
-            get {
-                return ResourceManager.GetString("Error_EFCore_NoChanges", resourceCulture);
+                return ResourceManager.GetString("Error_User_InvalidCredentials", resourceCulture);
             }
         }
     }

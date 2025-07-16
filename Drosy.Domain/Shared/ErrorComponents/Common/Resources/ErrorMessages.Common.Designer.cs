@@ -8,7 +8,7 @@
 // </auto-generated>
 //------------------------------------------------------------------------------
 
-namespace Drosy.Domain.Shared.ResultPattern.ErrorComponents.Resources {
+namespace Drosy.Domain.Shared.ErrorComponents.Common.Resources {
     using System;
     
     
@@ -39,7 +39,7 @@ namespace Drosy.Domain.Shared.ResultPattern.ErrorComponents.Resources {
         internal static global::System.Resources.ResourceManager ResourceManager {
             get {
                 if (object.ReferenceEquals(resourceMan, null)) {
-                    global::System.Resources.ResourceManager temp = new global::System.Resources.ResourceManager("Drosy.Domain.Shared.ResultPattern.ErrorComponents.Resources.ErrorMessages.Common", typeof(ErrorMessages_Common).Assembly);
+                    global::System.Resources.ResourceManager temp = new global::System.Resources.ResourceManager("Drosy.Domain.Shared.ErrorComponents.Common.Resources.ErrorMessages.Common", typeof(ErrorMessages_Common).Assembly);
                     resourceMan = temp;
                 }
                 return resourceMan;
@@ -63,36 +63,36 @@ namespace Drosy.Domain.Shared.ResultPattern.ErrorComponents.Resources {
         /// <summary>
         ///   Looks up a localized string similar to البيانات المقدمة غير صالحة..
         /// </summary>
-        internal static string Error_Invalid {
+        internal static string Error_Common_Invalid {
             get {
-                return ResourceManager.GetString("Error_Invalid", resourceCulture);
+                return ResourceManager.GetString("Error_Common_Invalid", resourceCulture);
             }
         }
         
         /// <summary>
         ///   Looks up a localized string similar to لم يتم العثور على المورد المطلوب..
         /// </summary>
-        internal static string Error_NotFound {
+        internal static string Error_Common_NotFound {
             get {
-                return ResourceManager.GetString("Error_NotFound", resourceCulture);
+                return ResourceManager.GetString("Error_Common_NotFound", resourceCulture);
             }
         }
         
         /// <summary>
         ///   Looks up a localized string similar to تم تقديم قيمة فارغة..
         /// </summary>
-        internal static string Error_NullValue {
+        internal static string Error_Common_NullValue {
             get {
-                return ResourceManager.GetString("Error_NullValue", resourceCulture);
+                return ResourceManager.GetString("Error_Common_NullValue", resourceCulture);
             }
         }
         
         /// <summary>
         ///   Looks up a localized string similar to حدث خطأ غير متوقع..
         /// </summary>
-        internal static string Error_Unexpected {
+        internal static string Error_Common_Unexpected {
             get {
-                return ResourceManager.GetString("Error_Unexpected", resourceCulture);
+                return ResourceManager.GetString("Error_Common_Unexpected", resourceCulture);
             }
         }
     }

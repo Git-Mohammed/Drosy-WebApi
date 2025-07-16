@@ -3,32 +3,15 @@ using Drosy.Api.Filters;
 using Drosy.Application.Interfaces.Common;
 using System.Globalization;
 using Microsoft.AspNetCore.Localization;
-using Drosy.Domain.Shared.ResultPattern.ErrorComponents;
+using Microsoft.Extensions.Options;
+using Drosy.Domain.Shared.ErrorComponents.Common;
+using Drosy.Domain.Shared.ErrorComponents;
 
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
 
-#region Localization Services Configuration
-builder.Services.AddLocalization(); // Add localization services
 
-builder.Services.Configure<RequestLocalizationOptions>(options => // Configure supported cultures
-{
-    var supportedCultures = new[]
-    {
-        new CultureInfo("en"), // English
-        new CultureInfo("ar"), // Arabic
-        // Add all other supported cultures here (e.g., new CultureInfo("pt"))
-    };
-
-    options.DefaultRequestCulture = new RequestCulture("en"); // Set your default culture
-    options.SupportedCultures = supportedCultures; // Specify supported cultures
-    options.SupportedUICultures = supportedCultures; // Specify supported UI cultures
-
-    // Use AcceptLanguageHeaderRequestCultureProvider for APIs, which is often the default.
-    options.RequestCultureProviders.Insert(0, new AcceptLanguageHeaderRequestCultureProvider());
-});
-#endregion
 
 builder.Services.AddControllers(options =>
 {
@@ -41,6 +24,7 @@ builder.Services.AddSwaggerGen();
 builder.Services.AddInfrastructureServices(builder.Configuration);
 builder.Services.AddApplicationServices(builder.Configuration);
 builder.Services.AddDBInitializer();
+builder.Services.AddLocalizationServicesConfiguration();
 
 #region Cors Configuration
 builder.Services.AddCors(options =>
@@ -64,6 +48,10 @@ if (app.Environment.IsDevelopment())
         options.SwaggerEndpoint("/openapi/v1.json", "api")
     );
 }
+#region Localication Middleware
+var options = app.Services.GetService<IOptions<RequestLocalizationOptions>>();
+app.UseRequestLocalization(options.Value);
+#endregion
 
 app.UseHttpsRedirection();
 app.UseRouting();
@@ -75,7 +63,7 @@ app.Use(async (context, next) => // Add this custom middleware after UseRequestL
 {
     // CultureInfo.CurrentUICulture is automatically set by UseRequestLocalization()
     // Assign it to your static Error.CurrentLanguage property
-    Error.CurrentLanguage = CultureInfo.CurrentUICulture.TwoLetterISOLanguageName;
+    AppError.CurrentLanguage = CultureInfo.CurrentUICulture.TwoLetterISOLanguageName;
     await next();
 });
 #endregion
