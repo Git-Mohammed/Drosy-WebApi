@@ -5,10 +5,10 @@
     /// </summary>
     public static class UserErrors
     {
-        public static AppError InvalidCredentials => new("Error_User_InvalidCredentials");
-        public static AppError AttemptExceeded => new("Error_User_AttemptExceeded");
-        public static AppError AlreadyExists => new("Error_User_AlreadyExists");
-        public static AppError Inactive => new("Error_User_Inactive");
-        public static AppError Locked => new("Error_User_Locked");
+        public static AppError InvalidCredentials => new(UserErrorCodes.InvalidCredentials);
+        public static AppError AttemptExceeded => new(UserErrorCodes.AttemptExceeded);
+        public static AppError AlreadyExists => new(UserErrorCodes.AlreadyExists);
+        public static AppError Inactive => new(UserErrorCodes.Inactive);
+        public static AppError Locked => new(UserErrorCodes.Locked);
     }
 }
