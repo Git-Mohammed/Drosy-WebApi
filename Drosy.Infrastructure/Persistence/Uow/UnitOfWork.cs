@@ -1,4 +1,4 @@
-﻿using Drosy.Domain.Interfaces.Uow;
+﻿using Drosy.Domain.Interfaces.Common.Uow;
 using Drosy.Infrastructure.Persistence.DbContexts;
 
 namespace Drosy.Infrastructure.Persistence.Uow

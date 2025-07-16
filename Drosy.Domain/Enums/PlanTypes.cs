@@ -1,6 +1,6 @@
 ﻿namespace Drosy.Domain.Enums;
 
-public enum PlanTypes
+public enum PlanTypes : byte
 {
     Individual = 1,
     Group

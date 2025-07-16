@@ -28,6 +28,17 @@ namespace Drosy.Infrastructure.Mapping.StudentConfigs
             config.NewConfig<StudentDTO, Student>()
                   .Map(dest => dest.Grade, src => src.Grade)
                   .Map(dest => dest.City, src => src.City);
+
+
+            config.NewConfig<Student, StudentCardInfoDTO>()
+            .Map(dest => dest.FullName,
+                 src => $"{src.FirstName} {src.ThirdName} {src.LastName}")
+            .Map(dest => dest.Address, src => src.Address)
+            .Map(dest => dest.PhoneNumber, src => src.PhoneNumber)
+            .Map(dest => dest.Grade, src => src.Grade.Name)
+            .Map(dest => dest.PlansCount, src => src.Plans.Count);
+
+
         }
     }
 }

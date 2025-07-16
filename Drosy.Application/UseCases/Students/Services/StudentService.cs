@@ -4,8 +4,8 @@ using Drosy.Domain.Entities;
 using Drosy.Application.UseCases.Students.DTOs;
 using Drosy.Domain.Shared.ResultPattern;
 using Drosy.Application.Interfaces.Common;
+using Drosy.Domain.Interfaces.Common.Uow;
 using Drosy.Domain.Shared.ResultPattern.ErrorComponents;
-using Drosy.Domain.Interfaces.Uow;
 
 namespace Drosy.Application.UseCases.Students.Services
 {
@@ -63,7 +63,7 @@ namespace Drosy.Application.UseCases.Students.Services
 
                 if(!isSuccess)
                 {
-                    return Result.Failure<StudentDTO>(Error.EFCore.CanNotSaveChanges);
+                    return Result.Failure<StudentDTO>(Error.CanNotSaveChanges);
                 }
 
                 var studentDto = _mapper.Map<Student, StudentDTO>(student);
@@ -97,7 +97,7 @@ namespace Drosy.Application.UseCases.Students.Services
 
                 bool isSuccess = await _unitOfWork.SaveChangesAsync(ct);
 
-                return isSuccess ? Result.Success() : Result.Failure(Error.EFCore.CanNotSaveChanges);
+                return isSuccess ? Result.Success() : Result.Failure(Error.CanNotSaveChanges);
             }
             catch (Exception ex)
             {
@@ -119,6 +119,21 @@ namespace Drosy.Application.UseCases.Students.Services
                 _logger.LogError(ex.Message, ex);
                 return Result.Failure(Error.Failure);
             }
+        }
+
+        public async Task<Result<List<StudentCardInfoDTO>>> GetAllStudentsInfoCardsAsync(int page, int size, CancellationToken cancellationToken)
+        {
+            //try
+            //{
+            //    cancellationToken.ThrowIfCancellationRequested();
+
+
+            //}
+            //catch() { }
+
+            var results = await _studentRepository.GetAllStudentsInfoCardsAsync(1, 1, cancellationToken);
+
+            return Result.Success(results.Select(x => _mapper.Map<Student, StudentCardInfoDTO>(x)).ToList());
         }
     }
 }

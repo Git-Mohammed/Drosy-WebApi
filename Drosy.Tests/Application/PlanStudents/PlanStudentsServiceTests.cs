@@ -3,11 +3,12 @@ using Drosy.Application.UseCases.PlanStudents.Services;
 using Drosy.Application.UseCases.Students.DTOs;
 using Drosy.Application.UseCases.Students.Interfaces;
 using Drosy.Domain.Entities;
+using Drosy.Domain.Interfaces.Common.Uow;
 using Drosy.Domain.Interfaces.Repository;
-using Drosy.Domain.Interfaces.Uow;
 using Drosy.Domain.Shared.ResultPattern;
 using Drosy.Domain.Shared.ResultPattern.ErrorComponents;
 using Moq;
+using Drosy.Application.Interfaces.Common;
 
 namespace Drosy.Tests.Application.PlanStudents
 {
@@ -15,7 +16,8 @@ namespace Drosy.Tests.Application.PlanStudents
     {
         private readonly Mock<IPlanStudentsRepository> _repoMock;
         private readonly Mock<IStudentService> _studentServiceMock;
-        private readonly Mock<Drosy.Application.Interfaces.Common.IMapper> _mapperMock;
+        private readonly Mock<IMapper> _mapperMock;
+        private readonly Mock<ILogger<PlanStudentsService>> _logger;
         private readonly Mock<IUnitOfWork> _uowMock;
         private readonly PlanStudentsService _service;
 
@@ -23,11 +25,13 @@ namespace Drosy.Tests.Application.PlanStudents
         {
             _repoMock = new Mock<IPlanStudentsRepository>();
             _studentServiceMock = new Mock<IStudentService>();
-            _mapperMock = new Mock<Drosy.Application.Interfaces.Common.IMapper>();
+            _mapperMock = new Mock<IMapper>();
             _uowMock = new Mock<IUnitOfWork>();
+            _logger = new Mock<ILogger<PlanStudentsService>>();
             _service = new PlanStudentsService(
                 _repoMock.Object,
                 _studentServiceMock.Object,
+                _logger.Object,
                 _mapperMock.Object,
                 _uowMock.Object);
         }
@@ -59,7 +63,7 @@ namespace Drosy.Tests.Application.PlanStudents
                 .Setup(s => s.GetByIdAsync(dto.StudentId, It.IsAny<CancellationToken>()))
                 .ReturnsAsync(Result.Success(new StudentDTO()));
             _repoMock
-                .Setup(r => r.ExistsAsync(It.IsAny<System.Linq.Expressions.Expression<Func<PlanStudent, bool>>>(), It.IsAny<CancellationToken>()))
+                .Setup(r => r.ExistsAsync(It.IsAny<int>(), It.IsAny<int>(), It.IsAny<CancellationToken>()))
                 .ReturnsAsync(true);
 
             // Act
@@ -82,7 +86,7 @@ namespace Drosy.Tests.Application.PlanStudents
                 .Setup(s => s.GetByIdAsync(dto.StudentId, It.IsAny<CancellationToken>()))
                 .ReturnsAsync(Result.Success(new StudentDTO()));
             _repoMock
-                .Setup(r => r.ExistsAsync(It.IsAny<System.Linq.Expressions.Expression<Func<PlanStudent, bool>>>(), It.IsAny<CancellationToken>()))
+                .Setup(r => r.ExistsAsync(It.IsAny<int>(),It.IsAny<int>() , It.IsAny<CancellationToken>()))
                 .ReturnsAsync(false);
             _mapperMock
                 .Setup(m => m.Map<AddStudentToPlanDto, PlanStudent>(dto))
@@ -116,7 +120,7 @@ namespace Drosy.Tests.Application.PlanStudents
                 .Setup(s => s.GetByIdAsync(dto.StudentId, It.IsAny<CancellationToken>()))
                 .ReturnsAsync(Result.Success(new StudentDTO()));
             _repoMock
-                .Setup(r => r.ExistsAsync(It.IsAny<System.Linq.Expressions.Expression<Func<PlanStudent, bool>>>(), It.IsAny<CancellationToken>()))
+                .Setup(r => r.ExistsAsync(It.IsAny<int>(), It.IsAny<int>(), It.IsAny<CancellationToken>()))
                 .ReturnsAsync(false);
             _mapperMock
                 .Setup(m => m.Map<AddStudentToPlanDto, PlanStudent>(dto))
@@ -131,7 +135,7 @@ namespace Drosy.Tests.Application.PlanStudents
 
             // Assert
             Assert.True(result.IsFailure);
-            Assert.Equal(Error.EFCore.CanNotSaveChanges, result.Error);
+            Assert.Equal(Error.CanNotSaveChanges, result.Error);
         }
 
         [Fact]
@@ -288,7 +292,7 @@ namespace Drosy.Tests.Application.PlanStudents
 
             // Assert
             Assert.True(result.IsFailure);
-            Assert.Equal(Error.EFCore.CanNotSaveChanges, result.Error);
+            Assert.Equal(Error.CanNotSaveChanges, result.Error);
         }
 
         [Fact]

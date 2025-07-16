@@ -53,6 +53,13 @@ namespace Drosy.Api.Controllers
                 return ResponseHandler.HandleException(ex);
             }
         }
+
+
+        [HttpGet]
+        public async Task<IActionResult> GetAllStudentsInfoCardsAsync(CancellationToken ct)
+        {
+            return Ok(await _studentService.GetAllStudentsInfoCardsAsync(1, 1, ct));
+        }
         #endregion
 
         #region Write

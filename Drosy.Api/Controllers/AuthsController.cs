@@ -1,5 +1,4 @@
-﻿using System.Security.Claims;
-using Drosy.Application.UseCases.Authentication.Interfaces;
+﻿using Drosy.Application.UseCases.Authentication.Interfaces;
 using Drosy.Application.UsesCases.Users.DTOs;
 using Drosy.Api.Commons.Responses;
 using Microsoft.AspNetCore.Authorization;
@@ -20,9 +19,9 @@ namespace Drosy.Api.Controllers
 
         [AllowAnonymous]
         [HttpPost("login")]
-        public async Task<IActionResult> LoginAsync(UserLoginDTO user)
+        public async Task<IActionResult> LoginAsync(UserLoginDTO user, CancellationToken token)
         {
-            var result = await _authService.LoginAsync(user, CancellationToken.None);
+            var result = await _authService.LoginAsync(user, token);
 
             if (result.IsFailure)
                 return ResponseHandler.UnauthorizedResponse("login", result.Error.Message);
@@ -33,9 +32,13 @@ namespace Drosy.Api.Controllers
         }
 
         [HttpPost("refresh-token")]
-        public async Task<IActionResult> RefreshTokenAsync([FromBody] string tokenString)
+        public async Task<IActionResult> RefreshTokenAsync(CancellationToken token)
         {
-            var result = await _authService.RefreshTokenAsync(tokenString, CancellationToken.None);
+            string? refreshToken = Request.Cookies["refreshToken"];
+            if (string.IsNullOrEmpty(refreshToken))
+                return ResponseHandler.UnauthorizedResponse("Access Token", "Unauthorized");
+
+            var result = await _authService.RefreshTokenAsync(refreshToken, token);
 
             if (result.IsFailure)
             {

@@ -1,7 +1,7 @@
 ﻿namespace Drosy.Domain.Enums;
 
 [Flags]
-public enum Days
+public enum Days : byte
 {
     None      = 0,
     Sunday    = 1,    // 0000001
