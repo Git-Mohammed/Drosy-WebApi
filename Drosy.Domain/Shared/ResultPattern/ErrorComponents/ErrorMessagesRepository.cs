@@ -1,87 +1,72 @@
-﻿namespace Drosy.Domain.Shared.ResultPattern.ErrorComponents
+﻿namespace Drosy.Domain.Shared.ResultPattern.ErrorComponents;
+
+using global::System.Globalization;
+using global::System.Reflection;
+using global::System.Resources;
+
+// IMPORTANT: Ensure these using statements correctly point to your generated resource classes.
+// The exact class names (e.g., ErrorMessages_Common_en) depend on how ResXFileCodeGenerator names them
+// when you specify the culture in the .resx filename.
+using Drosy.Domain.Shared.ResultPattern.ErrorComponents.Resources; // Might contain generated classes directly or nested
+using Drosy.Domain.Shared.ResultPattern.ErrorComponents.Resources.ErrorMessages_Common_en; // For the English common errors
+using Drosy.Domain.Shared.ResultPattern.ErrorComponents.Resources.ErrorMessages_Common_ar; // For the Arabic common errors
+using Drosy.Domain.Shared.UserManagementDomain.Resources; // For user errors (assuming it generates ErrorMessages.User)
+using Drosy.Infrastructure.Persistence.Errors.Resources; // For EFCore errors (assuming it generates ErrorMessages.EFCore)
+
+public static class ErrorMessagesRepository
 {
-    /// <summary>
-    /// Holds the localized error messages.
-    /// </summary>
-    public static class ErrorMessagesRepository
+    // List of all ResourceManagers for different error domains
+    private static readonly List<ResourceManager> _resourceManagers = new()
     {
-        /// <summary>
-        /// The default language code.
-        /// </summary>
-        private const string DefaultLanguage = "en";
+        // Common Errors - English (explicitly from ErrorMessages.Common.en.resx)
+        // You'll need to use the exact name of the generated class for this .resx file.
+        // It's often ErrorMessages_Common_en if the file is ErrorMessages.Common.en.resx
+        ErrorMessages_Common.ResourceManager,
 
-        /// <summary>
-        /// A read-only dictionary of localized error messages.
-        /// </summary>
-        private static readonly IReadOnlyDictionary<string, IReadOnlyDictionary<string, string>> LocalizedMessages =
-            new Dictionary<string, IReadOnlyDictionary<string, string>>
-            {
-                ["en"] = new Dictionary<string, string>
-                {
+        // User Errors (assuming Drosy.UserManagementDomain project's ErrorMessages.User.resx)
+        ErrorMessages_User.ResourceManager,
 
-                    ["Error.NullValue"] = "A null value was provided.",
-                    ["Error.NotFound"] = "The requested resource was not found.",
-                    ["Error.Invalid"] = "The provided data is invalid.",
-                    ["Error.Unauthorized"] = "Access denied. You are not authorized.",
-                    ["Error.Conflict"] = "A conflict was detected with the current state of the resource.",
-                    ["Error.Failure"] = "An internal failure occurred. Please try again later.",
-                    ["Error.EFCore.NoChanges"] = "No Change Has Been Made To The Server",
-                    ["Error.EFCore.FailedTransaction"] = "Faild To Start Trasnaction in the server.",
-                    ["Error.User.InvalidCredentials"] = "Username Or Password Invalid",
-                    ["Error.User.AttempExceeded"] = "Your Trails Has Been Exceeded Try Later"
+        // EFCore Errors (assuming Drosy.Infrastructure.Persistence.Errors project's ErrorMessages.EFCore.resx)
+        ErrorMessages_EFCore.ResourceManager
+        // Add more ResourceManagers for other domains/modules
+    };
 
-                },
-                ["pt"] = new Dictionary<string, string>
-                {
-                    ["Error.NullValue"] = "Um valor nulo foi fornecido.",
-                    ["Error.NotFound"] = "O recurso solicitado não foi encontrado.",
-                    ["Error.Invalid"] = "Os dados fornecidos são inválidos.",
-                    ["Error.Unauthorized"] = "Acesso negado. Você não está autorizado.",
-                    ["Error.Conflict"] = "Conflito detectado com o estado atual do recurso.",
-                    ["Error.Failure"] = "Ocorreu uma falha interna. Tente novamente mais tarde.",
-                }
-                ,
-                ["ar"] = new Dictionary<string, string>
-                {
-                    ["Error.NullValue"] = "تم تقديم قيمة فارغة.",
-                    ["Error.NotFound"] = "لم يتم العثور على المورد المطلوب.",
-                    ["Error.Invalid"] = "البيانات المقدمة غير صالحة.",
-                    ["Error.Unauthorized"] = "تم رفض الوصول. أنت غير مصرح لك.",
-                    ["Error.Conflict"] = "تم اكتشاف تعارض مع الحالة الحالية للمورد.",
-                    ["Error.Failure"] = "حدث خطأ داخلي. يرجى المحاولة مرة أخرى لاحقًا.",
-                    ["Error.EFCore.NoChanges"] = "لم يحدث اي تغير على السيرفر.",
-                    ["Error.EFCore.FailedTransaction"] = "فشل في بدأ عملية في السيرفر.",
-                    ["Error.User.InvalidCredentials"] = ".اسم المستخدم او كلمة المرور غير صحيح",
-                    ["Error.User.AttempExceeded"] = "لقد نفذة محاولاتك, رجاء حاول لاحقا"
-                },
-            };
+    // Dedicated ResourceManager for the "Unexpected Error" fallback.
+    // It must point to the *English* common errors if that's your primary fallback.
+    private static readonly ResourceManager _commonResourceManager =
+        ErrorMessages_Common_en.ResourceManager; // Ensure this points to your default/fallback language resource
 
-        /// <summary>
-        /// Retrieves the localized error message for a given error code and language.
-        /// </summary>
-        /// <param name="code">The error code identifier.</param>
-        /// <param name="language">
-        /// The language code (e.g. "en", "pt"). If not found, it falls back to the default language.
-        /// </param>
-        /// <returns>
-        /// The error message if found; otherwise, a generic "unexpected error occurred" message.
-        /// </returns>
-        public static string GetMessage(string code, string language)
+
+    public static string GetMessage(string code, string language)
+    {
+        CultureInfo culture = CultureInfo.GetCultureInfo(language);
+        string? message = null;
+
+        // First attempt: try to find the message in the specified language across all resource managers
+        foreach (var rm in _resourceManagers)
         {
-            // Attempt to get the messages table for the specified language.
-            if (!LocalizedMessages.TryGetValue(language, out var messages))
+            message = rm.GetString(code, culture);
+            if (!string.IsNullOrEmpty(message))
             {
-                messages = LocalizedMessages[DefaultLanguage];
+                return message; // Found the message in the requested language
             }
-
-            // Attempt to retrieve the message for the provided error code.
-            if (messages.TryGetValue(code, out var message))
-            {
-                return message;
-            }
-
-            // Fallback: if the code is not found, return a generic message.
-            return "An unexpected error occurred.";
         }
+
+        // Second attempt: if not found in the specified language, try to find it in English (default fallback)
+        // This specifically targets the English resources for a final fallback before generic.
+        if (string.IsNullOrEmpty(message) && !language.Equals("en", StringComparison.OrdinalIgnoreCase))
+        {
+            CultureInfo englishCulture = CultureInfo.GetCultureInfo("en");
+            // You can simplify this by directly checking ErrorMessages_Common_en.ResourceManager
+            // or iterate through _resourceManagers again with the English culture.
+            message = ErrorMessages_Common_en.ResourceManager.GetString(code, englishCulture);
+            if (!string.IsNullOrEmpty(message))
+            {
+                return message; // Found the message in English fallback
+            }
+        }
+
+        // Final fallback: return the generic "Unexpected Error" message from the common English resources
+        return _commonResourceManager.GetString("Error_Unexpected", CultureInfo.InvariantCulture) ?? "An unexpected error occurred.";
     }
 }

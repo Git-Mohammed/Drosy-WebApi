@@ -1,32 +1,34 @@
-﻿namespace Drosy.Domain.Shared.ResultPattern.ErrorComponents
+﻿namespace Drosy.Domain.Shared.ResultPattern.ErrorComponents;
+
+using global::System.Globalization;
+
+public record Error(string Code)
 {
-    public record Error(string Code)
+    // Message is fetched dynamically based on CurrentLanguage
+    public string Message => ErrorMessageHandler.GetMessage(Code, CurrentLanguage);
+
+    private static string _currentLanguage = CultureInfo.CurrentUICulture.TwoLetterISOLanguageName;
+
+    public static string CurrentLanguage
     {
-        public readonly string Message = ErrorMessageHandler.GetMessage(Code, CurrentLanguage);
-
-        public static string CurrentLanguage { get; set; } = "en";
-
-        public static readonly Error None = new(string.Empty);
-        public static readonly Error NullValue = new(nameof(NullValue));
-        public static readonly Error NotFound = new(nameof(NotFound));
-        public static readonly Error Invalid = new(nameof(Invalid));
-        public static readonly Error Unauthorized = new(nameof(Unauthorized));
-        public static readonly Error Conflict = new(nameof(Conflict));
-        public static readonly Error Failure = new(nameof(Failure));
-        public static readonly Error OperationCancelled = new(nameof(OperationCancelled));
-        public static readonly Error BusinessRule = new(nameof(BusinessRule));
-
-        public record EFCore
+        get => _currentLanguage;
+        set
         {
-            public static readonly Error NoChanges = new(nameof(NoChanges));
-            public static readonly Error CanNotSaveChanges = new(nameof(CanNotSaveChanges));
-            public static readonly Error FailedTransaction = new(nameof(FailedTransaction));
-        }
-
-        public record User
-        {
-            public static Error InvalidCredentials = new(nameof(InvalidCredentials));
-            public static Error AttempExceeded = new(nameof(AttempExceeded));
+            if (!string.IsNullOrWhiteSpace(value) && ErrorMessageHandler.IsValidCulture(value))
+            {
+                _currentLanguage = value;
+            }
         }
     }
+
+    public static readonly Error None = new(string.Empty);
+    public static readonly Error NullValue = new("Error_NullValue");
+    public static readonly Error NotFound = new("Error_NotFound");
+    public static readonly Error Invalid = new("Error_Invalid");
+    public static readonly Error Unauthorized = new("Error_Unauthorized");
+    public static readonly Error Conflict = new("Error_Conflict");
+    public static readonly Error Failure = new("Error_Failure");
+    public static readonly Error OperationCancelled = new("Error_OperationCancelled");
+    public static readonly Error BusinessRule = new("Error_BusinessRule");
+
 }

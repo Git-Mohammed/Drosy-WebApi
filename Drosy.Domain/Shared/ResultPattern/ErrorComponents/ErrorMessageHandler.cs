@@ -1,30 +1,33 @@
-﻿namespace Drosy.Domain.Shared.ResultPattern.ErrorComponents
-{
-    /// <summary>
-    /// A facade for retrieving localized error messages.
-    /// </summary>
-    public class ErrorMessageHandler
-    {
-        /// <summary>
-        /// Gets the localized error message for the given error code and language.
-        /// </summary>
-        /// <param name="code">The error code (e.g. "Error.NullValue").</param>
-        /// <param name="language">The language code (e.g. "en", "pt").</param>
-        /// <returns>The localized error message.</returns>
-        public static string GetMessage(string code, string language = "en")
-        {
-            return ErrorMessagesRepository.GetMessage(code, language);
-        }
+﻿namespace Drosy.Domain.Shared.ResultPattern.ErrorComponents;
 
-        /// <summary>
-        /// Gets the error message using the default language.
-        /// </summary>
-        /// <param name="code">The error code (e.g. "Error.NullValue").</param>
-        /// <returns>The localized error message in the default language.</returns>
-        public static string GetMessage(string code)
+using global::System.Globalization;
+
+public static class ErrorMessageHandler
+{
+    public static string GetMessage(string code, string language = "en")
+    {
+        if (string.IsNullOrWhiteSpace(language) || !IsValidCulture(language))
         {
-            // Hardcoding default language here (could be modified to pull from configuration or culture info)
-            return ErrorMessagesRepository.GetMessage(code, "en");
+            language = "en"; // Fallback to default if invalid
+        }
+        return ErrorMessagesRepository.GetMessage(code, language);
+    }
+
+    public static string GetMessage(string code)
+    {
+        return GetMessage(code, "en");
+    }
+
+    public static bool IsValidCulture(string language)
+    {
+        try
+        {
+            CultureInfo.GetCultureInfo(language);
+            return true;
+        }
+        catch (CultureNotFoundException)
+        {
+            return false;
         }
     }
 }
