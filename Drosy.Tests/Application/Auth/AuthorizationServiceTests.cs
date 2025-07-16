@@ -5,10 +5,10 @@ using Drosy.Application.UsesCases.Authentication.DTOs;
 using Drosy.Application.UsesCases.Users.DTOs;
 using Drosy.Domain.Entities;
 using Drosy.Domain.Interfaces.Repository;
-using Drosy.Domain.Shared.ResultPattern;
-using Drosy.Domain.Shared.ResultPattern.ErrorComponents;
 using Moq;
 using Drosy.Application.UseCases.Authentication.Services;
+using Drosy.Domain.Shared.ErrorComponents;
+using Drosy.Domain.Shared.ApplicationResults;
 
 namespace Drosy.Tests.Application.Auth
 {
@@ -118,7 +118,7 @@ namespace Drosy.Tests.Application.Auth
             else if (isFailure)
             {
                 _jwtServiceMock.Setup(j => j.RefreshTokenAsync(tokenString, default))
-                    .ReturnsAsync(Result.Failure<AuthModel>(Error.Unauthorized));
+                    .ReturnsAsync(Result.Failure<AuthModel>(AppError.Unauthorized));
             }
 
             // Act
@@ -128,7 +128,7 @@ namespace Drosy.Tests.Application.Auth
             if (string.IsNullOrEmpty(tokenString))
             {
                 Assert.False(result.IsSuccess);
-                Assert.Equal(Error.NullValue, result.Error);
+                Assert.Equal(AppError.NullValue, result.Error);
             }
             else if (isValid)
             {
@@ -139,7 +139,7 @@ namespace Drosy.Tests.Application.Auth
             else if (isFailure)
             {
                 Assert.False(result.IsSuccess);
-                Assert.Equal(Error.Unauthorized, result.Error);
+                Assert.Equal(AppError.Unauthorized, result.Error);
             }
         }
         

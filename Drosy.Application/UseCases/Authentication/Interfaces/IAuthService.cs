@@ -1,6 +1,6 @@
 ﻿using Drosy.Application.UsesCases.Authentication.DTOs;
 using Drosy.Application.UsesCases.Users.DTOs;
-using Drosy.Domain.Shared.ResultPattern;
+using Drosy.Domain.Shared.ApplicationResults;
 using System.Security.Claims;
 
 namespace Drosy.Application.UseCases.Authentication.Interfaces

@@ -1,5 +1,7 @@
-﻿using Drosy.Domain.Shared.ResultPattern;
-using Drosy.Domain.Shared.ResultPattern.ErrorComponents;
+﻿using Drosy.Domain.Shared.ApplicationResults;
+using Drosy.Domain.Shared.ErrorComponents;
+using Drosy.Domain.Shared.ErrorComponents.Common;
+using Drosy.Domain.Shared.ResultPattern.ErrorComponents.Common;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Drosy.Api.Commons.Responses
@@ -7,7 +9,7 @@ namespace Drosy.Api.Commons.Responses
     /// <summary>
     /// Provides standardized methods for generating HTTP API responses in a consistent structure.
     /// </summary>
-    public static class ResponseHandler
+    public static class ApiResponseFactory
     {
         /// <summary>
         /// Returns a 200 OK response with a success message and data.
@@ -127,82 +129,73 @@ namespace Drosy.Api.Commons.Responses
         }
 
         /// <summary>
-        /// Returns a response with a custom status code and optional error details.
+        /// Creates a standardized response with a custom HTTP status code and optional error details.
         /// </summary>
         /// <param name="statusCode">HTTP status code.</param>
         /// <param name="property">The related property or context.</param>
         /// <param name="message">Main message describing the result or error.</param>
         /// <param name="details">Optional additional messages.</param>
         /// <returns>An <see cref="IActionResult"/> with custom status and content.</returns>
-        public static IActionResult StatusCodeResponse(int statusCode, string property, string message, params string[] details)
+        public static IActionResult CreateStatusResponse(int statusCode, string property, string message, params string[] details)
         {
             bool isSuccess = statusCode is >= 200 and < 300;
-            var errors = isSuccess ? null : BuildErrors(property, message, details);
 
-            return new ObjectResult(new ApiResponse<object>
+            var response = new ApiResponse<object>
             {
                 IsSuccess = isSuccess,
                 Message = message,
                 Data = null,
-                Errors = errors
-            })
-            { StatusCode = statusCode };
-        }
-        
-        /// <summary>
-        /// Generates a structured error response based on a domain result object.
-        /// Maps domain-specific error codes to HTTP status codes.
-        /// </summary>
-        /// <param name="result">The result object containing the error.</param>
-        /// <param name="operation">The name of the failed operation (e.g., "Create", "Delete").</param>
-        /// <param name="entity">Optional entity name related to the operation.</param>
-        /// <returns>An appropriate <see cref="IActionResult"/> with mapped status and message.</returns>
-        public static IActionResult HandleFailure(Result result, string operation, string? entity = null)
-        {
-            var errorCode = result.Error.Code;
-            var errorMessage = result.Error.Message;
-            var error = new ApiError(operation, errorMessage);
-
-            var status = errorCode switch
-            {
-                nameof(Error.NotFound) => 404,
-                nameof(Error.Failure) => 500,
-                nameof(Error.NullValue) => 400,
-                nameof(Error.Invalid) => 422,
-                nameof(Error.Unauthorized) => 401,
-                nameof(Error.Conflict) => 409,
-                nameof(Error.OperationCancelled) => 202,
-                nameof(Error.BusinessRule) => 422,
-                _ => 400
+                Errors = isSuccess ? null : BuildErrors(property, message, details)
             };
 
-            var responseMessage = errorCode switch
-            {
-                nameof(Error.NotFound) => $"{entity?.ToLower()} not found.",
-                nameof(Error.Failure) => $"Failed to {operation.ToLower()}.",
-                nameof(Error.NullValue) => "Invalid data.",
-                nameof(Error.Invalid) => "Validation failed.",
-                nameof(Error.Unauthorized) => "Unauthorized access.",
-                nameof(Error.Conflict) => "Conflict detected.",
-                nameof(Error.OperationCancelled) => "Operation cancelled.",
-                nameof(Error.BusinessRule) => "Business Rule Violation.",
-                _ => "Unknown error occurred."
-            };
+            return new ObjectResult(response) { StatusCode = statusCode };
+        }
 
-            return StatusCodeResponse(status, error.Property, responseMessage, errorMessage);
-        }
-        
         /// <summary>
-        /// Handles unexpected exceptions by returning a standardized 500 Internal Server Error response.
+        /// Converts a failed <see cref="Result"/> into a standardized <see cref="IActionResult"/>.
+        /// Maps the domain error code to an appropriate HTTP status code and returns a localized error response.
         /// </summary>
-        /// <param name="ex">The exception that occurred.</param>
-        /// <returns>An <see cref="IActionResult"/> representing a server error.</returns>
-        public static IActionResult HandleException(Exception ex)
+        /// <param name="result">The domain result object representing a failed operation.</param>
+        /// <param name="operation">The name of the operation that failed (e.g., "Create", "Update").</param>
+        /// <param name="entity">Optional name of the entity involved in the operation.</param>
+        /// <returns>An <see cref="IActionResult"/> containing the mapped status code and localized error message.</returns>
+        public static IActionResult FromFailure(Result result, string operation, string? entity = null)
         {
-            var error = new ApiError("Exception", ErrorMessagesRepository.GetMessage(nameof(Error.Failure), Error.CurrentLanguage));
-            return StatusCodeResponse(500, "Exception", error.Message);
+            string errorCode = result.Error.Code;
+            string errorMessage = result.Error.Message;
+
+            var statusCode = MapStatusCode(errorCode);
+            var localizedMessage = LocalizedErrorMessageProvider.GetMessage(errorCode, AppError.CurrentLanguage);
+
+            return CreateStatusResponse(statusCode, operation, localizedMessage, errorMessage);
         }
-        
+
+        /// <summary>
+        /// Converts an unhandled exception into a standardized 500 Internal Server Error response.
+        /// </summary>
+        public static IActionResult FromException(Exception ex)
+        {
+            string message = ErrorMessageResourceRepository.GetMessage(CommonErrorCodes.Unexpected, AppError.CurrentLanguage);
+            return CreateStatusResponse(StatusCodes.Status500InternalServerError, "Exception", message);
+        }
+
+        /// <summary>
+        /// Maps domain error codes to HTTP status codes.
+        /// </summary>
+        private static int MapStatusCode(string errorCode) => errorCode switch
+        {
+            CommonErrorCodes.NotFound => StatusCodes.Status404NotFound,
+            CommonErrorCodes.Failure => StatusCodes.Status500InternalServerError,
+            CommonErrorCodes.NullValue => StatusCodes.Status400BadRequest,
+            CommonErrorCodes.Invalid => StatusCodes.Status422UnprocessableEntity,
+            CommonErrorCodes.Unauthorized => StatusCodes.Status401Unauthorized,
+            CommonErrorCodes.Conflict => StatusCodes.Status409Conflict,
+            CommonErrorCodes.OperationCancelled => StatusCodes.Status202Accepted,
+            CommonErrorCodes.BusinessRule => StatusCodes.Status422UnprocessableEntity,
+            _ => StatusCodes.Status400BadRequest
+        };
+
+
         /// <summary>
         /// Builds a list of <see cref="ApiError"/>s from a main message and optional detailed messages.
         /// </summary>

@@ -3,7 +3,8 @@ using Drosy.Application.UseCases.PlanStudents.DTOs;
 using Drosy.Application.UseCases.PlanStudents.Interfaces;
 using Drosy.Application.UseCases.PlanStudents.Services;
 using Drosy.Domain.Shared.DataDTOs;
-using Drosy.Domain.Shared.ResultPattern.ErrorComponents;
+using Drosy.Domain.Shared.ErrorComponents;
+using Drosy.Domain.Shared.ResultPattern.ErrorComponents.Common;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Drosy.Api.Controllers
@@ -25,11 +26,11 @@ namespace Drosy.Api.Controllers
             try
             {
                 // alter
-                return ResponseHandler.SuccessResponse("Student retrieved successfully.");
+                return ApiResponseFactory.SuccessResponse("Student retrieved successfully.");
             }
             catch (Exception ex)
             {
-                return ResponseHandler.HandleException(ex);
+                return ApiResponseFactory.FromException(ex);
             }
         }
    
@@ -40,7 +41,7 @@ namespace Drosy.Api.Controllers
             //if (result.IsFailure)
             //    return ResponseHandler.HandleFailure(result, nameof(GetAllAsync), "PlanStudent");
 
-            return ResponseHandler.SuccessResponse(new { }, "Students retrieved successfully.");
+            return ApiResponseFactory.SuccessResponse(new { }, "Students retrieved successfully.");
         }
 
         #endregion
@@ -73,18 +74,18 @@ namespace Drosy.Api.Controllers
             {
                 if (dto == null)
                 {
-                    var error = new ApiError("dto", ErrorMessagesRepository.GetMessage(Error.NullValue.Message, Error.CurrentLanguage));
-                    return ResponseHandler.BadRequestResponse("dto", "Invalid student data.", error.Message);
+                    var error = new ApiError("dto", ErrorMessageResourceRepository.GetMessage(CommonErrors.NullValue.Message, AppError.CurrentLanguage));
+                    return ApiResponseFactory.BadRequestResponse("dto", "Invalid student data.", error.Message);
                 }
 
                 var result = await _PlanStudentsService.AddStudentToPlanAsync(planId, dto, ct);
 
                 if (result.IsFailure)
                 {
-                    return ResponseHandler.HandleFailure(result, nameof(AddAsync), "PlanStudent");
+                    return ApiResponseFactory.FromFailure(result, nameof(AddAsync), "PlanStudent");
                 }
 
-                return ResponseHandler.CreatedResponse(
+                return ApiResponseFactory.CreatedResponse(
                    "GetPlanStudentById",
                     new { planId, id = result.Value.StudentId },
                     result.Value, "Student added to plan successfully."
@@ -92,7 +93,7 @@ namespace Drosy.Api.Controllers
             }
             catch (Exception ex)
             {
-                return ResponseHandler.HandleException(ex);
+                return ApiResponseFactory.FromException(ex);
             }
         }
 
@@ -122,8 +123,8 @@ namespace Drosy.Api.Controllers
             {
                 if (dtos == null || !dtos.Any())
                 {
-                    var err = new ApiError("dtos", ErrorMessagesRepository.GetMessage(Error.NullValue.Message, Error.CurrentLanguage));
-                    return ResponseHandler.BadRequestResponse("dtos", err.Message, err.Message);
+                    var err = new ApiError("dtos", ErrorMessageResourceRepository.GetMessage(CommonErrors.NullValue.Message, AppError.CurrentLanguage));
+                    return ApiResponseFactory.BadRequestResponse("dtos", err.Message, err.Message);
                 }
 
 
@@ -131,10 +132,10 @@ namespace Drosy.Api.Controllers
 
                 if (result.IsFailure)
                 {
-                    return ResponseHandler.HandleFailure(result, nameof(AddAsync), "PlanStudent");
+                    return ApiResponseFactory.FromFailure(result, nameof(AddAsync), "PlanStudent");
                 }
 
-                return ResponseHandler.CreatedResponse(
+                return ApiResponseFactory.CreatedResponse(
                    "GetPlanStudents",
                    new { planId },
                    result.Value, "Student added to plan successfully."
@@ -142,7 +143,7 @@ namespace Drosy.Api.Controllers
             }
             catch (Exception ex)
             {
-                return ResponseHandler.HandleException(ex);
+                return ApiResponseFactory.FromException(ex);
             }
         }
 

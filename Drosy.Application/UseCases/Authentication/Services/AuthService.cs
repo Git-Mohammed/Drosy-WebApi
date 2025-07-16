@@ -1,14 +1,11 @@
-﻿using System.Security.Claims;
-using System.Xml.XPath;
-using Drosy.Application.Interfaces.Common;
+﻿using Drosy.Application.Interfaces.Common;
 using Drosy.Application.UseCases.Authentication.Interfaces;
 using Drosy.Application.UsesCases.Authentication.DTOs;
 using Drosy.Application.UsesCases.Users.DTOs;
-using Drosy.Domain.Entities;
 using Drosy.Domain.Interfaces.Repository;
-using Drosy.Domain.Shared.ResultPattern;
-using Drosy.Domain.Shared.ResultPattern.ErrorComponents;
-using static Drosy.Domain.Shared.ResultPattern.ErrorComponents.Error;
+using Drosy.Domain.Shared.ApplicationResults;
+using Drosy.Domain.Shared.ResultPattern.ErrorComponents.Common;
+using System.Security.Claims;
 
 namespace Drosy.Application.UseCases.Authentication.Services
 {
@@ -33,7 +30,7 @@ namespace Drosy.Application.UseCases.Authentication.Services
             {
                 token.ThrowIfCancellationRequested();
 
-                if (user is null) return Result.Failure<AuthModel>(Error.NullValue);
+                if (user is null) return Result.Failure<AuthModel>(CommonErrors.NullValue);
 
                 var result = await _identityService.PasswordSignInAsync(user.UserName, user.Password, true, true);
                 if (result.IsFailure)
@@ -48,8 +45,8 @@ namespace Drosy.Application.UseCases.Authentication.Services
             }
             catch (OperationCanceledException) 
             {
-                _logger.LogWarning(Error.OperationCancelled.Message, "Operation Canceld While logging the user with userName {userName}", user.UserName);
-                return Result.Failure<AuthModel>(Error.OperationCancelled);
+                _logger.LogWarning(CommonErrors.OperationCancelled.Message, "Operation Canceld While logging the user with userName {userName}", user.UserName);
+                return Result.Failure<AuthModel>(CommonErrors.OperationCancelled);
             }
         }
 
@@ -65,7 +62,7 @@ namespace Drosy.Application.UseCases.Authentication.Services
 
         public async Task<Result<AuthModel>> RefreshTokenAsync(string tokenString, CancellationToken cancellationToken)
         {
-            if (string.IsNullOrEmpty(tokenString)) return Result.Failure<AuthModel>(Error.NullValue);
+            if (string.IsNullOrEmpty(tokenString)) return Result.Failure<AuthModel>(CommonErrors.NullValue);
 
             try
             {
@@ -74,8 +71,8 @@ namespace Drosy.Application.UseCases.Authentication.Services
             }
             catch (OperationCanceledException)
             {
-                _logger.LogWarning(Error.OperationCancelled.Message, "Operation Canceld While Resfreshing the token {tokenString}", tokenString);
-                return Result.Failure<AuthModel>(Error.OperationCancelled);
+                _logger.LogWarning(CommonErrors.OperationCancelled.Message, "Operation Canceld While Resfreshing the token {tokenString}", tokenString);
+                return Result.Failure<AuthModel>(CommonErrors.OperationCancelled);
             }
         }
 
