@@ -21,25 +21,14 @@ namespace Drosy.Api.Controllers
         [HttpPost("login")]
         public async Task<IActionResult> LoginAsync(UserLoginDTO user, CancellationToken token)
         {
-            try
-            {
+            var result = await _authService.LoginAsync(user, token);
 
-                await Task.Delay(1000000, token);
-                var result = await _authService.LoginAsync(user, token);
+            if (result.IsFailure)
+                return ResponseHandler.UnauthorizedResponse("login", result.Error.Message);
 
-                if (result.IsFailure)
-                    return ResponseHandler.UnauthorizedResponse("login", result.Error.Message);
+            SetRefreshTokenInCookie(result.Value.RefreshToken, result.Value.RefreshTokenExpiration);
 
-                SetRefreshTokenInCookie(result.Value.RefreshToken, result.Value.RefreshTokenExpiration);
-
-                return ResponseHandler.SuccessResponse(result.Value, "Login successful");
-            }
-
-            catch (Exception ex)
-            {
-                Console.WriteLine(ex.Message);
-                return BadRequest();
-            }
+            return ResponseHandler.SuccessResponse(result.Value, "Login successful");
         }
 
         [HttpPost("refresh-token")]
