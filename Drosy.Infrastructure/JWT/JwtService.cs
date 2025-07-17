@@ -95,7 +95,7 @@ namespace Drosy.Infrastructure.JWT
                 await _refreshTokenRepository.AddAsync(refreshToken, cancellationToken);
                 var saveingResult = await _unitOfWork.SaveChangesAsync(cancellationToken);
 
-                if (saveingResult)
+                if (!saveingResult)
                     return Result.Failure<AuthModel>(EFCoreErrors.CanNotSaveChanges);
             }
 
