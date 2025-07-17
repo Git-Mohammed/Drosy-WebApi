@@ -1,5 +1,5 @@
 ﻿using Drosy.Application.Interfaces.Common;
-using Drosy.Domain.Shared.System;
+using Drosy.Domain.Shared.System.Roles;
 using Drosy.Infrastructure.Identity.Entities;
 using Drosy.Infrastructure.Persistence.DbContexts;
 using Microsoft.AspNetCore.Identity;

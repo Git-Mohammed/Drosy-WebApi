@@ -1,4 +1,4 @@
-﻿namespace Drosy.Domain.Shared.System
+﻿namespace Drosy.Domain.Shared.System.Roles
 {
     public static class AppUserRoles
     {

@@ -8,7 +8,7 @@
 // </auto-generated>
 //------------------------------------------------------------------------------
 
-namespace Drosy.Domain.Shared.ErrorComponents.User.Resources {
+namespace Drosy.Domain.Shared.ErrorComponents.Validation.Resources {
     using System;
     
     
@@ -22,24 +22,24 @@ namespace Drosy.Domain.Shared.ErrorComponents.User.Resources {
     [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Resources.Tools.StronglyTypedResourceBuilder", "17.0.0.0")]
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
     [global::System.Runtime.CompilerServices.CompilerGeneratedAttribute()]
-    public class ErrorMessages_User {
+    internal class ValidationMessages {
         
         private static global::System.Resources.ResourceManager resourceMan;
         
         private static global::System.Globalization.CultureInfo resourceCulture;
         
         [global::System.Diagnostics.CodeAnalysis.SuppressMessageAttribute("Microsoft.Performance", "CA1811:AvoidUncalledPrivateCode")]
-        internal ErrorMessages_User() {
+        internal ValidationMessages() {
         }
         
         /// <summary>
         ///   Returns the cached ResourceManager instance used by this class.
         /// </summary>
         [global::System.ComponentModel.EditorBrowsableAttribute(global::System.ComponentModel.EditorBrowsableState.Advanced)]
-        public static global::System.Resources.ResourceManager ResourceManager {
+        internal static global::System.Resources.ResourceManager ResourceManager {
             get {
                 if (object.ReferenceEquals(resourceMan, null)) {
-                    global::System.Resources.ResourceManager temp = new global::System.Resources.ResourceManager("Drosy.Domain.Shared.ErrorComponents.User.Resources.ErrorMessages.User", typeof(ErrorMessages_User).Assembly);
+                    global::System.Resources.ResourceManager temp = new global::System.Resources.ResourceManager("Drosy.Domain.Shared.ErrorComponents.Validation.Resources.ValidationMessages", typeof(ValidationMessages).Assembly);
                     resourceMan = temp;
                 }
                 return resourceMan;
@@ -51,7 +51,7 @@ namespace Drosy.Domain.Shared.ErrorComponents.User.Resources {
         ///   resource lookups using this strongly typed resource class.
         /// </summary>
         [global::System.ComponentModel.EditorBrowsableAttribute(global::System.ComponentModel.EditorBrowsableState.Advanced)]
-        public static global::System.Globalization.CultureInfo Culture {
+        internal static global::System.Globalization.CultureInfo Culture {
             get {
                 return resourceCulture;
             }
@@ -61,20 +61,11 @@ namespace Drosy.Domain.Shared.ErrorComponents.User.Resources {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to تجاوزت عدد محاولات تسجيل الدخول. يرجى المحاولة مرة أخرى لاحقًا..
+        ///   Looks up a localized string similar to صيغة البريد الإلكتروني غير صحيحة..
         /// </summary>
-        public static string Error_User_AttemptExceeded {
+        internal static string Error_Validation_InvalidEmail {
             get {
-                return ResourceManager.GetString("Error_User_AttemptExceeded", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to تجاوزت عدد محاولات تسجيل الدخول. يرجى المحاولة مرة أخرى لاحقًا..
-        /// </summary>
-        public static string Error_User_InvalidCredentials {
-            get {
-                return ResourceManager.GetString("Error_User_InvalidCredentials", resourceCulture);
+                return ResourceManager.GetString("Error_Validation_InvalidEmail", resourceCulture);
             }
         }
     }

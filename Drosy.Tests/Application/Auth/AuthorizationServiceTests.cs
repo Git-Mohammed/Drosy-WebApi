@@ -7,7 +7,7 @@ using Drosy.Domain.Interfaces.Repository;
 using Drosy.Domain.Shared.ApplicationResults;
 using Drosy.Domain.Shared.ErrorComponents;
 using Drosy.Domain.Shared.ResultPattern.ErrorComponents.Common;
-using Drosy.Domain.Shared.System;
+using Drosy.Domain.Shared.System.Roles;
 using Moq;
 using System.Security.Claims;
 

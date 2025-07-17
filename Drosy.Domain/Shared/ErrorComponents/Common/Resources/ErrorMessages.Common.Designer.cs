@@ -22,7 +22,7 @@ namespace Drosy.Domain.Shared.ErrorComponents.Common.Resources {
     [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Resources.Tools.StronglyTypedResourceBuilder", "17.0.0.0")]
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
     [global::System.Runtime.CompilerServices.CompilerGeneratedAttribute()]
-    internal class ErrorMessages_Common {
+    public class ErrorMessages_Common {
         
         private static global::System.Resources.ResourceManager resourceMan;
         
@@ -36,7 +36,7 @@ namespace Drosy.Domain.Shared.ErrorComponents.Common.Resources {
         ///   Returns the cached ResourceManager instance used by this class.
         /// </summary>
         [global::System.ComponentModel.EditorBrowsableAttribute(global::System.ComponentModel.EditorBrowsableState.Advanced)]
-        internal static global::System.Resources.ResourceManager ResourceManager {
+        public static global::System.Resources.ResourceManager ResourceManager {
             get {
                 if (object.ReferenceEquals(resourceMan, null)) {
                     global::System.Resources.ResourceManager temp = new global::System.Resources.ResourceManager("Drosy.Domain.Shared.ErrorComponents.Common.Resources.ErrorMessages.Common", typeof(ErrorMessages_Common).Assembly);
@@ -51,7 +51,7 @@ namespace Drosy.Domain.Shared.ErrorComponents.Common.Resources {
         ///   resource lookups using this strongly typed resource class.
         /// </summary>
         [global::System.ComponentModel.EditorBrowsableAttribute(global::System.ComponentModel.EditorBrowsableState.Advanced)]
-        internal static global::System.Globalization.CultureInfo Culture {
+        public static global::System.Globalization.CultureInfo Culture {
             get {
                 return resourceCulture;
             }
@@ -63,7 +63,7 @@ namespace Drosy.Domain.Shared.ErrorComponents.Common.Resources {
         /// <summary>
         ///   Looks up a localized string similar to البيانات المقدمة غير صالحة..
         /// </summary>
-        internal static string Error_Common_Invalid {
+        public static string Error_Common_Invalid {
             get {
                 return ResourceManager.GetString("Error_Common_Invalid", resourceCulture);
             }
@@ -72,7 +72,7 @@ namespace Drosy.Domain.Shared.ErrorComponents.Common.Resources {
         /// <summary>
         ///   Looks up a localized string similar to لم يتم العثور على المورد المطلوب..
         /// </summary>
-        internal static string Error_Common_NotFound {
+        public static string Error_Common_NotFound {
             get {
                 return ResourceManager.GetString("Error_Common_NotFound", resourceCulture);
             }
@@ -81,7 +81,7 @@ namespace Drosy.Domain.Shared.ErrorComponents.Common.Resources {
         /// <summary>
         ///   Looks up a localized string similar to تم تقديم قيمة فارغة..
         /// </summary>
-        internal static string Error_Common_NullValue {
+        public static string Error_Common_NullValue {
             get {
                 return ResourceManager.GetString("Error_Common_NullValue", resourceCulture);
             }
@@ -90,7 +90,7 @@ namespace Drosy.Domain.Shared.ErrorComponents.Common.Resources {
         /// <summary>
         ///   Looks up a localized string similar to حدث خطأ غير متوقع..
         /// </summary>
-        internal static string Error_Common_Unexpected {
+        public static string Error_Common_Unexpected {
             get {
                 return ResourceManager.GetString("Error_Common_Unexpected", resourceCulture);
             }

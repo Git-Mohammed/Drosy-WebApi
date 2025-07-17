@@ -1,4 +1,4 @@
-﻿namespace Drosy.Domain.Shared.DataDTOs
+﻿namespace Drosy.Domain.Shared.ApplicationResults
 {
     /// <summary>
     /// Represents a paginated result set that inherits from <see cref="DataResult{T}"/>.
