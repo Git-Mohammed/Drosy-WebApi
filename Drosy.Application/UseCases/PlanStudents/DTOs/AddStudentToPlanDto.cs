@@ -4,7 +4,7 @@
     {
         public int StudentId { get; set; }
         public decimal Fee { get; set; }
-        public string Notes { get; set; } = null!;
+        public string? Notes { get; set; }
     }
 
 }
