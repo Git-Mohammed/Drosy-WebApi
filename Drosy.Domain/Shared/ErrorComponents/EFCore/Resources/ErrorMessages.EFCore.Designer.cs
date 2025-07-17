@@ -22,7 +22,7 @@ namespace Drosy.Domain.Shared.ErrorComponents.EFCore.Resources {
     [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Resources.Tools.StronglyTypedResourceBuilder", "17.0.0.0")]
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
     [global::System.Runtime.CompilerServices.CompilerGeneratedAttribute()]
-    internal class ErrorMessages_EFCore {
+    public class ErrorMessages_EFCore {
         
         private static global::System.Resources.ResourceManager resourceMan;
         
@@ -36,7 +36,7 @@ namespace Drosy.Domain.Shared.ErrorComponents.EFCore.Resources {
         ///   Returns the cached ResourceManager instance used by this class.
         /// </summary>
         [global::System.ComponentModel.EditorBrowsableAttribute(global::System.ComponentModel.EditorBrowsableState.Advanced)]
-        internal static global::System.Resources.ResourceManager ResourceManager {
+        public static global::System.Resources.ResourceManager ResourceManager {
             get {
                 if (object.ReferenceEquals(resourceMan, null)) {
                     global::System.Resources.ResourceManager temp = new global::System.Resources.ResourceManager("Drosy.Domain.Shared.ErrorComponents.EFCore.Resources.ErrorMessages.EFCore", typeof(ErrorMessages_EFCore).Assembly);
@@ -51,7 +51,7 @@ namespace Drosy.Domain.Shared.ErrorComponents.EFCore.Resources {
         ///   resource lookups using this strongly typed resource class.
         /// </summary>
         [global::System.ComponentModel.EditorBrowsableAttribute(global::System.ComponentModel.EditorBrowsableState.Advanced)]
-        internal static global::System.Globalization.CultureInfo Culture {
+        public static global::System.Globalization.CultureInfo Culture {
             get {
                 return resourceCulture;
             }
@@ -63,7 +63,7 @@ namespace Drosy.Domain.Shared.ErrorComponents.EFCore.Resources {
         /// <summary>
         ///   Looks up a localized string similar to فشل حفظ التغييرات في قاعدة البيانات..
         /// </summary>
-        internal static string Error_EFCore_CanNotSaveChanges {
+        public static string Error_EFCore_CanNotSaveChanges {
             get {
                 return ResourceManager.GetString("Error_EFCore_CanNotSaveChanges", resourceCulture);
             }
@@ -72,7 +72,7 @@ namespace Drosy.Domain.Shared.ErrorComponents.EFCore.Resources {
         /// <summary>
         ///   Looks up a localized string similar to حدث تعارض في التزامن. تم تعديل البيانات التي تحاول حفظها بواسطة مستخدم آخر..
         /// </summary>
-        internal static string Error_EFCore_ConcurrencyConflict {
+        public static string Error_EFCore_ConcurrencyConflict {
             get {
                 return ResourceManager.GetString("Error_EFCore_ConcurrencyConflict", resourceCulture);
             }
@@ -81,7 +81,7 @@ namespace Drosy.Domain.Shared.ErrorComponents.EFCore.Resources {
         /// <summary>
         ///   Looks up a localized string similar to فشل بدء أو إتمام عملية قاعدة البيانات..
         /// </summary>
-        internal static string Error_EFCore_FailedTransaction {
+        public static string Error_EFCore_FailedTransaction {
             get {
                 return ResourceManager.GetString("Error_EFCore_FailedTransaction", resourceCulture);
             }
@@ -90,7 +90,7 @@ namespace Drosy.Domain.Shared.ErrorComponents.EFCore.Resources {
         /// <summary>
         ///   Looks up a localized string similar to لم يتم إجراء أي تغيير على الخادم..
         /// </summary>
-        internal static string Error_EFCore_NoChanges {
+        public static string Error_EFCore_NoChanges {
             get {
                 return ResourceManager.GetString("Error_EFCore_NoChanges", resourceCulture);
             }

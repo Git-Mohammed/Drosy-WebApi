@@ -63,9 +63,9 @@ namespace Drosy.Domain.Shared.ErrorComponents.Validation.Resources {
         /// <summary>
         ///   Looks up a localized string similar to صيغة البريد الإلكتروني غير صحيحة..
         /// </summary>
-        internal static string InvalidEmail {
+        internal static string Error_Validation_InvalidEmail {
             get {
-                return ResourceManager.GetString("InvalidEmail", resourceCulture);
+                return ResourceManager.GetString("Error_Validation_InvalidEmail", resourceCulture);
             }
         }
     }
