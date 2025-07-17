@@ -1,12 +1,21 @@
-﻿using Drosy.Application.Interfaces.Common;
+﻿using System.Numerics;
+using Drosy.Application.Interfaces.Common;
+using Drosy.Application.UseCases.PlanStudents.DTOs;
 using Drosy.Application.UseCases.Students.DTOs;
 using Drosy.Application.UseCases.Students.Interfaces;
 using Drosy.Domain.Entities;
-using Drosy.Domain.Interfaces.Common.Uow;
+using Drosy.Domain.Enums;
+using Drosy.Domain.Shared.ResultPattern;
 using Drosy.Domain.Interfaces.Repository;
+using Drosy.Domain.Shared.ResultPattern;
+using Drosy.Domain.Shared.ResultPattern.ErrorComponents;
+using Drosy.Domain.Shared.ResultPattern;
+using Drosy.Application.Interfaces.Common;
+using Drosy.Domain.Interfaces.Common.Uow;
+using Drosy.Domain.Shared.ResultPattern.ErrorComponents;
 using Drosy.Domain.Shared.ApplicationResults;
-using Drosy.Domain.Shared.ErrorComponents;
 using Drosy.Domain.Shared.ErrorComponents.EFCoreErrors;
+using Drosy.Domain.Shared.ErrorComponents;
 using Drosy.Domain.Shared.ResultPattern.ErrorComponents.Common;
 
 namespace Drosy.Application.UseCases.Students.Services
@@ -122,19 +131,66 @@ namespace Drosy.Application.UseCases.Students.Services
             }
         }
 
-        public async Task<Result<List<StudentCardInfoDTO>>> GetAllStudentsInfoCardsAsync(int page, int size, CancellationToken cancellationToken)
+        public async Task<Result<List<StudentCardInfoDTO>>> GetAllStudentsInfoCardsAsync(CancellationToken cancellationToken)
         {
-            //try
-            //{
-            //    cancellationToken.ThrowIfCancellationRequested();
+            try
+            {
+                cancellationToken.ThrowIfCancellationRequested();
+                var results = await _studentRepository.GetAllStudentsInfoCardsAsync(cancellationToken);
+                var newLists = new List<StudentCardInfoDTO>();
+                foreach (var s in results)
+                {
+                    int totalplans = s.Plans.Count(x => x.Plan.Status == PlanStatus.Active);
+                    newLists.Add(new StudentCardInfoDTO
+                    {
+                        Address = s.Address,
+                        FullName = $"{s.FirstName} {s.ThirdName} {s.LastName}",
+                        Grade = s.Grade.Name,
+                        PhoneNumber = s.PhoneNumber,
+                        PlansCount = totalplans,
+                        SessionsCount = CalculateTotalSessionsForStudent(s)
+                    });
+                }
 
 
-            //}
-            //catch() { }
+                return newLists.Count > 0 ? Result.Success(newLists) : Result.Failure<List<StudentCardInfoDTO>>(CommonErrors.NotFound);
 
-            var results = await _studentRepository.GetAllStudentsInfoCardsAsync(1, 1, cancellationToken);
+            }
+            catch (OperationCanceledException)
+            {
+                _logger.LogWarning("Operation canceled while retrving students info");
+                return Result.Failure<List<StudentCardInfoDTO>>(CommonErrors.OperationCancelled);
+            }
 
-            return Result.Success(results.Select(x => _mapper.Map<Student, StudentCardInfoDTO>(x)).ToList());
+
         }
+
+        public int CalculateTotalSessions(Plan plan)
+        {
+            // 1. عدد الأيام في الأسبوع اللي فيها حصص
+            int sessionsPerWeek = Enum.GetValues(typeof(DayOfWeek))
+                .Cast<DayOfWeek>()
+                .Count(day => plan.DaysOfWeek.HasFlag((Days)(1 << (int)day)));
+
+            // 2. عدد الأسابيع بين البداية والنهاية
+            int totalDays = (plan.EndDate - plan.StartDate).Days + 1;
+            double totalWeeks = totalDays / 7.0;
+
+            // 3. الحصص الكلية = الأيام بالأسبوع × عدد الأسابيع
+            int totalSessions = (int)Math.Floor(totalWeeks * sessionsPerWeek);
+
+            return totalSessions;
+        }
+
+        public int CalculateTotalSessionsForStudent(Student student)
+        {
+            int sessions = 0;
+            foreach(PlanStudent planStudent in student.Plans)
+            {
+                sessions += CalculateTotalSessions(planStudent.Plan);
+            }
+            return sessions;
+        }
+
     }
 }

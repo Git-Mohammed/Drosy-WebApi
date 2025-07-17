@@ -1,9 +1,11 @@
 ﻿using Drosy.Api.Commons.Responses;
 using Drosy.Application.UseCases.Students.DTOs;
 using Drosy.Application.UseCases.Students.Interfaces;
+using Drosy.Domain.Shared.ApplicationResults;
 using Drosy.Domain.Shared.ErrorComponents;
 using Drosy.Domain.Shared.ResultPattern.ErrorComponents.Common;
 using Microsoft.AspNetCore.Mvc;
+using static System.Runtime.InteropServices.JavaScript.JSType;
 
 namespace Drosy.Api.Controllers
 {
@@ -56,10 +58,21 @@ namespace Drosy.Api.Controllers
         }
 
 
-        [HttpGet]
+        [HttpGet(Name = "GetAllStudentsInfoCardsAsync")]
         public async Task<IActionResult> GetAllStudentsInfoCardsAsync(CancellationToken ct)
         {
-            return Ok(await _studentService.GetAllStudentsInfoCardsAsync(1, 1, ct));
+            if (ct.IsCancellationRequested)
+            {
+                return ApiResponseFactory.FromFailure(Result.Failure(CommonErrors.OperationCancelled), nameof(GetAllStudentsInfoCardsAsync));
+            }
+
+            var result = await _studentService.GetAllStudentsInfoCardsAsync(ct);
+
+            if (result.IsFailure)
+            {
+                return ApiResponseFactory.FromFailure(result, nameof(GetAllStudentsInfoCardsAsync));
+            }
+            return ApiResponseFactory.SuccessResponse<List<StudentCardInfoDTO>>(result.Value);
         }
         #endregion
 

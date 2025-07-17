@@ -9,11 +9,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
 
-namespace Drosy.Infrastructure.Persistence.Migrations
+namespace Drosy.Infrastructure.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20250707123357_SeedData")]
-    partial class SeedData
+    [Migration("20250716165749_intit")]
+    partial class intit
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -47,6 +47,9 @@ namespace Drosy.Infrastructure.Persistence.Migrations
                         .HasColumnType("int");
 
                     b.HasKey("Id");
+
+                    b.HasIndex("UserId")
+                        .IsUnique();
 
                     b.ToTable("Assistants");
                 });
@@ -158,7 +161,7 @@ namespace Drosy.Infrastructure.Persistence.Migrations
                         });
                 });
 
-            modelBuilder.Entity("Drosy.Domain.Entities.RefreshToken", b =>
+            modelBuilder.Entity("Drosy.Domain.Entities.Plan", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -166,8 +169,66 @@ namespace Drosy.Infrastructure.Persistence.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
-                    b.Property<int?>("ApplicationUserId")
+                    b.Property<int>("DaysOfWeek")
                         .HasColumnType("int");
+
+                    b.Property<DateTime>("EndDate")
+                        .HasColumnType("datetime2");
+
+                    b.Property<TimeSpan>("EndSession")
+                        .HasColumnType("time");
+
+                    b.Property<DateTime>("StartDate")
+                        .HasColumnType("datetime2");
+
+                    b.Property<TimeSpan>("StartSession")
+                        .HasColumnType("time");
+
+                    b.Property<byte>("Status")
+                        .HasColumnType("tinyint");
+
+                    b.Property<decimal>("TotalFees")
+                        .HasColumnType("decimal(18,2)");
+
+                    b.Property<byte>("Type")
+                        .HasColumnType("tinyint");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("Plans", "EduManagement");
+                });
+
+            modelBuilder.Entity("Drosy.Domain.Entities.PlanStudent", b =>
+                {
+                    b.Property<int>("PlanId")
+                        .HasColumnType("int");
+
+                    b.Property<int>("StudentId")
+                        .HasColumnType("int");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<decimal>("Fee")
+                        .HasColumnType("decimal(18,2)");
+
+                    b.Property<string>("Notes")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("PlanId", "StudentId");
+
+                    b.HasIndex("StudentId");
+
+                    b.ToTable("PlanStudents", "EduManagement");
+                });
+
+            modelBuilder.Entity("Drosy.Domain.Entities.RefreshToken", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
                     b.Property<DateTime>("CreatedOn")
                         .HasColumnType("datetime2");
@@ -187,9 +248,9 @@ namespace Drosy.Infrastructure.Persistence.Migrations
 
                     b.HasKey("Id");
 
-                    b.HasIndex("ApplicationUserId");
+                    b.HasIndex("UserId");
 
-                    b.ToTable("RefreshTokens");
+                    b.ToTable("RefreshTokens", "Identity");
                 });
 
             modelBuilder.Entity("Drosy.Domain.Entities.Student", b =>
@@ -249,6 +310,10 @@ namespace Drosy.Infrastructure.Persistence.Migrations
 
                     b.HasIndex("GradeId");
 
+                    b.HasIndex("UserId")
+                        .IsUnique()
+                        .HasFilter("[UserId] IS NOT NULL");
+
                     b.ToTable("Students");
                 });
 
@@ -274,6 +339,9 @@ namespace Drosy.Infrastructure.Persistence.Migrations
                         .HasColumnType("int");
 
                     b.HasKey("Id");
+
+                    b.HasIndex("UserId")
+                        .IsUnique();
 
                     b.ToTable("Teachers");
                 });
@@ -479,6 +547,15 @@ namespace Drosy.Infrastructure.Persistence.Migrations
                     b.ToTable("UserTokens", "Identity");
                 });
 
+            modelBuilder.Entity("Drosy.Domain.Entities.Assistant", b =>
+                {
+                    b.HasOne("Drosy.Infrastructure.Identity.Entities.ApplicationUser", null)
+                        .WithOne("Assistant")
+                        .HasForeignKey("Drosy.Domain.Entities.Assistant", "UserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+                });
+
             modelBuilder.Entity("Drosy.Domain.Entities.City", b =>
                 {
                     b.HasOne("Drosy.Domain.Entities.Country", "Country")
@@ -490,11 +567,32 @@ namespace Drosy.Infrastructure.Persistence.Migrations
                     b.Navigation("Country");
                 });
 
+            modelBuilder.Entity("Drosy.Domain.Entities.PlanStudent", b =>
+                {
+                    b.HasOne("Drosy.Domain.Entities.Plan", "Plan")
+                        .WithMany("Students")
+                        .HasForeignKey("PlanId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("Drosy.Domain.Entities.Student", "Student")
+                        .WithMany("Plans")
+                        .HasForeignKey("StudentId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Plan");
+
+                    b.Navigation("Student");
+                });
+
             modelBuilder.Entity("Drosy.Domain.Entities.RefreshToken", b =>
                 {
                     b.HasOne("Drosy.Infrastructure.Identity.Entities.ApplicationUser", null)
                         .WithMany("RefreshTokens")
-                        .HasForeignKey("ApplicationUserId");
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
                 });
 
             modelBuilder.Entity("Drosy.Domain.Entities.Student", b =>
@@ -511,9 +609,22 @@ namespace Drosy.Infrastructure.Persistence.Migrations
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
+                    b.HasOne("Drosy.Infrastructure.Identity.Entities.ApplicationUser", null)
+                        .WithOne("Student")
+                        .HasForeignKey("Drosy.Domain.Entities.Student", "UserId");
+
                     b.Navigation("City");
 
                     b.Navigation("Grade");
+                });
+
+            modelBuilder.Entity("Drosy.Domain.Entities.Teacher", b =>
+                {
+                    b.HasOne("Drosy.Infrastructure.Identity.Entities.ApplicationUser", null)
+                        .WithOne("Teacher")
+                        .HasForeignKey("Drosy.Domain.Entities.Teacher", "UserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<int>", b =>
@@ -577,9 +688,25 @@ namespace Drosy.Infrastructure.Persistence.Migrations
                     b.Navigation("Students");
                 });
 
+            modelBuilder.Entity("Drosy.Domain.Entities.Plan", b =>
+                {
+                    b.Navigation("Students");
+                });
+
+            modelBuilder.Entity("Drosy.Domain.Entities.Student", b =>
+                {
+                    b.Navigation("Plans");
+                });
+
             modelBuilder.Entity("Drosy.Infrastructure.Identity.Entities.ApplicationUser", b =>
                 {
+                    b.Navigation("Assistant");
+
                     b.Navigation("RefreshTokens");
+
+                    b.Navigation("Student");
+
+                    b.Navigation("Teacher");
                 });
 #pragma warning restore 612, 618
         }

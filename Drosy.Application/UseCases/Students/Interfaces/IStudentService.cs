@@ -21,8 +21,15 @@ namespace Drosy.Application.UseCases.Students.Interfaces
         /// </returns>
         Task<Result<StudentDTO>> GetByIdAsync(int id, CancellationToken cancellationToken);
 
+        /// <summary>
+        /// Retrieves a list of student information cards.
+        /// </summary>
+        /// <param name="cancellationToken">Token to monitor for cancellation requests.</param>
+        /// <returns>
+        /// A result containing a list of <see cref="StudentCardInfoDTO"/> objects if successful; otherwise, an error result.
+        /// </returns>
+        Task<Result<List<StudentCardInfoDTO>>> GetAllStudentsInfoCardsAsync(CancellationToken cancellationToken);
 
-        Task<Result<List<StudentCardInfoDTO>>> GetAllStudentsInfoCardsAsync(int page, int size, CancellationToken cancellationToken);
         #endregion
 
         #region Write

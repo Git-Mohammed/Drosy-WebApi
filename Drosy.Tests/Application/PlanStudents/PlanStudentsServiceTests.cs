@@ -1,14 +1,18 @@
-﻿using Drosy.Application.UseCases.PlanStudents.DTOs;
+﻿using Drosy.Application.Interfaces.Common;
+using Drosy.Application.UseCases.PlanStudents.DTOs;
 using Drosy.Application.UseCases.PlanStudents.Services;
 using Drosy.Application.UseCases.Students.DTOs;
 using Drosy.Application.UseCases.Students.Interfaces;
 using Drosy.Domain.Entities;
 using Drosy.Domain.Interfaces.Common.Uow;
 using Drosy.Domain.Interfaces.Repository;
+using Drosy.Domain.Shared.ApplicationResults;
+using Drosy.Domain.Shared.ErrorComponents.EFCoreErrors;
 using Drosy.Domain.Shared.ResultPattern;
 using Drosy.Domain.Shared.ResultPattern.ErrorComponents;
+using Drosy.Domain.Shared.ResultPattern.ErrorComponents.Common;
 using Moq;
-using Drosy.Application.Interfaces.Common;
+using static System.Runtime.InteropServices.JavaScript.JSType;
 
 namespace Drosy.Tests.Application.PlanStudents
 {
@@ -44,14 +48,14 @@ namespace Drosy.Tests.Application.PlanStudents
             var dto = new AddStudentToPlanDto { StudentId = 1 };
             _studentServiceMock
                 .Setup(s => s.GetByIdAsync(dto.StudentId, It.IsAny<CancellationToken>()))
-                .ReturnsAsync(Result.Failure<StudentDTO>(Error.NotFound, new Exception()));
+                .ReturnsAsync(Result.Failure<StudentDTO>(CommonErrors.NotFound, new Exception()));
 
             // Act
             var result = await _service.AddStudentToPlanAsync(10, dto, CancellationToken.None);
 
             // Assert
             Assert.True(result.IsFailure);
-            Assert.Equal(Error.NotFound, result.Error);
+            Assert.Equal(CommonErrors.NotFound, result.Error);
         }
 
         [Fact]
@@ -71,7 +75,7 @@ namespace Drosy.Tests.Application.PlanStudents
 
             // Assert
             Assert.True(result.IsFailure);
-            Assert.Equal(Error.Conflict, result.Error);
+            Assert.Equal(CommonErrors.Conflict, result.Error);
         }
 
         [Fact]
@@ -135,7 +139,7 @@ namespace Drosy.Tests.Application.PlanStudents
 
             // Assert
             Assert.True(result.IsFailure);
-            Assert.Equal(Error.CanNotSaveChanges, result.Error);
+            Assert.Equal(EFCoreErrors.CanNotSaveChanges, result.Error);
         }
 
         [Fact]
@@ -150,7 +154,7 @@ namespace Drosy.Tests.Application.PlanStudents
 
             // Assert
             Assert.True(result.IsFailure);
-            Assert.Equal(Error.OperationCancelled, result.Error);
+            Assert.Equal(CommonErrors.OperationCancelled, result.Error);
         }
 
         [Fact]
@@ -167,7 +171,7 @@ namespace Drosy.Tests.Application.PlanStudents
 
             // Assert
             Assert.True(result.IsFailure);
-            Assert.Equal(Error.Failure, result.Error);
+            Assert.Equal(CommonErrors.Failure, result.Error);
         }
         #endregion
 
@@ -189,7 +193,7 @@ namespace Drosy.Tests.Application.PlanStudents
 
             // Assert
             Assert.True(result.IsFailure);
-            Assert.Equal(Error.NotFound, result.Error);
+            Assert.Equal(CommonErrors.NotFound, result.Error);
         }
 
         [Fact]
@@ -209,7 +213,7 @@ namespace Drosy.Tests.Application.PlanStudents
 
             // Assert
             Assert.True(result.IsFailure);
-            Assert.Equal(Error.Conflict, result.Error);
+            Assert.Equal(CommonErrors.Conflict, result.Error);
         }
 
         [Fact]
@@ -292,7 +296,7 @@ namespace Drosy.Tests.Application.PlanStudents
 
             // Assert
             Assert.True(result.IsFailure);
-            Assert.Equal(Error.CanNotSaveChanges, result.Error);
+            Assert.Equal(EFCoreErrors.CanNotSaveChanges, result.Error);
         }
 
         [Fact]
@@ -307,7 +311,7 @@ namespace Drosy.Tests.Application.PlanStudents
 
             // Assert
             Assert.True(result.IsFailure);
-            Assert.Equal(Error.OperationCancelled, result.Error);
+            Assert.Equal(CommonErrors.OperationCancelled, result.Error);
         }
 
         [Fact]
@@ -324,7 +328,7 @@ namespace Drosy.Tests.Application.PlanStudents
 
             // Assert
             Assert.True(result.IsFailure);
-            Assert.Equal(Error.Failure, result.Error);
+            Assert.Equal(CommonErrors.Failure, result.Error);
         }
         #endregion
     }

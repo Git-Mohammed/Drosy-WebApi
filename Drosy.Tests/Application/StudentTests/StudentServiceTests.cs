@@ -5,6 +5,9 @@ using Drosy.Domain.Shared.ResultPattern;
 using Drosy.Application.UseCases.Grades.DTOs;
 using Drosy.Application.UseCases.Cities.DTOs;
 using Drosy.Domain.Shared.ResultPattern.ErrorComponents;
+using Drosy.Domain.Shared.ApplicationResults;
+using Drosy.Domain.Shared.ResultPattern.ErrorComponents.Common;
+using Drosy.Domain.Shared.ErrorComponents.Common;
 
 namespace Drosy.Tests.Application.StudentTests
 {
@@ -187,7 +190,7 @@ namespace Drosy.Tests.Application.StudentTests
                         d.EmergencyNumber == emergencyNumber &&
                         d.GradeId == gradeId &&
                         d.CityId == cityId),CancellationToken.None))
-                    .ReturnsAsync(Result.Failure<StudentDTO>(Error.Invalid));
+                    .ReturnsAsync(Result.Failure<StudentDTO>(CommonErrors.Invalid));
             }
 
             // Act
@@ -270,7 +273,7 @@ namespace Drosy.Tests.Application.StudentTests
             {
                 _studentService
                     .Setup(s => s.UpdateAsync(It.IsAny<UpdateStudentDTO>(), studentId, CancellationToken.None))
-                    .ReturnsAsync(Result.Failure(Error.Invalid));
+                    .ReturnsAsync(Result.Failure(CommonErrors.Invalid));
             }
 
             // Act
