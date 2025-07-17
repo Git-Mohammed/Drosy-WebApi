@@ -1,6 +1,6 @@
 ﻿using System.Text.RegularExpressions;
 
-namespace Drosy.Domain.Shared.Validation.Patterns
+namespace Drosy.Domain.Shared.System.Validation.Patterns
 {
     public static class RegexPatterns
     {

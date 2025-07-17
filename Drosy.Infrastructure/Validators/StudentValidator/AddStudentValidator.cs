@@ -1,5 +1,6 @@
 ﻿using Drosy.Application.UseCases.Students.DTOs;
-using Drosy.Domain.Shared.Helpers;
+using Drosy.Domain.Shared.ErrorComponents.Validation;
+using Drosy.Domain.Shared.System.Validation.Rules;
 using FluentValidation;
 
 namespace Drosy.Infrastructure.Validators.StudentValidator
@@ -13,7 +14,7 @@ namespace Drosy.Infrastructure.Validators.StudentValidator
         {
             RuleFor(x => x.FirstName)
                 .NotEmpty().WithMessage("First name is required.")
-                .MaximumLength(ValidationHelper.MaxNameLength).WithMessage("First name must not exceed 50 characters.");
+                .MaximumLength(TextValidationRules.MaxNameLength).WithMessage(ValidationErrors.MaxLengthExceeded.Message);
 
             RuleFor(x => x.SecondName)
                 .NotEmpty().WithMessage("Second name is required.")

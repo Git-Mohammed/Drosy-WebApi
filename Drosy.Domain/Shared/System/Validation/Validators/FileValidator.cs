@@ -1,8 +1,8 @@
 ﻿using Drosy.Domain.Enums;
 using Microsoft.AspNetCore.Http;
-using Drosy.Domain.Shared.Validation.Rules;
+using Drosy.Domain.Shared.System.Validation.Rules;
 
-namespace Drosy.Domain.Shared.Validation.Validators;
+namespace Drosy.Domain.Shared.System.Validation.Validators;
 
 public static class FileValidator
 {

@@ -1,4 +1,4 @@
-﻿namespace Drosy.Domain.Shared.Validation.Rules;
+﻿namespace Drosy.Domain.Shared.System.Validation.Rules;
 
 public static class TextValidationRules
 {
