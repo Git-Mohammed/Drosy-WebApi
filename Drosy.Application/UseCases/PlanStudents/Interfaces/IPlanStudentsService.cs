@@ -1,6 +1,5 @@
 ﻿using Drosy.Application.UseCases.PlanStudents.DTOs;
 using Drosy.Domain.Shared.ApplicationResults;
-using Drosy.Domain.Shared.DataDTOs;
 
 namespace Drosy.Application.UseCases.PlanStudents.Interfaces
 {

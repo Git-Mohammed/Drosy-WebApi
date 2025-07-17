@@ -6,7 +6,6 @@ using Drosy.Domain.Entities;
 using Drosy.Domain.Interfaces.Common.Uow;
 using Drosy.Domain.Interfaces.Repository;
 using Drosy.Domain.Shared.ApplicationResults;
-using Drosy.Domain.Shared.DataDTOs;
 using Drosy.Domain.Shared.ErrorComponents;
 using Drosy.Domain.Shared.ErrorComponents.EFCoreErrors;
 using Drosy.Domain.Shared.ResultPattern.ErrorComponents.Common;
