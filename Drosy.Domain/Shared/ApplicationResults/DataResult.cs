@@ -1,4 +1,4 @@
-﻿namespace Drosy.Domain.Shared.DataDTOs
+﻿namespace Drosy.Domain.Shared.ApplicationResults
 {
     /// <summary>
     /// Represents a standard structure for returning data collections, 
