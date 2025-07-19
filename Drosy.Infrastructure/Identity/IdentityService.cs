@@ -1,9 +1,8 @@
 ﻿using Drosy.Application.Interfaces.Common;
-using Drosy.Application.UsesCases.Authentication.DTOs;
 using Drosy.Domain.Entities;
 using Drosy.Domain.Shared.ApplicationResults;
+using Drosy.Domain.Shared.ErrorComponents.Common;
 using Drosy.Domain.Shared.ErrorComponents.User;
-using Drosy.Domain.Shared.ResultPattern.ErrorComponents.Common;
 using Drosy.Infrastructure.Identity.Entities;
 using Microsoft.AspNetCore.Identity;
 

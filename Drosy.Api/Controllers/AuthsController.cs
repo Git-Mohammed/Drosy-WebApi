@@ -2,7 +2,7 @@
 using Drosy.Application.UseCases.Authentication.Interfaces;
 using Drosy.Application.UsesCases.Users.DTOs;
 using Drosy.Domain.Shared.ApplicationResults;
-using Drosy.Domain.Shared.ResultPattern.ErrorComponents.Common;
+using Drosy.Domain.Shared.ErrorComponents.Common;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
