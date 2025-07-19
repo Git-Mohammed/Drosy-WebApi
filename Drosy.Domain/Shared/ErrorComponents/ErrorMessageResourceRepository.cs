@@ -13,16 +13,15 @@ namespace Drosy.Domain.Shared.ErrorComponents
     /// </summary>
     public static class ErrorMessageResourceRepository
     {
-        private static readonly List<ResourceManager> _resourceManagers = new()
-        {
+        private static readonly List<ResourceManager> ResourceManagers =
+        [
             ErrorMessages_Common.ResourceManager,
             ErrorMessages_User.ResourceManager,
             ErrorMessages_EFCore.ResourceManager,
             ValidationMessages.ResourceManager
-            // Add more ResourceManagers here as needed
-        };
+        ];
 
-        private static readonly ResourceManager _fallbackResourceManager = ErrorMessages_Common.ResourceManager;
+        private static readonly ResourceManager FallbackResourceManager = ErrorMessages_Common.ResourceManager;
         private const string FallbackKey = CommonErrorCodes.Unexpected;
 
         /// <summary>
@@ -36,7 +35,7 @@ namespace Drosy.Domain.Shared.ErrorComponents
             var culture = GetCulture(language);
 
             // Try to find the message in the requested language
-            foreach (var rm in _resourceManagers)
+            foreach (var rm in ResourceManagers)
             {
                 var message = rm.GetString(code, culture);
                 if (!string.IsNullOrWhiteSpace(message))
@@ -47,7 +46,7 @@ namespace Drosy.Domain.Shared.ErrorComponents
             if (!culture.TwoLetterISOLanguageName.Equals("en", StringComparison.OrdinalIgnoreCase))
             {
                 var englishCulture = CultureInfo.GetCultureInfo("en");
-                foreach (var rm in _resourceManagers)
+                foreach (var rm in ResourceManagers)
                 {
                     var message = rm.GetString(code, englishCulture);
                     if (!string.IsNullOrWhiteSpace(message))
@@ -56,7 +55,7 @@ namespace Drosy.Domain.Shared.ErrorComponents
             }
 
             // Final fallback: generic unexpected error
-            return _fallbackResourceManager.GetString(FallbackKey, CultureInfo.InvariantCulture)
+            return FallbackResourceManager.GetString(FallbackKey, CultureInfo.InvariantCulture)
                 ?? "An unexpected error occurred.";
         }
 

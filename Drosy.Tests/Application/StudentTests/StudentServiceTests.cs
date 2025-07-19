@@ -1,12 +1,9 @@
 ﻿using Moq;
 using Drosy.Application.UseCases.Students.Interfaces;
 using Drosy.Application.UseCases.Students.DTOs;
-using Drosy.Domain.Shared.ResultPattern;
 using Drosy.Application.UseCases.Grades.DTOs;
 using Drosy.Application.UseCases.Cities.DTOs;
-using Drosy.Domain.Shared.ResultPattern.ErrorComponents;
 using Drosy.Domain.Shared.ApplicationResults;
-using Drosy.Domain.Shared.ResultPattern.ErrorComponents.Common;
 using Drosy.Domain.Shared.ErrorComponents.Common;
 
 namespace Drosy.Tests.Application.StudentTests

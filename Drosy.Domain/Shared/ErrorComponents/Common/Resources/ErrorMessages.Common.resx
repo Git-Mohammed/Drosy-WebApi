@@ -129,4 +129,19 @@
   <data name="Error_Common_Unexpected" xml:space="preserve">
     <value>حدث خطأ غير متوقع.</value>
   </data>
+  <data name="Error_Common_Unauthorized" xml:space="preserve">
+    <value>ليس لديك صلاحية لتنفيذ هذا الإجراء.</value>
+  </data>
+  <data name="Error_Common_Conflict" xml:space="preserve">
+    <value> حدث تعارض أثناء معالجة الطلب.</value>
+  </data>
+  <data name="Error_Common_Failure" xml:space="preserve">
+    <value>حدث خطأ غير متوقع. يرجى المحاولة لاحقًا.</value>
+  </data>
+  <data name="Error_Common_OperationCancelled" xml:space="preserve">
+    <value>تم إلغاء العملية.</value>
+  </data>
+  <data name="Error_Common_BusinessRule" xml:space="preserve">
+    <value>هذا الإجراء يخالف قاعدة من قواعد العمل.</value>
+  </data>
 </root>

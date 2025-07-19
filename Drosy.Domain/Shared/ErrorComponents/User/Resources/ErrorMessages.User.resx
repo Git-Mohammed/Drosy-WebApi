@@ -123,4 +123,13 @@
   <data name="Error_User_InvalidCredentials" xml:space="preserve">
     <value>تجاوزت عدد محاولات تسجيل الدخول. يرجى المحاولة مرة أخرى لاحقًا.</value>
   </data>
+  <data name="Error_User_AlreadyExists" xml:space="preserve">
+    <value>يوجد مستخدم بنفس البيانات بالفعل.</value>
+  </data>
+  <data name="Error_User_Inactive" xml:space="preserve">
+    <value>حساب المستخدم هذا غير نشط.</value>
+  </data>
+  <data name="Error_User_Locked" xml:space="preserve">
+    <value>تم قفل حساب المستخدم. يرجى التواصل مع الدعم الفني.</value>
+  </data>
 </root>

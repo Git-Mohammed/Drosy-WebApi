@@ -4,7 +4,7 @@ using Drosy.Application.UseCases.PlanStudents.Interfaces;
 using Drosy.Application.UseCases.PlanStudents.Services;
 using Drosy.Domain.Shared.ApplicationResults;
 using Drosy.Domain.Shared.ErrorComponents;
-using Drosy.Domain.Shared.ResultPattern.ErrorComponents.Common;
+using Drosy.Domain.Shared.ErrorComponents.Common;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Drosy.Api.Controllers

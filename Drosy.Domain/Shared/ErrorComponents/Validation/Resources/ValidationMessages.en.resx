@@ -120,4 +120,25 @@
   <data name="Error_Validation_InvalidEmail" xml:space="preserve">
     <value>Invalid email format. </value>
   </data>
+  <data name="Error_Validation_RequiredField" xml:space="preserve">
+    <value>This field is required.</value>
+  </data>
+  <data name="Error_Validation_InvalidPhone" xml:space="preserve">
+    <value>The phone number format is invalid.</value>
+  </data>
+  <data name="Error_Validation_MaxLengthExceeded" xml:space="preserve">
+    <value>The maximum allowed length has been exceeded.</value>
+  </data>
+  <data name="Error_Validation_MinLengthNotMet" xml:space="preserve">
+    <value>The minimum required length has not been met.</value>
+  </data>
+  <data name="Error_Validation_InvalidFormat" xml:space="preserve">
+    <value>The format of the input is invalid.</value>
+  </data>
+  <data name="Error_Validation_InvalidFileType" xml:space="preserve">
+    <value>The selected file type is not allowed.</value>
+  </data>
+  <data name="Error_Validation_FileTooLarge" xml:space="preserve">
+    <value>The file size exceeds the allowed limit.</value>
+  </data>
 </root>

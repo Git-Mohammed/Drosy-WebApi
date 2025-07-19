@@ -5,8 +5,8 @@ using Drosy.Domain.Entities;
 using Drosy.Domain.Interfaces.Common.Uow;
 using Drosy.Domain.Interfaces.Repository;
 using Drosy.Domain.Shared.ApplicationResults;
-using Drosy.Domain.Shared.ErrorComponents.EFCoreErrors;
-using Drosy.Domain.Shared.ResultPattern.ErrorComponents.Common;
+using Drosy.Domain.Shared.ErrorComponents.Common;
+using Drosy.Domain.Shared.ErrorComponents.EFCore;
 
 namespace Drosy.Application.UseCases.Plans.Services;
 
@@ -31,7 +31,7 @@ public class PlanService(
         if (!result)
         {
             _logger.LogError("Error creating plan", newPlan);
-            return Result.Failure<PlanDto>(EFCoreErrors.CanNotSaveChanges);
+            return Result.Failure<PlanDto>(EfCoreErrors.CanNotSaveChanges);
         }
         var planDto = _mapper.Map<Plan, PlanDto>(plan);
         return Result.Success(planDto);

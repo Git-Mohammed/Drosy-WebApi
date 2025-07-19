@@ -1,6 +1,6 @@
 ﻿using System.Diagnostics.CodeAnalysis;
 using Drosy.Domain.Shared.ErrorComponents;
-using Drosy.Domain.Shared.ResultPattern.ErrorComponents.Common;
+using Drosy.Domain.Shared.ErrorComponents.Common;
 
 namespace Drosy.Domain.Shared.ApplicationResults
 {
