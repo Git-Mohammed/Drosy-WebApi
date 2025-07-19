@@ -57,7 +57,27 @@ namespace Drosy.Api.Controllers
             }
         }
 
-
+        /// <summary>
+        /// Retrieves a list of student information cards asynchronously.
+        /// </summary>
+        /// <remarks>
+        /// This endpoint fetches detailed information cards for all students in the system.  
+        /// It supports cancellation via the provided <paramref name="ct"/> token.  
+        /// If the operation is canceled before completion, a cancellation response is returned.  
+        /// If the service returns a failure, an error response is returned.
+        /// </remarks>
+        /// <param name="ct">A cancellation token to cancel the operation if needed.</param>
+        /// <returns>
+        /// An <see cref="IActionResult"/> containing either:
+        /// <list type="bullet">
+        ///     <item><description><c>200 OK</c> with a list of <see cref="StudentCardInfoDTO"/> if successful.</description></item>
+        ///     <item><description><c>400 Bad Request</c> if the operation fails due to service error.</description></item>
+        ///     <item><description><c>499 Client Closed Request</c> (custom) if the request is canceled by the client.</description></item>
+        /// </list>
+        /// </returns>
+        /// <response code="200">Returns the list of student info cards.</response>
+        /// <response code="400">If the service layer returns a failure result.</response>
+        /// <response code="499">If the request was canceled via the cancellation token.</response>
         [HttpGet(Name = "GetAllStudentsInfoCardsAsync")]
         public async Task<IActionResult> GetAllStudentsInfoCardsAsync(CancellationToken ct)
         {

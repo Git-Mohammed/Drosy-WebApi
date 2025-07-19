@@ -1,6 +1,8 @@
-﻿using Drosy.Application.UseCases.Authentication.Interfaces;
+﻿using Drosy.Api.Commons.Responses;
+using Drosy.Application.UseCases.Authentication.Interfaces;
 using Drosy.Application.UsesCases.Users.DTOs;
-using Drosy.Api.Commons.Responses;
+using Drosy.Domain.Shared.ApplicationResults;
+using Drosy.Domain.Shared.ResultPattern.ErrorComponents.Common;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
@@ -21,6 +23,10 @@ namespace Drosy.Api.Controllers
         [HttpPost("login")]
         public async Task<IActionResult> LoginAsync(UserLoginDTO user, CancellationToken token)
         {
+            if (token.IsCancellationRequested)
+            {
+                return ApiResponseFactory.FromFailure(Result.Failure(CommonErrors.OperationCancelled), nameof(LoginAsync));
+            }
             var result = await _authService.LoginAsync(user, token);
 
             if (result.IsFailure)
@@ -32,13 +38,17 @@ namespace Drosy.Api.Controllers
         }
 
         [HttpPost("refresh-token")]
-        public async Task<IActionResult> RefreshTokenAsync(CancellationToken token)
+        public async Task<IActionResult> RefreshTokenAsync(CancellationToken cancellationToken)
         {
+            if (cancellationToken.IsCancellationRequested)
+            {
+                return ApiResponseFactory.FromFailure(Result.Failure(CommonErrors.OperationCancelled), nameof(LoginAsync));
+            }
             string? refreshToken = Request.Cookies["refreshToken"];
             if (string.IsNullOrEmpty(refreshToken))
                 return ApiResponseFactory.UnauthorizedResponse("Access Token", "Unauthorized");
 
-            var result = await _authService.RefreshTokenAsync(refreshToken, token);
+            var result = await _authService.RefreshTokenAsync(refreshToken, cancellationToken);
 
             if (result.IsFailure)
             {
@@ -59,6 +69,11 @@ namespace Drosy.Api.Controllers
         {
             // if (!int.TryParse(User.FindFirstValue(ClaimTypes.NameIdentifier), out int userId) || userId <= 0)
             //     return ResponseHandler.UnauthorizedResponse("user", "Invalid or missing user ID");
+
+            if (cancellationToken.IsCancellationRequested)
+            {
+                return ApiResponseFactory.FromFailure(Result.Failure(CommonErrors.OperationCancelled), nameof(LoginAsync));
+            }
 
             string? refreshToken = Request.Cookies["refreshToken"];
             if (string.IsNullOrEmpty(refreshToken))

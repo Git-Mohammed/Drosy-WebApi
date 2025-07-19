@@ -1,4 +1,5 @@
-﻿using Drosy.Domain.Entities;
+﻿using System.Security.Cryptography;
+using Drosy.Domain.Entities;
 using Drosy.Domain.Interfaces.Repository;
 using Drosy.Infrastructure.Persistence.DbContexts;
 using Microsoft.AspNetCore.DataProtection.KeyManagement.Internal;
@@ -31,9 +32,25 @@ namespace Drosy.Infrastructure.Persistence.Repositories
             if (string.IsNullOrEmpty(tokenString))
                 return null;
 
-            
-
-            return await DbSet.FirstOrDefaultAsync(x => x.Token == tokenString && x.RevokedOn == null && DateTime.UtcNow <= x.ExpiresOn, cancellationToken);
+            return await (from tokens in DbSet
+                   join users in _dbContext.Users on tokens.UserId equals users.Id
+                   where tokens.Token == tokenString && tokens.RevokedOn == null && DateTime.UtcNow <= tokens.ExpiresOn
+                   select  new RefreshToken
+                   {
+                       Id = tokens.Id,
+                       Token = tokens.Token,
+                       RevokedOn = tokens.RevokedOn,
+                       CreatedOn = tokens.CreatedOn,
+                       ExpiresOn = tokens.ExpiresOn,
+                       UserId = tokens.UserId,
+                       User = new AppUser
+                       {
+                           Id = users.Id,
+                           Email = users.Email,
+                           UserName = users.UserName
+                       }
+                   }).FirstOrDefaultAsync();
+                   
         }
 
         public async Task<RefreshToken?> GetByUserIdAsync(int userId, CancellationToken cancellationToken)
