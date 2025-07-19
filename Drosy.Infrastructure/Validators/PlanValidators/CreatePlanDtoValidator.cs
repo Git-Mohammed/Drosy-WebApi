@@ -2,17 +2,20 @@
 using FluentValidation;
 using System.Globalization;
 using Drosy.Domain.Interfaces.Repository;
+using Drosy.Domain.Shared.ErrorComponents.Common;
+using Drosy.Domain.Shared.ErrorComponents.Plans;
+using Drosy.Domain.Shared.ErrorComponents.Validation;
 
 namespace Drosy.Infrastructure.Validators.PlanValidators;
 
 public class CreatePlanDtoValidator : AbstractValidator<CreatePlanDTo>
 {
-    private static readonly string[] ValidTypes = { "Individual", "Group" };
-    private static readonly string[] ValidStatuses = { "Active", "Inactive" };
-    private static readonly string[] ValidDays = 
-    {
+    private static readonly string[] ValidTypes = ["Individual", "Group"];
+    private static readonly string[] ValidStatuses = ["Active", "Inactive"];
+    private static readonly string[] ValidDays =
+    [
         "Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"
-    };
+    ];
 
     private readonly IPlanRepository _repository;
     
@@ -21,39 +24,39 @@ public class CreatePlanDtoValidator : AbstractValidator<CreatePlanDTo>
         _repository = planRepository;
         
         RuleFor(x => x.Type)
-            .NotEmpty().WithMessage("Type is required.")
+            .NotEmpty().WithMessage(ValidationErrors.RequiredField.Message)
             .Must(t => ValidTypes.Contains(t, StringComparer.OrdinalIgnoreCase))
-            .WithMessage($"Type must be one of: {string.Join(", ", ValidTypes)}");
+            .WithMessage($"{PlanErrors.PlanTypeNotSupported.Message}: {string.Join(", ", ValidTypes)}");
 
         RuleFor(x => x.Status)
-            .NotEmpty().WithMessage("Status is required.")
+            .NotEmpty().WithMessage(ValidationErrors.RequiredField.Message)
             .Must(s => ValidStatuses.Contains(s, StringComparer.OrdinalIgnoreCase))
             .WithMessage($"Status must be one of: {string.Join(", ", ValidStatuses)}");
 
         RuleFor(x => x.DaysOfWeek)
-            .NotNull().WithMessage("DaysOfWeek is required.")
-            .Must(list => list.Count > 0).WithMessage("At least one day must be selected.")
+            .NotNull().WithMessage(ValidationErrors.RequiredField.Message)
+            .Must(list => list.Count > 0).WithMessage(PlanErrors.DaysOfWeekRequired.Message)
             .ForEach(day =>
                 day.Must(d => ValidDays.Contains(d, StringComparer.OrdinalIgnoreCase))
                     .WithMessage(d => $"'{d}' is not a valid day."));
 
         RuleFor(x => x.TotalFees)
-            .GreaterThanOrEqualTo(0).WithMessage("Total fees must be >= 0.");
+            .GreaterThanOrEqualTo(0).WithMessage(PlanErrors.TotalFeesMustBePositive.Message);
 
         RuleFor(x => x.StartDate)
-            .GreaterThanOrEqualTo(DateTime.Today).WithMessage("Start date cannot be in the past.");
+            .GreaterThanOrEqualTo(DateTime.Today).WithMessage(PlanErrors.InvalidDateRange.Message);
 
         RuleFor(x => x.Period)
-            .GreaterThan(0).WithMessage("Period must be greater than 0.");
+            .GreaterThan(0).WithMessage(PlanErrors.InvalidPeriod.Message);
 
         RuleFor(x => x.StartSession)
             .LessThan(x => x.EndSession)
-            .WithMessage("Start session time must be earlier than end session time.");
+            .WithMessage(PlanErrors.SessionTimeConflict.Message);
         
         RuleFor(x => x)
             .MustAsync(async (dto, cancellation) =>
                 !await IsExistsPlanAsync(dto.StartSession, dto.EndSession, cancellation))
-            .WithMessage("A plan already exists for the selected session time.");
+            .WithMessage(PlanErrors.SessionTimeConflict.Message);
     }
 
     private async Task<bool> IsExistsPlanAsync(TimeSpan startSession, TimeSpan endSession, CancellationToken cancellationToken)

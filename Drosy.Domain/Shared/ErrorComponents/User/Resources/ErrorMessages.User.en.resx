@@ -123,4 +123,13 @@
   <data name="Error_User_InvalidCredentials" xml:space="preserve">
     <value>Invalid username or password. </value>
   </data>
+  <data name="Error_User_AlreadyExists" xml:space="preserve">
+    <value>A user with the same information already exists.</value>
+  </data>
+  <data name="Error_User_Inactive" xml:space="preserve">
+    <value>This user account is inactive.</value>
+  </data>
+  <data name="Error_User_Locked" xml:space="preserve">
+    <value>This user account is locked. Please contact support.</value>
+  </data>
 </root>

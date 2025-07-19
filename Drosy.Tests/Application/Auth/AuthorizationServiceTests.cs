@@ -6,10 +6,10 @@ using Drosy.Domain.Entities;
 using Drosy.Domain.Interfaces.Repository;
 using Drosy.Domain.Shared.ApplicationResults;
 using Drosy.Domain.Shared.ErrorComponents;
-using Drosy.Domain.Shared.ResultPattern.ErrorComponents.Common;
 using Drosy.Domain.Shared.System.Roles;
 using Moq;
 using System.Security.Claims;
+using Drosy.Domain.Shared.ErrorComponents.Common;
 
 namespace Drosy.Tests.Application.Auth
 {

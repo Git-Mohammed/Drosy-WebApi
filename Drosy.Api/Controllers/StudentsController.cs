@@ -3,7 +3,7 @@ using Drosy.Application.UseCases.Students.DTOs;
 using Drosy.Application.UseCases.Students.Interfaces;
 using Drosy.Domain.Shared.ApplicationResults;
 using Drosy.Domain.Shared.ErrorComponents;
-using Drosy.Domain.Shared.ResultPattern.ErrorComponents.Common;
+using Drosy.Domain.Shared.ErrorComponents.Common;
 using Microsoft.AspNetCore.Mvc;
 using static System.Runtime.InteropServices.JavaScript.JSType;
 

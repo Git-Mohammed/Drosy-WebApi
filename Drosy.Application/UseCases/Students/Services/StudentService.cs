@@ -5,18 +5,13 @@ using Drosy.Application.UseCases.Students.DTOs;
 using Drosy.Application.UseCases.Students.Interfaces;
 using Drosy.Domain.Entities;
 using Drosy.Domain.Enums;
-using Drosy.Domain.Shared.ResultPattern;
 using Drosy.Domain.Interfaces.Repository;
-using Drosy.Domain.Shared.ResultPattern;
-using Drosy.Domain.Shared.ResultPattern.ErrorComponents;
-using Drosy.Domain.Shared.ResultPattern;
 using Drosy.Application.Interfaces.Common;
 using Drosy.Domain.Interfaces.Common.Uow;
-using Drosy.Domain.Shared.ResultPattern.ErrorComponents;
 using Drosy.Domain.Shared.ApplicationResults;
-using Drosy.Domain.Shared.ErrorComponents.EFCoreErrors;
 using Drosy.Domain.Shared.ErrorComponents;
-using Drosy.Domain.Shared.ResultPattern.ErrorComponents.Common;
+using Drosy.Domain.Shared.ErrorComponents.Common;
+using Drosy.Domain.Shared.ErrorComponents.EFCore;
 
 namespace Drosy.Application.UseCases.Students.Services
 {
@@ -73,7 +68,7 @@ namespace Drosy.Application.UseCases.Students.Services
 
                 if (!isSuccess)
                 {
-                    return Result.Failure<StudentDTO>(EFCoreErrors.CanNotSaveChanges);
+                    return Result.Failure<StudentDTO>(EfCoreErrors.CanNotSaveChanges);
                 }
 
                 var studentDto = _mapper.Map<Student, StudentDTO>(student);
@@ -107,7 +102,7 @@ namespace Drosy.Application.UseCases.Students.Services
 
                 bool isSuccess = await _unitOfWork.SaveChangesAsync(ct);
 
-                return isSuccess ? Result.Success() : Result.Failure(EFCoreErrors.CanNotSaveChanges);
+                return isSuccess ? Result.Success() : Result.Failure(EfCoreErrors.CanNotSaveChanges);
             }
             catch (Exception ex)
             {

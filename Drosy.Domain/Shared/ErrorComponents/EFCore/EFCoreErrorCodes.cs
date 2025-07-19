@@ -1,6 +1,6 @@
-﻿namespace Drosy.Domain.Shared.ErrorComponents.EFCoreErrors
+﻿namespace Drosy.Domain.Shared.ErrorComponents.EFCore
 {
-    public static class EFCoreErrorCodes
+    public static class EfCoreErrorCodes
     {
         public const string NoChanges = "Error_EFCore_NoChanges";
         public const string CanNotSaveChanges = "Error_EFCore_CanNotSaveChanges";

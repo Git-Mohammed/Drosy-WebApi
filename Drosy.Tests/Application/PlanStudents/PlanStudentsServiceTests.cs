@@ -7,10 +7,8 @@ using Drosy.Domain.Entities;
 using Drosy.Domain.Interfaces.Common.Uow;
 using Drosy.Domain.Interfaces.Repository;
 using Drosy.Domain.Shared.ApplicationResults;
-using Drosy.Domain.Shared.ErrorComponents.EFCoreErrors;
-using Drosy.Domain.Shared.ResultPattern;
-using Drosy.Domain.Shared.ResultPattern.ErrorComponents;
-using Drosy.Domain.Shared.ResultPattern.ErrorComponents.Common;
+using Drosy.Domain.Shared.ErrorComponents.Common;
+using Drosy.Domain.Shared.ErrorComponents.EFCore;
 using Moq;
 using static System.Runtime.InteropServices.JavaScript.JSType;
 
@@ -139,7 +137,7 @@ namespace Drosy.Tests.Application.PlanStudents
 
             // Assert
             Assert.True(result.IsFailure);
-            Assert.Equal(EFCoreErrors.CanNotSaveChanges, result.Error);
+            Assert.Equal(EfCoreErrors.CanNotSaveChanges, result.Error);
         }
 
         [Fact]
@@ -296,7 +294,7 @@ namespace Drosy.Tests.Application.PlanStudents
 
             // Assert
             Assert.True(result.IsFailure);
-            Assert.Equal(EFCoreErrors.CanNotSaveChanges, result.Error);
+            Assert.Equal(EfCoreErrors.CanNotSaveChanges, result.Error);
         }
 
         [Fact]

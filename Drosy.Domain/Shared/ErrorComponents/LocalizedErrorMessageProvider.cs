@@ -22,7 +22,7 @@ public static class LocalizedErrorMessageProvider
     {
         try
         {
-            CultureInfo.GetCultureInfo(language);
+            var cultureInfo = CultureInfo.GetCultureInfo(language);
             return true;
         }
         catch (CultureNotFoundException)

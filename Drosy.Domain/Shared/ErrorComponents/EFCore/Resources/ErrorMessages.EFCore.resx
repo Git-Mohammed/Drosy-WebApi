@@ -129,4 +129,7 @@
   <data name="Error_EFCore_NoChanges" xml:space="preserve">
     <value>لم يتم إجراء أي تغيير على الخادم.</value>
   </data>
+  <data name="Error_EFCore_ConstraintViolation" xml:space="preserve">
+    <value> تم انتهاك أحد قيود قاعدة البيانات. يرجى التأكد من صحة البيانات والمحاولة مرة أخرى.</value>
+  </data>
 </root>

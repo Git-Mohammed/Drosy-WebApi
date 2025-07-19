@@ -1,8 +1,4 @@
-﻿using Drosy.Domain.Shared.ErrorComponents;
-using Drosy.Domain.Shared.ErrorComponents.Common;
-using Drosy.Domain.Shared.ResultPattern.ErrorComponents;
-
-namespace Drosy.Domain.Shared.ResultPattern.ErrorComponents.Common
+﻿namespace Drosy.Domain.Shared.ErrorComponents.Common
 {
     /// <summary>
     /// Provides domain-level AppError instances for common error scenarios.

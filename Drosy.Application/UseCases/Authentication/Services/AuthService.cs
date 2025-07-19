@@ -4,8 +4,8 @@ using Drosy.Application.UsesCases.Authentication.DTOs;
 using Drosy.Application.UsesCases.Users.DTOs;
 using Drosy.Domain.Interfaces.Repository;
 using Drosy.Domain.Shared.ApplicationResults;
-using Drosy.Domain.Shared.ResultPattern.ErrorComponents.Common;
 using System.Security.Claims;
+using Drosy.Domain.Shared.ErrorComponents.Common;
 
 namespace Drosy.Application.UseCases.Authentication.Services
 {

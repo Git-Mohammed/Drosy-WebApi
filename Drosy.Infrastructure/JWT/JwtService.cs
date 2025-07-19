@@ -5,13 +5,13 @@ using Drosy.Domain.Interfaces.Common.Uow;
 using Drosy.Domain.Interfaces.Repository;
 using Drosy.Domain.Shared.ApplicationResults;
 using Drosy.Domain.Shared.ErrorComponents;
-using Drosy.Domain.Shared.ErrorComponents.EFCoreErrors;
-using Drosy.Domain.Shared.ResultPattern.ErrorComponents.Common;
 using Microsoft.IdentityModel.Tokens;
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Security.Cryptography;
 using System.Text;
+using Drosy.Domain.Shared.ErrorComponents.Common;
+using Drosy.Domain.Shared.ErrorComponents.EFCore;
 
 namespace Drosy.Infrastructure.JWT
 {
@@ -103,7 +103,7 @@ namespace Drosy.Infrastructure.JWT
                 var saveingResult = await _unitOfWork.SaveChangesAsync(cancellationToken);
 
                 if (!saveingResult)
-                    return Result.Failure<AuthModel>(EFCoreErrors.CanNotSaveChanges);
+                    return Result.Failure<AuthModel>(EfCoreErrors.CanNotSaveChanges);
             }
 
             return Result.Success(token);
@@ -185,7 +185,7 @@ namespace Drosy.Infrastructure.JWT
 
             var result = await _unitOfWork.SaveChangesAsync(cancellationToken);
             if (result)
-                return Result.Failure(EFCoreErrors.CanNotSaveChanges);
+                return Result.Failure(EfCoreErrors.CanNotSaveChanges);
             return Result.Success();
         }
     }
