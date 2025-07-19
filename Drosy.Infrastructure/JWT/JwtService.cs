@@ -152,7 +152,7 @@ namespace Drosy.Infrastructure.JWT
                 var savingResult = await _unitOfWork.SaveChangesAsync(cancellationToken);
 
                 if (!savingResult)
-                    return Result.Failure<AuthModel>(EFCoreErrors.CanNotSaveChanges);
+                    return Result.Failure<AuthModel>(EfCoreErrors.CanNotSaveChanges);
 
                 var token = new AuthModel
                 {
