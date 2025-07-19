@@ -3,7 +3,6 @@ using Drosy.Infrastructure.Identity.Entities;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
-using System.Diagnostics.Metrics;
 
 namespace Drosy.Infrastructure.Persistence.DbContexts
 {
@@ -13,6 +12,8 @@ namespace Drosy.Infrastructure.Persistence.DbContexts
 
         public DbSet<ApplicationUser> AppUsers { get; set; }
         public DbSet<Student> Students { get; set; }
+        public DbSet<PlanStudent> PlanStudents { get; set; }
+        public DbSet<Plan> Plans { get; set; }
         public DbSet<Teacher> Teachers { get; set; }
         public DbSet<Assistant> Assistants { get; set; }
         public DbSet<City> Cities { get; set; }

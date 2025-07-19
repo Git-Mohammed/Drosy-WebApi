@@ -1,11 +1,16 @@
-﻿using Drosy.Application.UseCases.Authentication.Interfaces;
+﻿using Drosy.Api.Commons.Responses;
+using Drosy.Application.UseCases.Authentication.Interfaces;
 using Drosy.Application.UsesCases.Users.DTOs;
+using Drosy.Domain.Shared.ApplicationResults;
+using Drosy.Domain.Shared.ErrorComponents.Common;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Drosy.Api.Controllers
 {
-    [Route("api/[controller]")]
+    [Route("api/auths")]
     [ApiController]
+    [Authorize]
     public class AuthsController : ControllerBase
     {
         private readonly IAuthService _authService;
@@ -14,29 +19,73 @@ namespace Drosy.Api.Controllers
             _authService = authService;
         }
 
+        [AllowAnonymous]
         [HttpPost("login")]
-        public async Task<IActionResult> LoginAsync(UserLoginDTO user)
+        public async Task<IActionResult> LoginAsync(UserLoginDTO user, CancellationToken token)
         {
-            
+            if (token.IsCancellationRequested)
+            {
+                return ApiResponseFactory.FromFailure(Result.Failure(CommonErrors.OperationCancelled), nameof(LoginAsync));
+            }
+            var result = await _authService.LoginAsync(user, token);
 
-            var result = await _authService.LoginAsync(user, CancellationToken.None);
-
-            if (result.IsFailure) return BadRequest(result.Error);
+            if (result.IsFailure)
+                return ApiResponseFactory.UnauthorizedResponse("login", result.Error.Message);
 
             SetRefreshTokenInCookie(result.Value.RefreshToken, result.Value.RefreshTokenExpiration);
 
-            return Ok(new { token = result.Value });
+            return ApiResponseFactory.SuccessResponse(result.Value, "Login successful");
         }
 
         [HttpPost("refresh-token")]
-        public async Task<IActionResult> RefreshTokenAsync([FromBody] string tokenString)
+        public async Task<IActionResult> RefreshTokenAsync(CancellationToken cancellationToken)
         {
-            var result = await _authService.RefreshTokenAsync(tokenString, CancellationToken.None);
-            if (result.IsFailure) return BadRequest(result.Error);
+            if (cancellationToken.IsCancellationRequested)
+            {
+                return ApiResponseFactory.FromFailure(Result.Failure(CommonErrors.OperationCancelled), nameof(LoginAsync));
+            }
+            string? refreshToken = Request.Cookies["refreshToken"];
+            if (string.IsNullOrEmpty(refreshToken))
+                return ApiResponseFactory.UnauthorizedResponse("Access Token", "Unauthorized");
+
+            var result = await _authService.RefreshTokenAsync(refreshToken, cancellationToken);
+
+            if (result.IsFailure)
+            {
+                if (result.Error.Code == "NullValue")
+                    return ApiResponseFactory.BadRequestResponse("token", result.Error.Message);
+
+                return ApiResponseFactory.UnauthorizedResponse("token", result.Error.Message);
+            }
+
             SetRefreshTokenInCookie(result.Value.RefreshToken, result.Value.RefreshTokenExpiration);
-            return Ok(new { token = result.Value });
+
+            return ApiResponseFactory.SuccessResponse(result.Value, "Token refreshed successfully");
         }
 
+
+        [HttpPost("logout")]
+        public async Task<IActionResult> Logout(CancellationToken cancellationToken)
+        {
+            // if (!int.TryParse(User.FindFirstValue(ClaimTypes.NameIdentifier), out int userId) || userId <= 0)
+            //     return ResponseHandler.UnauthorizedResponse("user", "Invalid or missing user ID");
+
+            if (cancellationToken.IsCancellationRequested)
+            {
+                return ApiResponseFactory.FromFailure(Result.Failure(CommonErrors.OperationCancelled), nameof(LoginAsync));
+            }
+
+            string? refreshToken = Request.Cookies["refreshToken"];
+            if (string.IsNullOrEmpty(refreshToken))
+                return ApiResponseFactory.UnauthorizedResponse("Access Token", "Unauthorized");
+
+            var result = await _authService.LogoutAsync(refreshToken, cancellationToken);
+
+            if (result.IsFailure)
+                return ApiResponseFactory.CreateStatusResponse(500, "logout", "An error occurred during logout");
+
+            return ApiResponseFactory.SuccessResponse("Logged out successfully");
+        }
 
         private void SetRefreshTokenInCookie(string refreshToken, DateTime expires)
         {

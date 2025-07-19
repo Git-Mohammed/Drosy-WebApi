@@ -1,9 +1,5 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using Drosy.Domain.Entities;
+﻿using Drosy.Domain.Entities;
+using Drosy.Domain.Interfaces.Common.Repository;
 
 namespace Drosy.Domain.Interfaces.Repository
 {

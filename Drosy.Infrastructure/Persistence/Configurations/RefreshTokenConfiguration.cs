@@ -1,4 +1,5 @@
 ﻿using Drosy.Domain.Entities;
+using Drosy.Infrastructure.Identity.Entities;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
@@ -10,5 +11,13 @@ internal class RefreshTokenConfiguration : IEntityTypeConfiguration<RefreshToken
     {
         builder.HasKey(x => x.Id);
         builder.ToTable("RefreshTokens","Identity");
+        builder.HasOne(x => x.User)
+            .WithMany()
+            .HasForeignKey(x => x.UserId)
+            .OnDelete(DeleteBehavior.Cascade);
+
+        builder.HasOne<ApplicationUser>()
+            .WithMany(x => x.RefreshTokens)
+            .HasForeignKey(x => x.UserId);
     }
 }

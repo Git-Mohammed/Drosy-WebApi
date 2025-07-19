@@ -7,7 +7,76 @@
     </PropertyGroup>
 
     <ItemGroup>
-      <Folder Include="Enums\" />
+      <PackageReference Include="Microsoft.AspNetCore.Http.Features" Version="2.3.0" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <Compile Update="Shared\ErrorComponents\Common\Resources\ErrorMessages.Common.Designer.cs">
+        <DesignTime>True</DesignTime>
+        <AutoGen>True</AutoGen>
+        <DependentUpon>ErrorMessages.Common.resx</DependentUpon>
+      </Compile>
+      <Compile Update="Shared\ErrorComponents\EFCore\Resources\ErrorMessages.EFCore.Designer.cs">
+        <DesignTime>True</DesignTime>
+        <AutoGen>True</AutoGen>
+        <DependentUpon>ErrorMessages.EFCore.resx</DependentUpon>
+      </Compile>
+      <Compile Update="Shared\ErrorComponents\User\Resources\ErrorMessages.User.Designer.cs">
+        <DesignTime>True</DesignTime>
+        <AutoGen>True</AutoGen>
+        <DependentUpon>ErrorMessages.User.resx</DependentUpon>
+      </Compile>
+      <Compile Update="Shared\ErrorComponents\Validation\Resources\ValidationMessages.Designer.cs">
+        <DesignTime>True</DesignTime>
+        <AutoGen>True</AutoGen>
+        <DependentUpon>ValidationMessages.resx</DependentUpon>
+      </Compile>
+      <Compile Update="Shared\ErrorComponents\Plans\Resources\ErrorMessages.Plan.Designer.cs">
+        <DesignTime>True</DesignTime>
+        <AutoGen>True</AutoGen>
+        <DependentUpon>ErrorMessages.Plan.resx</DependentUpon>
+      </Compile>
+      <Compile Update="Shared\ErrorComponents\Plans\Resources\ErrorMessages.Plan.ar.Designer.cs">
+        <DesignTime>True</DesignTime>
+        <AutoGen>True</AutoGen>
+        <DependentUpon>ErrorMessages.Plan.ar.resx</DependentUpon>
+      </Compile>
+      <Compile Update="Shared\ErrorComponents\Plans\Resources\ErrorMessages.Plan.en.Designer.cs">
+        <DesignTime>True</DesignTime>
+        <AutoGen>True</AutoGen>
+        <DependentUpon>ErrorMessages.Plan.en.resx</DependentUpon>
+      </Compile>
+    </ItemGroup>
+
+    <ItemGroup>
+      <EmbeddedResource Update="Shared\ErrorComponents\Common\Resources\ErrorMessages.Common.resx">
+        <Generator>PublicResXFileCodeGenerator</Generator>
+        <LastGenOutput>ErrorMessages.Common.Designer.cs</LastGenOutput>
+      </EmbeddedResource>
+      <EmbeddedResource Update="Shared\ErrorComponents\EFCore\Resources\ErrorMessages.EFCore.resx">
+        <Generator>PublicResXFileCodeGenerator</Generator>
+        <LastGenOutput>ErrorMessages.EFCore.Designer.cs</LastGenOutput>
+      </EmbeddedResource>
+      <EmbeddedResource Update="Shared\ErrorComponents\User\Resources\ErrorMessages.User.resx">
+        <Generator>PublicResXFileCodeGenerator</Generator>
+        <LastGenOutput>ErrorMessages.User.Designer.cs</LastGenOutput>
+      </EmbeddedResource>
+      <EmbeddedResource Update="Shared\ErrorComponents\Validation\Resources\ValidationMessages.resx">
+        <Generator>ResXFileCodeGenerator</Generator>
+        <LastGenOutput>ValidationMessages.Designer.cs</LastGenOutput>
+      </EmbeddedResource>
+      <EmbeddedResource Update="Shared\ErrorComponents\Plans\Resources\ErrorMessages.Plan.resx">
+        <Generator>ResXFileCodeGenerator</Generator>
+        <LastGenOutput>ErrorMessages.Plan.Designer.cs</LastGenOutput>
+      </EmbeddedResource>
+      <EmbeddedResource Update="Shared\ErrorComponents\Plans\Resources\ErrorMessages.Plan.ar.resx">
+        <Generator>ResXFileCodeGenerator</Generator>
+        <LastGenOutput>PlansMessages.ar.Designer.cs</LastGenOutput>
+      </EmbeddedResource>
+      <EmbeddedResource Update="Shared\ErrorComponents\Plans\Resources\ErrorMessages.Plan.en.resx">
+        <Generator>ResXFileCodeGenerator</Generator>
+        <LastGenOutput>PlansMessages.en.Designer.cs</LastGenOutput>
+      </EmbeddedResource>
     </ItemGroup>
 
 </Project>

@@ -1,5 +1,5 @@
 ﻿using System.Collections.Concurrent;
-using Drosy.Api.Commons.Models;
+using Drosy.Api.Commons.Responses;
 using FluentValidation;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Filters;
@@ -32,12 +32,14 @@ namespace Drosy.Api.Filters
 
                     if (!result.IsValid)
                     {
-                        // foreach (var error in result.Errors)
-                        //     context.ModelState.AddModelError(error.PropertyName, error.ErrorMessage);
-                        var errors = result.Errors.Select(x => new ApiError(x.PropertyName, x.ErrorMessage)).ToList();
-                        context.Result = new BadRequestObjectResult(ApiResponse<string>.Failure(errors, "Validation failed"));
+                        var errors = result.Errors
+                            .Select(error => new ApiError(error.PropertyName, error.ErrorMessage))
+                            .ToList();
+
+                        context.Result = ApiResponseFactory.BadRequestResponse(errors, "Validation failed");
                         return;
                     }
+
                 }
             }
 

@@ -1,15 +1,22 @@
-﻿using System.Text;
-using Drosy.Application.UsesCases.Authentication.DTOs;
+﻿
 using Drosy.Application.Interfaces;
 using Drosy.Application.Interfaces.Common;
 using Drosy.Application.UseCases.Authentication.Interfaces;
 using Drosy.Application.UseCases.Authentication.Services;
-using Drosy.Infrastructure.Identity;
-using Microsoft.AspNetCore.Authentication.JwtBearer;
-using Microsoft.IdentityModel.Tokens;
+using Drosy.Application.UseCases.PlanStudents.Interfaces;
+using Drosy.Application.UseCases.PlanStudents.Services;
+using Drosy.Application.UseCases.Students.Interfaces;
+using Drosy.Application.UseCases.Students.Services;
+using Drosy.Application.UsesCases.Authentication.DTOs;
 using Drosy.Domain.Interfaces.Repository;
+using Drosy.Infrastructure.Identity;
 using Drosy.Infrastructure.JWT;
 using Drosy.Infrastructure.Persistence.Repositories;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.IdentityModel.Tokens;
+using System.Text;
+using Drosy.Application.UseCases.Plans.Interfaces;
+using Drosy.Application.UseCases.Plans.Services;
 
 namespace Drosy.Api.Extensions.DependencyInjection
 {
@@ -24,10 +31,11 @@ namespace Drosy.Api.Extensions.DependencyInjection
             #region Custom Services
             services.AddScoped<IAuthService, AuthService>();
             services.AddScoped<IJwtService, JwtService>();
-            services.AddScoped<IRefreshTokenRepository, RefreshTokenRepository>();
-            services.AddScoped<IAppUserRepository, AppUserRepository>();
+            services.AddScoped<IStudentService, StudentService>();
+            services.AddScoped<IPlanStudentsService, PlanStudentsService>();
+            services.AddScoped<IPlanService, PlanService>();
             #endregion
-            
+
             #region JWT Registration
 
             var authOption = configuration.GetSection("JWT").Get<AuthOptions>();
@@ -43,6 +51,7 @@ namespace Drosy.Api.Extensions.DependencyInjection
                         ValidateIssuerSigningKey = true,
                         ValidIssuer = authOption.Issuer,
                         ValidAudience = authOption.Audience,
+                        ClockSkew = TimeSpan.Zero,
                         IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(authOption.SigningKey))
                     };
                 });
