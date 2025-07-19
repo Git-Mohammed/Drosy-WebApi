@@ -63,4 +63,7 @@
     <data name="Error_Plan_ConstraintViolation" xml:space="preserve">
         <value>تم انتهاك أحد قيود قاعدة البيانات أثناء معالجة الخطة.</value>
     </data>
+    <data name="Error_Plan_InvalidPeriod" xml:space="preserve">
+        <value>مدة الخطة يجب أن تكون أكبر من صفر.</value>
+    </data>
 </root>

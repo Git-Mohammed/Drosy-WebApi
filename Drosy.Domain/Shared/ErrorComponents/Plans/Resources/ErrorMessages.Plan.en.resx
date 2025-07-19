@@ -63,4 +63,7 @@
     <data name="Error_Plan_ConstraintViolation" xml:space="preserve">
         <value>A database constraint was violated while processing the plan.</value>
     </data>
+    <data name="Error_Plan_InvalidPeriod" xml:space="preserve">
+        <value>Plan period must be greater than zero.</value>
+    </data>
 </root>

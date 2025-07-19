@@ -12,6 +12,7 @@ public static class PlanErrors
     public static AppError InvalidSessionTimeRange => new(PlanErrorCodes.InvalidSessionTimeRange);
     public static AppError InvalidDateRange => new(PlanErrorCodes.InvalidDateRange);
     public static AppError DaysOfWeekRequired => new(PlanErrorCodes.DaysOfWeekRequired);
+    public static AppError InvalidPeriod => new(PlanErrorCodes.InvalidPeriod);
 
     #endregion
 

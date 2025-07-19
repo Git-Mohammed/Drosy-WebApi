@@ -12,6 +12,8 @@ public static class PlanErrorCodes
     public const string InvalidSessionTimeRange = "Error_Plan_InvalidSessionTimeRange"; // start > end
     public const string InvalidDateRange = "Error_Plan_InvalidDateRange"; // start > end
     public const string DaysOfWeekRequired = "Error_Plan_DaysOfWeekRequired";
+    public const string InvalidPeriod = "Error_Plan_InvalidPeriod";
+
     
     #endregion
     

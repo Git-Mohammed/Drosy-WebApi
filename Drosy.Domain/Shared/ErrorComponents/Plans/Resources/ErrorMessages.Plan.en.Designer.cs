@@ -105,6 +105,15 @@ namespace Drosy.Domain.Shared.ErrorComponents.Plans.Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Plan period must be greater than zero..
+        /// </summary>
+        internal static string Error_Plan_InvalidPeriod {
+            get {
+                return ResourceManager.GetString("Error_Plan_InvalidPeriod", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Start time must be before end time..
         /// </summary>
         internal static string Error_Plan_InvalidSessionTimeRange {
