@@ -31,6 +31,21 @@
         <AutoGen>True</AutoGen>
         <DependentUpon>ValidationMessages.resx</DependentUpon>
       </Compile>
+      <Compile Update="Shared\ErrorComponents\Plans\Resources\ErrorMessages.Plan.Designer.cs">
+        <DesignTime>True</DesignTime>
+        <AutoGen>True</AutoGen>
+        <DependentUpon>ErrorMessages.Plan.resx</DependentUpon>
+      </Compile>
+      <Compile Update="Shared\ErrorComponents\Plans\Resources\ErrorMessages.Plan.ar.Designer.cs">
+        <DesignTime>True</DesignTime>
+        <AutoGen>True</AutoGen>
+        <DependentUpon>ErrorMessages.Plan.ar.resx</DependentUpon>
+      </Compile>
+      <Compile Update="Shared\ErrorComponents\Plans\Resources\ErrorMessages.Plan.en.Designer.cs">
+        <DesignTime>True</DesignTime>
+        <AutoGen>True</AutoGen>
+        <DependentUpon>ErrorMessages.Plan.en.resx</DependentUpon>
+      </Compile>
     </ItemGroup>
 
     <ItemGroup>
@@ -49,6 +64,18 @@
       <EmbeddedResource Update="Shared\ErrorComponents\Validation\Resources\ValidationMessages.resx">
         <Generator>ResXFileCodeGenerator</Generator>
         <LastGenOutput>ValidationMessages.Designer.cs</LastGenOutput>
+      </EmbeddedResource>
+      <EmbeddedResource Update="Shared\ErrorComponents\Plans\Resources\ErrorMessages.Plan.resx">
+        <Generator>ResXFileCodeGenerator</Generator>
+        <LastGenOutput>PlansMessages.Designer.cs</LastGenOutput>
+      </EmbeddedResource>
+      <EmbeddedResource Update="Shared\ErrorComponents\Plans\Resources\ErrorMessages.Plan.ar.resx">
+        <Generator>ResXFileCodeGenerator</Generator>
+        <LastGenOutput>PlansMessages.ar.Designer.cs</LastGenOutput>
+      </EmbeddedResource>
+      <EmbeddedResource Update="Shared\ErrorComponents\Plans\Resources\ErrorMessages.Plan.en.resx">
+        <Generator>ResXFileCodeGenerator</Generator>
+        <LastGenOutput>PlansMessages.en.Designer.cs</LastGenOutput>
       </EmbeddedResource>
     </ItemGroup>
 
