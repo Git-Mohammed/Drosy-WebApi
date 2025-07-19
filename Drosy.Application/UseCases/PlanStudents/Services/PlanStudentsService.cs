@@ -7,8 +7,8 @@ using Drosy.Domain.Interfaces.Common.Uow;
 using Drosy.Domain.Interfaces.Repository;
 using Drosy.Domain.Shared.ApplicationResults;
 using Drosy.Domain.Shared.ErrorComponents;
-using Drosy.Domain.Shared.ErrorComponents.EFCoreErrors;
-using Drosy.Domain.Shared.ResultPattern.ErrorComponents.Common;
+using Drosy.Domain.Shared.ErrorComponents.Common;
+using Drosy.Domain.Shared.ErrorComponents.EFCore;
 
 namespace Drosy.Application.UseCases.PlanStudents.Services
 {
@@ -68,7 +68,7 @@ namespace Drosy.Application.UseCases.PlanStudents.Services
                 if (!isSaved)
                 {
                     _logger.LogError("Failed to save changes when adding Student {StudentId} to Plan {PlanId}", dto.StudentId, planId);
-                    return Result.Failure<PlanStudentDto>(EFCoreErrors.CanNotSaveChanges);
+                    return Result.Failure<PlanStudentDto>(EfCoreErrors.CanNotSaveChanges);
                 }
 
                 var planStudentDto = _mapper.Map<PlanStudent, PlanStudentDto>(planStudent);
@@ -141,7 +141,7 @@ namespace Drosy.Application.UseCases.PlanStudents.Services
                 if (!isSaved)
                 {
                     _logger.LogError("Failed to save batch add for PlanId={PlanId}", planId);
-                    return Result.Failure<DataResult<PlanStudentDto>>(EFCoreErrors.CanNotSaveChanges);
+                    return Result.Failure<DataResult<PlanStudentDto>>(EfCoreErrors.CanNotSaveChanges);
                 }
 
                 var mappedDtos = _mapper.Map<List<PlanStudent>, List<PlanStudentDto>>(planStudents);

@@ -5,8 +5,8 @@
     /// </summary>
     public static class ValidationErrorCodes
     {
-        public const string RequiredField = "Error_Validation_RequiredField";
         public const string InvalidEmail = "Error_Validation_InvalidEmail";
+        public const string RequiredField = "Error_Validation_RequiredField";
         public const string InvalidPhone = "Error_Validation_InvalidPhone";
         public const string MaxLengthExceeded = "Error_Validation_MaxLengthExceeded";
         public const string MinLengthNotMet = "Error_Validation_MinLengthNotMet";

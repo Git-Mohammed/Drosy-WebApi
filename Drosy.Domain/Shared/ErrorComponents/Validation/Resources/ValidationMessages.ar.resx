@@ -120,4 +120,27 @@
   <data name="Error_Validation_InvalidEmail" xml:space="preserve">
     <value>صيغة البريد الإلكتروني غير صحيحة.</value>
   </data>
+  <data name="Error_Validation_RequiredField" xml:space="preserve">
+    <value>هذا الحقل مطلوب.</value>
+  </data>
+  <data name="Error_Validation_InvalidPhone" xml:space="preserve">
+    <value>تنسيق رقم الهاتف غير صالح.</value>
+  </data>
+  <data name="Error_Validation_MaxLengthExceeded" xml:space="preserve">
+    <value> تم تجاوز الحد الأقصى للطول المسموح به.
+
+</value>
+  </data>
+  <data name="Error_Validation_MinLengthNotMet" xml:space="preserve">
+    <value>لم يتم الوصول إلى الحد الأدنى للطول المطلوب.</value>
+  </data>
+  <data name="Error_Validation_InvalidFormat" xml:space="preserve">
+    <value>تنسيق الإدخال غير صالح.</value>
+  </data>
+  <data name="Error_Validation_InvalidFileType" xml:space="preserve">
+    <value>نوع الملف المحدد غير مسموح به.</value>
+  </data>
+  <data name="Error_Validation_FileTooLarge" xml:space="preserve">
+    <value>حجم الملف يتجاوز الحد المسموح به.</value>
+  </data>
 </root>

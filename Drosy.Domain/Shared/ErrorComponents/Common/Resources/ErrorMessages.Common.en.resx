@@ -129,4 +129,19 @@
   <data name="Error_Common_Unexpected" xml:space="preserve">
     <value>An unexpected error occurred.</value>
   </data>
+  <data name="Error_Common_Unauthorized" xml:space="preserve">
+    <value>You are not authorized to perform this action.</value>
+  </data>
+  <data name="Error_Common_Conflict" xml:space="preserve">
+    <value>A conflict occurred while processing your request.</value>
+  </data>
+  <data name="Error_Common_Failure" xml:space="preserve">
+    <value>An unexpected error has occurred. Please try again later.</value>
+  </data>
+  <data name="Error_Common_OperationCancelled" xml:space="preserve">
+    <value>The operation has been cancelled.</value>
+  </data>
+  <data name="Error_Common_BusinessRule" xml:space="preserve">
+    <value>The operation violates a business rule.</value>
+  </data>
 </root>
