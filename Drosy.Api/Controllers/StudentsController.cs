@@ -4,6 +4,7 @@ using Drosy.Application.UseCases.Students.Interfaces;
 using Drosy.Domain.Shared.ApplicationResults;
 using Drosy.Domain.Shared.ErrorComponents;
 using Drosy.Domain.Shared.ErrorComponents.Common;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using static System.Runtime.InteropServices.JavaScript.JSType;
 
@@ -15,6 +16,7 @@ namespace Drosy.Api.Controllers
 
     [ApiController]
     [Route("api/students")]
+    [Authorize]
     public class StudentsController : ControllerBase
     {
         private readonly IStudentService _studentService;

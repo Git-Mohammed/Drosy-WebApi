@@ -30,13 +30,14 @@ namespace Drosy.Api.Controllers
             var result = await _authService.LoginAsync(user, token);
 
             if (result.IsFailure)
-                return ApiResponseFactory.UnauthorizedResponse("login", result.Error.Message);
+                return ApiResponseFactory.BadRequestResponse("login", result.Error.Message);
 
             SetRefreshTokenInCookie(result.Value.RefreshToken, result.Value.RefreshTokenExpiration);
 
             return ApiResponseFactory.SuccessResponse(result.Value, "Login successful");
         }
 
+        [AllowAnonymous]
         [HttpPost("refresh-token")]
         public async Task<IActionResult> RefreshTokenAsync(CancellationToken cancellationToken)
         {
