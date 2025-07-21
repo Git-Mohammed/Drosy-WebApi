@@ -1,4 +1,5 @@
-﻿using Drosy.Domain.Interfaces.Common;
+﻿using Drosy.Domain.Enums;
+using Drosy.Domain.Interfaces.Common;
 
 namespace Drosy.Domain.Entities
 {
@@ -6,7 +7,7 @@ namespace Drosy.Domain.Entities
     {
         public int SessionId { get; set; }
         public int StudentId { get; set; }
-        public string Status { get; set; } = null!;
+        public AttendenceStatus Status { get; set; } 
         public string Note { get; set; } = null!;
         public DateTime CreatedAt { get; set; }
       
