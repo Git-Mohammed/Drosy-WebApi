@@ -67,7 +67,7 @@
       </EmbeddedResource>
       <EmbeddedResource Update="Shared\ErrorComponents\Plans\Resources\ErrorMessages.Plan.resx">
         <Generator>ResXFileCodeGenerator</Generator>
-        <LastGenOutput>PlansMessages.Designer.cs</LastGenOutput>
+        <LastGenOutput>ErrorMessages.Plan.Designer.cs</LastGenOutput>
       </EmbeddedResource>
       <EmbeddedResource Update="Shared\ErrorComponents\Plans\Resources\ErrorMessages.Plan.ar.resx">
         <Generator>ResXFileCodeGenerator</Generator>
