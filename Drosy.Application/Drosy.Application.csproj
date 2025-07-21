@@ -10,9 +10,4 @@
       <ProjectReference Include="..\Drosy.Domain\Drosy.Domain.csproj" />
     </ItemGroup>
 
-    <ItemGroup>
-      <Folder Include="UseCases\Attendences\DTOs\" />
-      <Folder Include="UseCases\Attendences\Interfaces\" />
-    </ItemGroup>
-
 </Project>
