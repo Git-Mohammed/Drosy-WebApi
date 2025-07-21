@@ -30,6 +30,21 @@ namespace Drosy.Application.UseCases.PlanStudents.Services
             _logger = logger;
         }
 
+        public async Task<Result> IsStudentInPlanAsync(int planId, int studentId, CancellationToken cancellationToken)
+        {
+            try
+            {
+                var isExists = await _planStudentRepository.ExistsAsync(planId,studentId, cancellationToken);
+
+                return isExists ? Result.Success() : Result.Failure(CommonErrors.NotFound);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex.Message, ex);
+                return Result.Failure(AppError.Failure);
+            }
+        }
+
         public async Task<Result<PlanStudentDto>> AddStudentToPlanAsync(int planId, AddStudentToPlanDto dto, CancellationToken ct)
         {
             _logger.LogInformation("Starting AddStudentToPlanAsync for PlanId={PlanId}, StudentId={StudentId}", planId, dto.StudentId);

@@ -9,6 +9,17 @@ namespace Drosy.Application.UseCases.PlanStudents.Interfaces
     public interface IPlanStudentsService
     {
         /// <summary>
+        /// Checks whether a student is already assigned to a specific plan.
+        /// </summary>
+        /// <param name="planId">The identifier of the plan.</param>
+        /// <param name="studentId">The identifier of the student.</param>
+        /// <param name="cancellationToken">A token to monitor for cancellation requests.</param>
+        /// <returns>
+        /// A <see cref="Result"/> indicating whether the student exists in the specified plan.
+        /// </returns>
+        Task<Result> IsStudentInPlanAsync(int planId, int studentId, CancellationToken cancellationToken);
+
+        /// <summary>
         /// Adds a single student to the specified plan.
         /// </summary>
         /// <param name="planId">The identifier of the plan to which the student will be added.</param>
