@@ -57,7 +57,17 @@ namespace Drosy.Application.UseCases.Authentication.Services
 
         public async Task<Result> LogoutAsync(string refreshToken, CancellationToken cancellationToken)
         {
-            return await _jwtService.RevokeRefreshTokensAsync(refreshToken,cancellationToken);
+            try
+            {
+                cancellationToken.ThrowIfCancellationRequested();
+                return await _jwtService.RevokeRefreshTokensAsync(refreshToken,cancellationToken);
+            }
+            catch (OperationCanceledException)
+            {
+                _logger.LogWarning(CommonErrors.OperationCancelled.Message, "Operation Canceld While logout");
+                return Result.Failure<AuthModel>(CommonErrors.OperationCancelled);
+            }
+
         }
 
         public async Task<Result<AuthModel>> RefreshTokenAsync(string tokenString, CancellationToken cancellationToken)

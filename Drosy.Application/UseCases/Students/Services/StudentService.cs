@@ -143,7 +143,7 @@ namespace Drosy.Application.UseCases.Students.Services
                         Grade = s.Grade.Name,
                         PhoneNumber = s.PhoneNumber,
                         PlansCount = totalplans,
-                        SessionsCount = CalculateTotalSessionsForStudent(s)
+                        SessionsCount = _CalculateTotalSessionsForStudent(s)
                     });
                 }
 
@@ -160,7 +160,7 @@ namespace Drosy.Application.UseCases.Students.Services
 
         }
 
-        public int CalculateTotalSessions(Plan plan)
+        private int _CalculateTotalSessions(Plan plan)
         {
             // 1. عدد الأيام في الأسبوع اللي فيها حصص
             int sessionsPerWeek = Enum.GetValues(typeof(DayOfWeek))
@@ -177,12 +177,12 @@ namespace Drosy.Application.UseCases.Students.Services
             return totalSessions;
         }
 
-        public int CalculateTotalSessionsForStudent(Student student)
+        private int _CalculateTotalSessionsForStudent(Student student)
         {
             int sessions = 0;
             foreach(PlanStudent planStudent in student.Plans)
             {
-                sessions += CalculateTotalSessions(planStudent.Plan);
+                sessions += _CalculateTotalSessions(planStudent.Plan);
             }
             return sessions;
         }

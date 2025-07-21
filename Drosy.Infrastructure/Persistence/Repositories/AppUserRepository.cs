@@ -39,5 +39,7 @@ namespace Drosy.Infrastructure.Persistence.Repositories
                 Email = user?.Email ?? string.Empty,
             };
         }
+
+
     }
 }
