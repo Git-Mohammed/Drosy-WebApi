@@ -16,15 +16,13 @@ namespace Drosy.Application.UseCases.Authentication.Services
         private readonly IAppUserRepository _userRepository;
         private readonly IJwtService _jwtService;
         private readonly ILogger<AuthService> _logger;
-        private readonly IEmailService _emailService;
 
-        public AuthService(IJwtService jwtService, IAppUserRepository userRepository, IIdentityService identity, ILogger<AuthService> logger, IEmailService emailService)
+        public AuthService(IJwtService jwtService, IAppUserRepository userRepository, IIdentityService identity, ILogger<AuthService> logger)
         {
             _jwtService = jwtService;
             _userRepository = userRepository;
             _identityService = identity;
             _logger = logger;
-            _emailService = emailService;
         }
 
         public async Task<Result<AuthModel>> LoginAsync(UserLoginDTO user, CancellationToken token)
@@ -109,9 +107,22 @@ namespace Drosy.Application.UseCases.Authentication.Services
             }
         }
 
-        public Task<Result> ForgetPasswordAsync(string email)
+        public async Task<Result> ForgetPasswordAsync(string email, string link, CancellationToken ct)
         {
-            throw new NotImplementedException();
+            try
+            {
+                ct.ThrowIfCancellationRequested();
+                var result = await _identityService.ForgetPasswordAsync(email, link, ct);
+                if (result.IsFailure)
+                    return Result.Failure(result.Error);
+
+                return result;
+            }
+            catch(OperationCanceledException)
+            {
+                _logger.LogWarning(CommonErrors.OperationCancelled.Message, "Operation Canceld While Forget PAssword Work For user email {email}", email);
+                return Result.Failure(CommonErrors.OperationCancelled);
+            }
         }
     }
 }

@@ -12,6 +12,6 @@ namespace Drosy.Application.UseCases.Authentication.Interfaces
         bool IsAuthorized(ClaimsPrincipal user, string requiredRole);
         Task<Result>  LogoutAsync(string refreshToken,CancellationToken cancellationToken);
         Task<Result> ChangePasswordAsync(int userId, ChangePasswordDTO dto, CancellationToken ct);
-        Task<Result> ForgetPasswordAsync(string email);
+        Task<Result> ForgetPasswordAsync(string email, string link, CancellationToken ct);
     }
 }

@@ -8,7 +8,7 @@ namespace Drosy.Infrastructure.Helper.Email
 {
     public static class EmailTemplates {
 
-        public static string GetEmailConfirmEmailBody(string callbackUrl)
+        public static string GetEmailConfirmEmailBody(string callbackUrl, string userName, int expiration)
         {
             return $@"            
         <!DOCTYPE html>
@@ -35,7 +35,7 @@ namespace Drosy.Infrastructure.Helper.Email
                         display: inline-block;
                         padding: 12px 20px;
                         font-size: 16px;
-                        color: rgb(13, 41, 39);
+                        color: white;
                         background: linear-gradient(135deg, rgb(38, 175, 217) 0%, rgb(72, 220, 198) 100%);
                         text-decoration: none;
                         border-radius: 5px;
@@ -48,10 +48,10 @@ namespace Drosy.Infrastructure.Helper.Email
             </head>
             <body>
                 <div class='container'>
-                    <p>مرحبًا [اسم المستخدم]،</p>
+                    <p>مرحبًا {userName}،</p>
                     <p>لقد تلقينا طلبًا لإعادة تعيين كلمة المرور الخاصة بحسابك. إذا كنت أنت من قام بهذا الطلب، فيرجى الضغط على الزر أو الرابط أدناه لإعادة تعيين كلمة المرور:</p>
-                    <a href='{{System.Net.WebUtility.HtmlEncode(callbackUrl)}}' class='button'>رابط إعادة تعيين كلمة المرور</a>
-                    <p>يرجى ملاحظة أن هذا الرابط صالح لمدة {{30 دقيقة}} فقط، وبعد ذلك سيتعين عليك طلب رابط جديد.
+                    <a href='{callbackUrl}' class='button'>رابط إعادة تعيين كلمة المرور</a>
+                    <p>يرجى ملاحظة أن هذا الرابط صالح لمدة دقيقة {expiration} فقط، وبعد ذلك سيتعين عليك طلب رابط جديد.
                         إذا لم تقم بطلب إعادة تعيين كلمة المرور، يمكنك تجاهل هذه الرسالة. لن يتم إجراء أي تغيير على حسابك.</p>
                     <p>
                         شكرًا لك،
