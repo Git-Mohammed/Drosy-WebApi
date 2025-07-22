@@ -18,7 +18,7 @@ namespace Drosy.Application.UseCases.Attendences.Interfaces
 
         Task<Result<AttendenceDto>> AddAsync(int sessionId,AddAttendencenDto dto, CancellationToken ct);
         Task<Result<DataResult<AttendenceDto>>> AddRangeAsync(int sessionId,IEnumerable<AddAttendencenDto> dto, CancellationToken ct);
-        Task<Result<AttendenceDto>> UpdateAsync(int sessionId, UpdateAttendencenDto dto, CancellationToken ct);
+        Task<Result<AttendenceDto>> UpdateAsync(int sessionId,int studentId, UpdateAttendencenDto dto, CancellationToken ct);
     }
 }
 

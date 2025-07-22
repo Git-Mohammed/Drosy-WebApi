@@ -37,6 +37,26 @@ namespace Drosy.Application.UseCases.Attendences.Services
             _logger = logger;
         }
 
+        #region Read
+        public Task<Result<DataResult<AttendenceDto>>> GetAllForSessionAsync(int sessionId, CancellationToken ct)
+        {
+            throw new NotImplementedException();
+        }
+
+        public Task<Result<DataResult<AttendenceDto>>> GetAllForStudentAsync(int sessionId, int studentId, CancellationToken ct)
+        {
+            throw new NotImplementedException();
+        }
+
+        public Task<Result<DataResult<AttendenceDto>>> GetAllForStudentByStatusAsync(int sessionId, int studentId, AttendenceStatus status, CancellationToken ct)
+        {
+            throw new NotImplementedException();
+        }
+
+
+        #endregion
+
+        #region Write
         public async Task<Result<AttendenceDto>> AddAsync(int sessionId, AddAttendencenDto dto, CancellationToken ct)
         {
             _logger.LogInformation("Starting AddAttendenceAsync for SessionId={SessionId}, StudentId={StudentId}", sessionId, dto.StudentId);
@@ -144,24 +164,9 @@ namespace Drosy.Application.UseCases.Attendences.Services
             }
         }
 
-        public Task<Result<DataResult<AttendenceDto>>> GetAllForSessionAsync(int sessionId, CancellationToken ct)
+        public async Task<Result<AttendenceDto>> UpdateAsync(int sessionId, int studentId, UpdateAttendencenDto dto, CancellationToken ct)
         {
-            throw new NotImplementedException();
-        }
-
-        public Task<Result<DataResult<AttendenceDto>>> GetAllForStudentAsync(int sessionId, int studentId, CancellationToken ct)
-        {
-            throw new NotImplementedException();
-        }
-
-        public Task<Result<DataResult<AttendenceDto>>> GetAllForStudentByStatusAsync(int sessionId, int studentId, AttendenceStatus status, CancellationToken ct)
-        {
-            throw new NotImplementedException();
-        }
-
-        public async Task<Result<AttendenceDto>> UpdateAsync(int sessionId, UpdateAttendencenDto dto, CancellationToken ct)
-        {
-            _logger.LogInformation("Starting UpdateAttendenceAsync for SessionId={SessionId}, StudentId={StudentId}", sessionId, dto.StudentId);
+            _logger.LogInformation("Starting UpdateAttendenceAsync for SessionId={SessionId}, StudentId={StudentId}", sessionId, studentId);
 
             try
             {
@@ -169,42 +174,42 @@ namespace Drosy.Application.UseCases.Attendences.Services
 
                 #region Validations
                 // 1) Does the record exist?
-                var attendence = await _attendencesRepository.GetByIdAsync(sessionId, dto.StudentId, ct);
+                var attendence = await _attendencesRepository.GetByIdAsync(sessionId, studentId, ct);
                 if (attendence == null)
                 {
-                    _logger.LogWarning("Attendence not found for SessionId={SessionId}, StudentId={StudentId}", sessionId, dto.StudentId);
+                    _logger.LogWarning("Attendence not found for SessionId={SessionId}, StudentId={StudentId}", sessionId, studentId);
                     return Result.Failure<AttendenceDto>(CommonErrors.NotFound);
                 }
                 #endregion
 
                 _mapper.Map(dto, attendence);
-           
+
 
                 bool isSaved = await _unitOfWork.SaveChangesAsync(ct);
                 if (!isSaved)
                 {
-                    _logger.LogError("Failed to save changes when updating Attendence for SessionId={SessionId}, StudentId={StudentId}", sessionId, dto.StudentId);
+                    _logger.LogError("Failed to save changes when updating Attendence for SessionId={SessionId}, StudentId={StudentId}", sessionId, studentId);
                     return Result.Failure<AttendenceDto>(EfCoreErrors.CanNotSaveChanges);
                 }
-               
+
                 var updatedDto = _mapper.Map<Attendence, AttendenceDto>(attendence);
 
-                _logger.LogInformation("Successfully updated Attendence for SessionId={SessionId}, StudentId={StudentId}", sessionId, dto.StudentId);
+                _logger.LogInformation("Successfully updated Attendence for SessionId={SessionId}, StudentId={StudentId}", sessionId, studentId);
 
                 return Result.Success(updatedDto);
             }
             catch (OperationCanceledException)
             {
-                _logger.LogWarning("Operation canceled in UpdateAttendenceAsync for SessionId={SessionId}, StudentId={StudentId}",
-                                   sessionId, dto.StudentId);
+                _logger.LogWarning("Operation canceled in UpdateAttendenceAsync for SessionId={SessionId}, StudentId={StudentId}", sessionId, studentId);
                 return Result.Failure<AttendenceDto>(CommonErrors.OperationCancelled);
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex.Message, "Unexpected error in UpdateAttendenceAsync for SessionId={SessionId}, StudentId={StudentId}", sessionId, dto.StudentId);
+                _logger.LogError(ex.Message, "Unexpected error in UpdateAttendenceAsync for SessionId={SessionId}, StudentId={StudentId}", sessionId, studentId);
                 return Result.Failure<AttendenceDto>(AppError.Failure);
             }
         }
+        #endregion
     }
 
 }

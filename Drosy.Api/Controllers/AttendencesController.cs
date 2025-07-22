@@ -4,6 +4,7 @@ using Drosy.Application.UseCases.Attendences.Interfaces;
 using Drosy.Domain.Shared.ErrorComponents;
 using Drosy.Domain.Shared.ErrorComponents.Common;
 using Microsoft.AspNetCore.Mvc;
+using System.Threading;
 
 namespace Drosy.Api.Controllers
 {
@@ -19,7 +20,7 @@ namespace Drosy.Api.Controllers
 
 
         [HttpGet("{id:int}", Name = "GetPlanStudentById")]
-        public async Task<IActionResult> GetByIdAsync(int sessionId, int id, CancellationToken ct)
+        public async Task<IActionResult> GetByIdAsync([FromRoute] int sessionId, [FromQuery] int id, CancellationToken ct)
         {
             try
             {
@@ -33,7 +34,7 @@ namespace Drosy.Api.Controllers
 
 
         [HttpGet(Name = "GetSessionAttendences")]
-        public async Task<IActionResult> GetAllForSessionAsync(int sessionId, CancellationToken ct)
+        public async Task<IActionResult> GetAllForSessionAsync([FromRoute] int sessionId, CancellationToken ct)
         {
             try
             {
@@ -47,7 +48,7 @@ namespace Drosy.Api.Controllers
 
 
         [HttpPost(Name = "AddStudentAttendenceForSession")]
-        public async Task<IActionResult> AddAsync(int sessionId, [FromBody] AddAttendencenDto dto, CancellationToken ct)
+        public async Task<IActionResult> AddAsync([FromRoute] int sessionId, [FromBody] AddAttendencenDto dto, CancellationToken ct)
         {
             try
             {
@@ -78,7 +79,7 @@ namespace Drosy.Api.Controllers
 
 
         [HttpPost("batch", Name = "AddRangeOfStudentAttendenceForSession")]
-        public async Task<IActionResult> AddRangeAsync(int sessionId, [FromBody] IEnumerable<AddAttendencenDto> dtos, CancellationToken ct)
+        public async Task<IActionResult> AddRangeAsync([FromRoute] int sessionId, [FromBody] IEnumerable<AddAttendencenDto> dtos, CancellationToken ct)
         {
             try
             {
@@ -100,6 +101,39 @@ namespace Drosy.Api.Controllers
                    new { sessionId },
                    result.Value, "Attendences added for session successfully."
                 );
+            }
+            catch (Exception ex)
+            {
+                return ApiResponseFactory.FromException(ex);
+            }
+        }
+
+
+        [HttpPut("{id:int}", Name = "AddRangeOfStudentAttendenceForSession")]
+        public async Task<IActionResult> UpdateAsync([FromRoute] int sessionId,[FromQuery] int id, [FromBody] UpdateAttendencenDto dto, CancellationToken ct)
+        {
+            if (id < 1)
+            {
+                var error = new ApiError("id", ErrorMessageResourceRepository.GetMessage(CommonErrors.Invalid.Message, AppError.CurrentLanguage));
+                return ApiResponseFactory.BadRequestResponse("id", "Invalid student ID.", error.Message);
+            }
+
+            if (dto == null)
+            {
+                var error = new ApiError("dto", ErrorMessageResourceRepository.GetMessage(CommonErrors.NullValue.Message, AppError.CurrentLanguage));
+                return ApiResponseFactory.BadRequestResponse("dto", "Invalid student attendence data.", error.Message);
+            }
+
+            try
+            {
+                var result = await _attendencesService.UpdateAsync(sessionId, id,dto, ct);
+
+                if (result.IsFailure)
+                {
+                    return ApiResponseFactory.FromFailure(result, nameof(UpdateAsync), "Attendence");
+                }
+
+                return ApiResponseFactory.SuccessResponse("Student Attendence updated successfully.");
             }
             catch (Exception ex)
             {
