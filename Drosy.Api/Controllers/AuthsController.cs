@@ -127,6 +127,23 @@ namespace Drosy.Api.Controllers
             return ApiResponseFactory.SuccessResponse("Email sent succefuly");
         }
 
+        [HttpPost("reset-password")]
+        [AllowAnonymous]
+        public async Task<IActionResult> ResetPasswordAsync(RestPasswordDTO dto, CancellationToken ct)
+        {
+            if (ct.IsCancellationRequested)
+            {
+                return ApiResponseFactory.FromFailure(Result.Failure(CommonErrors.OperationCancelled), nameof(LoginAsync));
+            }
+
+            var result = await _authService.ResetPasswordAsync(dto, ct);
+
+            if (result.IsFailure)
+            {
+                return ApiResponseFactory.BadRequestResponse(nameof(ForgetPasswordAsync), result.Error.Message);
+            }
+            return ApiResponseFactory.SuccessResponse("Passsword Rest Succefuly");
+        }
 
         private void SetRefreshTokenInCookie(string refreshToken, DateTime expires)
         {

@@ -2,12 +2,12 @@
 {
     public static class PasswordResetTokenHelper
     {
-        public static Drosy.Domain.Entities.PasswordResetToken CreateToken(int userId)
+        public static Drosy.Domain.Entities.PasswordResetToken CreateToken(int userId, string toekn)
         {
             return new Domain.Entities.PasswordResetToken
             {
                 UserId = userId,
-                TokenString = Guid.NewGuid().ToString(),
+                TokenString = toekn,
                 ExpirationDate = DateTime.Now.AddMinutes(30),
             };
         }

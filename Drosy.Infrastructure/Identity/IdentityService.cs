@@ -2,6 +2,7 @@
 using Drosy.Application.Interfaces.Common;
 using Drosy.Application.UseCases.Email.Interfaces;
 using Drosy.Application.UsesCases.Authentication.DTOs;
+using Drosy.Application.UsesCases.Users.DTOs;
 using Drosy.Domain.Entities;
 using Drosy.Domain.Interfaces.Common.Uow;
 using Drosy.Domain.Interfaces.Repository;
@@ -15,10 +16,6 @@ using Microsoft.AspNetCore.Identity;
 
 namespace Drosy.Infrastructure.Identity
 {
-    /*
-     TODO:
-        - Check Password and Then Check LouckOut
-     */
     public class IdentityService(
         UserManager<ApplicationUser> userManager,
         SignInManager<ApplicationUser> signInManager,
@@ -101,7 +98,8 @@ namespace Drosy.Infrastructure.Identity
                 if (user == null) 
                     return Result.Failure(CommonErrors.NullValue);
 
-                var passwordToken = PasswordResetTokenHelper.CreateToken(user.Id);
+                var stringToken = await _userManager.GeneratePasswordResetTokenAsync(user);
+                var passwordToken = PasswordResetTokenHelper.CreateToken(user.Id, stringToken);
 
                 await _passwordResetTokenRepository.AddAsync(passwordToken, ct);
                 var IsSaved = await _unitOfWork.SaveChangesAsync(ct);
@@ -122,5 +120,33 @@ namespace Drosy.Infrastructure.Identity
             }
 
         }
+
+        public async Task<Result> RestPasswordAsync(RestPasswordDTO dto, CancellationToken ct)
+        {
+            try
+            {
+                ct.ThrowIfCancellationRequested();
+                var restToken  = await _passwordResetTokenRepository.GetTokenAsync(dto.Token, ct);
+                var user = await _userManager.FindByIdAsync(restToken.UserId.ToString());
+                if (restToken == null)
+                    return Result.Failure(CommonErrors.NullValue);
+
+                restToken.IsUsed = true;
+
+                var restResult = await _userManager.ResetPasswordAsync(user, restToken.TokenString, dto.NewPassword);
+
+                if (!restResult.Succeeded)
+                    return Result.Failure(CommonErrors.Failure);
+
+                return Result.Success();    
+            }
+            catch (OperationCanceledException)
+            {
+                _logger.LogWarning(CommonErrors.OperationCancelled.Message, "Operation Canceld While rest user password");
+                return Result.Failure<AuthModel>(CommonErrors.OperationCancelled);
+            }
+        }
+
+
     }
 }

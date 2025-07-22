@@ -120,7 +120,25 @@ namespace Drosy.Application.UseCases.Authentication.Services
             }
             catch(OperationCanceledException)
             {
-                _logger.LogWarning(CommonErrors.OperationCancelled.Message, "Operation Canceld While Forget PAssword Work For user email {email}", email);
+                _logger.LogWarning(CommonErrors.OperationCancelled.Message, "Operation Canceld While Forget Password Work For user email {email}", email);
+                return Result.Failure(CommonErrors.OperationCancelled);
+            }
+        }
+
+        public async Task<Result> ResetPasswordAsync(RestPasswordDTO dto, CancellationToken ct)
+        {
+            try
+            {
+                ct.ThrowIfCancellationRequested();
+                var result = await _identityService.RestPasswordAsync(dto, ct);
+                if (result.IsFailure)
+                    return Result.Failure(result.Error);
+
+                return result;
+            }
+            catch (OperationCanceledException)
+            {
+                _logger.LogWarning(CommonErrors.OperationCancelled.Message, "Operation Canceld While Rest Password Work");
                 return Result.Failure(CommonErrors.OperationCancelled);
             }
         }

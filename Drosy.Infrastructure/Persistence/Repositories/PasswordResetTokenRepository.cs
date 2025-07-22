@@ -26,5 +26,27 @@ namespace Drosy.Infrastructure.Persistence.Repositories
             if (entity != null)
                 await Task.Run(() => DbSet.Update(entity));
         }
+
+        public async Task<PasswordResetToken?> GetTokenAsync(string token, CancellationToken ct)
+        {
+            return await (from restToken in DbSet
+                          join user in _dbContext.Users on restToken.UserId equals user.Id
+                          where restToken.IsUsed == false && restToken.ExpirationDate > DateTime.UtcNow && token == restToken.TokenString
+                          select new PasswordResetToken
+                          {
+                              ExpirationDate = restToken.ExpirationDate,
+                              UserId = user.Id,
+                              Id = restToken.Id,
+                              IsUsed = restToken.IsUsed,
+                              TokenString = restToken.TokenString,
+                              User = new AppUser
+                              {
+                                  Id = user.Id,
+                                  Email = user.Email,
+                                  UserName = user.UserName
+                              }
+
+                          }).FirstOrDefaultAsync(ct);
+        }
     }
 }
