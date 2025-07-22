@@ -1,4 +1,5 @@
-﻿using Drosy.Application.UseCases.Students.DTOs;
+﻿using Drosy.Application.UseCases.Sessions.DTOs;
+using Drosy.Application.UseCases.Students.DTOs;
 using Drosy.Domain.Enums;
 
 namespace Drosy.Application.UseCases.Attendences.DTOs
@@ -13,13 +14,9 @@ namespace Drosy.Application.UseCases.Attendences.DTOs
 
         #region Nav Properties
         public StudentDTO Student { get; set; } = null!;
-        public SessionDto Session { get; set; } = null!;
+        public SessionDTO Session { get; set; } = null!;
 
         #endregion
     }
-    public class SessionDto
-    {
 
-    }
 }
-

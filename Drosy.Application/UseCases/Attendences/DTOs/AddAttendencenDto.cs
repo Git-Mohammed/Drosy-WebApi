@@ -6,7 +6,7 @@ namespace Drosy.Application.UseCases.Attendences.DTOs
     {
         public int StudentId { get; set; }
         public AttendenceStatus Status { get; set; }
-        public string Note { get; set; } = null!;
+        public string? Note { get; set; } = null!;
     }
 }
 

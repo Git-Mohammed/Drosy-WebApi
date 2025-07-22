@@ -74,6 +74,7 @@ namespace Drosy.Application.UseCases.Attendences.Services
                 return Result.Failure<AttendenceDto>(AppError.Failure);
             }
         }
+      
         public async Task<Result<DataResult<AttendenceDto>>> GetAllForSessionAsync(int sessionId, CancellationToken ct)
         {
            try
@@ -380,11 +381,7 @@ namespace Drosy.Application.UseCases.Attendences.Services
                 return Result.Failure(AppError.Failure);
             }
         }
-
-
-
         #endregion
     }
-
 }
 

@@ -5,7 +5,7 @@ namespace Drosy.Application.UseCases.Attendences.DTOs
     public class UpdateAttendencenDto()
     {
         public AttendenceStatus Status { get; set; }
-        public string Note { get; set; } = null!;
+        public string? Note { get; set; } = null!;
     }
 }
 
