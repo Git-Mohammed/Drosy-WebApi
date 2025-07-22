@@ -116,7 +116,7 @@ namespace Drosy.Application.UseCases.Attendences.Services
         {
          try
             {
-                var attendences = (await _attendencesRepository.GetAllForStudentByStatusAsync(sessionId, status, ct)).ToList();
+                var attendences = (await _attendencesRepository.GetAllForSessionByStatusAsync(sessionId, status, ct)).ToList();
                 //validation
                 //
 
@@ -296,12 +296,48 @@ namespace Drosy.Application.UseCases.Attendences.Services
             }
         }
 
-        public Task<Result> DeleteAsync(int sessionId, int studentId, CancellationToken ct)
+        public async Task<Result> DeleteAsync(int sessionId, int studentId, CancellationToken ct)
         {
-            throw new NotImplementedException();
+            _logger.LogInformation(  "Starting DeleteAttendenceAsync for SessionId={SessionId}, StudentId={StudentId}",   sessionId,  studentId );
+            try
+            {
+                ct.ThrowIfCancellationRequested();
+
+                // 1) Fetch existing
+                var existing = await _attendencesRepository.GetByIdAsync(sessionId, studentId, ct);
+                if (existing == null)
+                {
+                    _logger.LogWarning( "Attendence not found for SessionId={SessionId}, StudentId={StudentId}",  sessionId, studentId );
+                    return Result.Failure(CommonErrors.NotFound);
+                }
+
+                await _attendencesRepository.DeleteAsync(existing, ct);
+
+                var saved = await _unitOfWork.SaveChangesAsync(ct);
+                if (!saved)
+                {
+                    _logger.LogError(
+                        "Failed to save changes when deleting Attendence for SessionId={SessionId}, StudentId={StudentId}", sessionId,  studentId);
+                    return Result.Failure(EfCoreErrors.CanNotSaveChanges);
+                }
+
+                _logger.LogInformation( "Successfully deleted Attendence for SessionId={SessionId}, StudentId={StudentId}",    sessionId, studentId);
+                return Result.Success();
+            }
+            catch (OperationCanceledException)
+            {
+                _logger.LogWarning(   "Operation canceled in DeleteAttendenceAsync for SessionId={SessionId}, StudentId={StudentId}",   sessionId,  studentId);
+                return Result.Failure(CommonErrors.OperationCancelled);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex.Message, "Unexpected error in DeleteAttendenceAsync for SessionId={SessionId}, StudentId={StudentId}", sessionId, studentId);
+                return Result.Failure(AppError.Failure);
+            }
         }
 
-        
+
+
         #endregion
     }
 

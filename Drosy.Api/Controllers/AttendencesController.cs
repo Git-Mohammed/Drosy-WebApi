@@ -209,23 +209,26 @@ namespace Drosy.Api.Controllers
 
 
         [HttpDelete("{studentId:int}", Name = "DeleteAttendence")]
-        public async Task<IActionResult> DeleteAsync([FromRoute] int sessionId, [FromRoute] int studentId, CancellationToken ct)
-        {
-            if (id < 1)
+        public async Task<IActionResult> DeleteAsync( [FromRoute] int sessionId,   [FromRoute] int studentId,  CancellationToken ct) {
+     
+            if (studentId < 1)
             {
-                var error = new ApiError("id", ErrorMessageResourceRepository.GetMessage(CommonErrors.Invalid.Message, AppError.CurrentLanguage));
-                return ApiResponseFactory.BadRequestResponse("id", "Invalid student ID.", error.Message);
+                var error = new ApiError(  "studentId",   ErrorMessageResourceRepository.GetMessage(CommonErrors.Invalid.Message, AppError.CurrentLanguage)    );
+                return ApiResponseFactory.BadRequestResponse(     "studentId",  "Invalid student ID.",error.Message);
             }
 
+            try {
+                var result = await _attendencesService.DeleteAsync(sessionId, studentId, ct);
+                if (result.IsFailure)
+                    return ApiResponseFactory.FromFailure(  result,    nameof(DeleteAsync), "Attendence" );
 
-            try
-            {
-
+                return ApiResponseFactory.SuccessResponse("Attendence deleted successfully.");
             }
             catch (Exception ex)
             {
                 return ApiResponseFactory.FromException(ex);
             }
         }
+
     }
 }
