@@ -22,7 +22,7 @@ namespace Drosy.Tests.Application.Attendeces.ValidatorsTests
 
         [Theory]
         [InlineData(null, false)]
-        [InlineData("", false)]
+        [InlineData("", true)]
         [InlineData("ok", true)]
         public void NoteValidation(string note, bool valid)
         {
@@ -31,5 +31,6 @@ namespace Drosy.Tests.Application.Attendeces.ValidatorsTests
             if (valid) result.ShouldNotHaveValidationErrorFor(x => x.Note);
             else result.ShouldHaveValidationErrorFor(x => x.Note);
         }
+
     }
 }

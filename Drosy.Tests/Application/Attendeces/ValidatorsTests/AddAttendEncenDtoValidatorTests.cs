@@ -23,8 +23,8 @@ namespace Drosy.Tests.Application.Attendeces.ValidatorsTests
         }
 
         [Theory]
-        [InlineData("", false)]
         [InlineData(null, false)]
+        [InlineData("", true)]
         [InlineData("note", true)]
         public void NoteValidation(string note, bool valid)
         {
