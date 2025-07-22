@@ -19,7 +19,7 @@ namespace Drosy.Api.Controllers
         }
 
 
-        [HttpGet("{id:int}", Name = "GetPlanStudentById")]
+        [HttpGet("{id:int}", Name = "GetAttendencetById")]
         public async Task<IActionResult> GetByIdAsync([FromRoute] int sessionId, [FromQuery] int id, CancellationToken ct)
         {
             try
@@ -47,7 +47,7 @@ namespace Drosy.Api.Controllers
         }
 
 
-        [HttpPost(Name = "AddStudentAttendenceForSession")]
+        [HttpPost(Name = "AddStudentAttendencesForSession")]
         public async Task<IActionResult> AddAsync([FromRoute] int sessionId, [FromBody] AddAttendencenDto dto, CancellationToken ct)
         {
             try
@@ -66,7 +66,7 @@ namespace Drosy.Api.Controllers
                 }
 
                 return ApiResponseFactory.CreatedResponse(
-                   "GetPlanStudentById",
+                   "GetAttendencetById",
                     new { sessionId, id = result.Value.StudentId },
                     result.Value, "Attendence added for session successfully."
                 );
@@ -109,7 +109,7 @@ namespace Drosy.Api.Controllers
         }
 
 
-        [HttpPut("{id:int}", Name = "AddRangeOfStudentAttendenceForSession")]
+        [HttpPut("{id:int}", Name = "UpdateAttendence")]
         public async Task<IActionResult> UpdateAsync([FromRoute] int sessionId, [FromQuery] int id, [FromBody] UpdateAttendencenDto dto, CancellationToken ct)
         {
             if (id < 1)
