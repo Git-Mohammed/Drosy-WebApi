@@ -1,8 +1,9 @@
 ﻿using System.Diagnostics.Metrics;
+using Drosy.Domain.Interfaces.Common;
 
 namespace Drosy.Domain.Entities
 {
-    public class Student : BaseEntity<int>
+    public class Student : BaseEntity<int>, ISoftDeleteble
     {
         public string FirstName { get; set; } = null!;
         public string SecondName { get; set; } = null!;
@@ -21,6 +22,7 @@ namespace Drosy.Domain.Entities
         public City City { get; set; } = null!;
        public Grade Grade { get; set; } = null!;
         public List<PlanStudent> Plans { get; set; } = new();
+        public bool IsDeleted { get; set; } = false;
 
         #endregion
     }

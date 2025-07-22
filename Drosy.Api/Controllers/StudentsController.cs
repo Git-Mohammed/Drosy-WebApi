@@ -175,6 +175,19 @@ namespace Drosy.Api.Controllers
                 return ApiResponseFactory.FromException(ex);
             }
         }
+
+        [HttpPut("archive/{id:int}")]
+        public async Task<IActionResult> ArchiveStudentAsync(int id, CancellationToken ct)
+        {
+            if (ct.IsCancellationRequested)
+            {
+                return ApiResponseFactory.FromFailure(Result.Failure(CommonErrors.OperationCancelled), nameof(ArchiveStudentAsync));
+            }
+
+            var result = await _studentService.ArchiveStudentAsync(id, ct);
+
+            return result.IsSuccess ? ApiResponseFactory.SuccessResponse() : ApiResponseFactory.FromFailure(result, nameof(ArchiveStudentAsync));
+        }
         #endregion
     }
 }
