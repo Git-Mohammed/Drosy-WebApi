@@ -21,6 +21,11 @@
         <AutoGen>True</AutoGen>
         <DependentUpon>ErrorMessages.EFCore.resx</DependentUpon>
       </Compile>
+      <Compile Update="Shared\ErrorComponents\Sesstions\Resources\ErrorMessages.Session.Designer.cs">
+        <DesignTime>True</DesignTime>
+        <AutoGen>True</AutoGen>
+        <DependentUpon>ErrorMessages.Session.resx</DependentUpon>
+      </Compile>
       <Compile Update="Shared\ErrorComponents\User\Resources\ErrorMessages.User.Designer.cs">
         <DesignTime>True</DesignTime>
         <AutoGen>True</AutoGen>
@@ -56,6 +61,10 @@
       <EmbeddedResource Update="Shared\ErrorComponents\EFCore\Resources\ErrorMessages.EFCore.resx">
         <Generator>PublicResXFileCodeGenerator</Generator>
         <LastGenOutput>ErrorMessages.EFCore.Designer.cs</LastGenOutput>
+      </EmbeddedResource>
+      <EmbeddedResource Update="Shared\ErrorComponents\Sesstions\Resources\ErrorMessages.Session.resx">
+        <Generator>ResXFileCodeGenerator</Generator>
+        <LastGenOutput>ErrorMessages.Session.Designer.cs</LastGenOutput>
       </EmbeddedResource>
       <EmbeddedResource Update="Shared\ErrorComponents\User\Resources\ErrorMessages.User.resx">
         <Generator>PublicResXFileCodeGenerator</Generator>

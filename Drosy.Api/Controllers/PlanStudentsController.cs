@@ -1,18 +1,15 @@
 ﻿using Drosy.Api.Commons.Responses;
 using Drosy.Application.UseCases.PlanStudents.DTOs;
 using Drosy.Application.UseCases.PlanStudents.Interfaces;
-using Drosy.Application.UseCases.PlanStudents.Services;
 using Drosy.Domain.Shared.ApplicationResults;
 using Drosy.Domain.Shared.ErrorComponents;
 using Drosy.Domain.Shared.ErrorComponents.Common;
-using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Drosy.Api.Controllers
 {
     [Route("api/plans/{planId:int}/students")]
     [ApiController]
-    [Authorize]
     public class PlanStudentsController : ControllerBase
     {
         private readonly IPlanStudentsService _PlanStudentsService;
