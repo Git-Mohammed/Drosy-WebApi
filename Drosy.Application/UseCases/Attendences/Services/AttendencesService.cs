@@ -38,19 +38,104 @@ namespace Drosy.Application.UseCases.Attendences.Services
         }
 
         #region Read
-        public Task<Result<DataResult<AttendenceDto>>> GetAllForSessionAsync(int sessionId, CancellationToken ct)
+        public async Task<Result<AttendenceDto>> GetByIdAsync(int sessionId, int studentId, CancellationToken ct)
         {
-            throw new NotImplementedException();
+            try
+            {
+                var attendence = await _attendencesRepository.GetByIdAsync(sessionId, studentId, ct);
+
+                //validation
+                //
+                var dto = _mapper.Map<Attendence, AttendenceDto>(attendence);
+               
+                return Result.Success(dto);
+            }
+            catch (OperationCanceledException)
+            {
+                return Result.Failure<AttendenceDto>(CommonErrors.OperationCancelled);
+            }
+            catch (Exception ex)
+            {
+                return Result.Failure<AttendenceDto>(AppError.Failure);
+            }
+        }
+        public async Task<Result<DataResult<AttendenceDto>>> GetAllForSessionAsync(int sessionId, CancellationToken ct)
+        {
+           try
+            {
+                var attendences = (await _attendencesRepository.GetAllForSessionAsync(sessionId, ct)).ToList();
+
+                //validation
+                //
+
+                var dtos = _mapper.Map<List<Attendence>, List<AttendenceDto>>(attendences);
+                var result = new DataResult<AttendenceDto>
+                {
+                    Data = dtos,
+                    TotalRecordsCount = dtos.Count
+                };
+                return Result.Success(result);
+            }
+            catch (OperationCanceledException)
+            {
+                return Result.Failure<DataResult<AttendenceDto>>(CommonErrors.OperationCancelled);
+            }
+            catch (Exception ex)
+            {
+                return Result.Failure<DataResult<AttendenceDto>>(AppError.Failure);
+            }
         }
 
-        public Task<Result<DataResult<AttendenceDto>>> GetAllForStudentAsync(int sessionId, int studentId, CancellationToken ct)
+        public async Task<Result<DataResult<AttendenceDto>>> GetAllForStudentAsync(int sessionId, int studentId, CancellationToken ct)
         {
-            throw new NotImplementedException();
+           try
+            {
+                var attendences = (await _attendencesRepository.GetAllForStudentAsync(sessionId, studentId, ct)).ToList();
+
+                //validation
+                //
+                var dtos = _mapper.Map<List<Attendence>, List<AttendenceDto>>(attendences);
+                var result = new DataResult<AttendenceDto>
+                {
+                    Data = dtos,
+                    TotalRecordsCount = dtos.Count
+                };
+                return Result.Success(result);
+            }
+            catch (OperationCanceledException)
+            {
+                return Result.Failure<DataResult<AttendenceDto>>(CommonErrors.OperationCancelled);
+            }
+            catch (Exception ex)
+            {
+                return Result.Failure<DataResult<AttendenceDto>>(AppError.Failure);
+            }
         }
 
-        public Task<Result<DataResult<AttendenceDto>>> GetAllForStudentByStatusAsync(int sessionId, int studentId, AttendenceStatus status, CancellationToken ct)
+        public async Task<Result<DataResult<AttendenceDto>>> GetAllForSessionByStatusAsync(int sessionId, AttendenceStatus status, CancellationToken ct)
         {
-            throw new NotImplementedException();
+         try
+            {
+                var attendences = (await _attendencesRepository.GetAllForStudentByStatusAsync(sessionId, status, ct)).ToList();
+                //validation
+                //
+
+                var dtos = _mapper.Map<List<Attendence>, List<AttendenceDto>>(attendences);
+                var result = new DataResult<AttendenceDto>
+                {
+                    Data = dtos,
+                    TotalRecordsCount = dtos.Count
+                };
+                return Result.Success(result);
+            }
+            catch (OperationCanceledException)
+            {
+                return Result.Failure<DataResult<AttendenceDto>>(CommonErrors.OperationCancelled);
+            }
+            catch (Exception ex)
+            {
+                return Result.Failure<DataResult<AttendenceDto>>(AppError.Failure);
+            }
         }
 
 
@@ -210,6 +295,13 @@ namespace Drosy.Application.UseCases.Attendences.Services
                 return Result.Failure<AttendenceDto>(AppError.Failure);
             }
         }
+
+        public Task<Result> DeleteAsync(int sessionId, int studentId, CancellationToken ct)
+        {
+            throw new NotImplementedException();
+        }
+
+        
         #endregion
     }
 
