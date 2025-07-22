@@ -18,8 +18,4 @@ namespace Drosy.Domain.Entities
         #endregion
     }
 
-    public class Session
-    {
-
-    }
 }
