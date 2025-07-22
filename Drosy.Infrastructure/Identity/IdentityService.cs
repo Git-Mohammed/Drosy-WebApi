@@ -1,4 +1,5 @@
-﻿using Drosy.Application.Interfaces.Common;
+﻿using System.Diagnostics.CodeAnalysis;
+using Drosy.Application.Interfaces.Common;
 using Drosy.Domain.Entities;
 using Drosy.Domain.Shared.ApplicationResults;
 using Drosy.Domain.Shared.ErrorComponents.Common;
@@ -60,6 +61,24 @@ namespace Drosy.Infrastructure.Identity
                 return Result.Failure<AppUser>(CommonErrors.Failure);
             }
 
+        }
+
+        public async Task<Result> ChangePasswordAsync(int userId, string oldPassword, string newPassword)
+        {
+            var user = await _userManager.FindByIdAsync(userId.ToString());
+            if (user == null)
+                return Result.Failure(CommonErrors.NullValue);
+
+            var passwordCheck = await _userManager.CheckPasswordAsync(user, oldPassword);
+            if (!passwordCheck)
+                return Result.Failure(UserErrors.InvalidCredentials);
+
+            var changePasswordResult = await _userManager.ChangePasswordAsync(user, oldPassword, newPassword);
+
+            if (!changePasswordResult.Succeeded)
+                return Result.Failure(CommonErrors.Failure);
+
+            return Result.Success();
         }
     }
 }

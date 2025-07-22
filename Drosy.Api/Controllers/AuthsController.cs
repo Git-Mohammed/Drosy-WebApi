@@ -1,4 +1,5 @@
-﻿using Drosy.Api.Commons.Responses;
+﻿using System.Security.Claims;
+using Drosy.Api.Commons.Responses;
 using Drosy.Application.UseCases.Authentication.Interfaces;
 using Drosy.Application.UsesCases.Users.DTOs;
 using Drosy.Domain.Shared.ApplicationResults;
@@ -86,6 +87,25 @@ namespace Drosy.Api.Controllers
                 return ApiResponseFactory.CreateStatusResponse(500, "logout", "An error occurred during logout");
 
             return ApiResponseFactory.SuccessResponse("Logged out successfully");
+        }
+
+        [HttpPost("change-password")]
+        public async Task<IActionResult> ChangePasswordAsync(ChangePasswordDTO dto ,CancellationToken ct)
+        {
+            if (ct.IsCancellationRequested)
+            {
+                return ApiResponseFactory.FromFailure(Result.Failure(CommonErrors.OperationCancelled), nameof(LoginAsync));
+            }
+
+            var userId = 0;
+            int.TryParse(User.FindFirst(ClaimTypes.NameIdentifier)?.Value, out userId);
+            var result = await _authService.ChangePasswordAsync(userId, dto, ct);
+
+            if (result.IsFailure)
+            {
+                return ApiResponseFactory.BadRequestResponse(nameof(ChangePasswordAsync), result.Error.Message);
+            }
+            return ApiResponseFactory.SuccessResponse("Password Cahnge Succefully");
         }
 
         private void SetRefreshTokenInCookie(string refreshToken, DateTime expires)

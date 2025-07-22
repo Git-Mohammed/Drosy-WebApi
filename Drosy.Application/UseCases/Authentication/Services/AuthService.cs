@@ -86,6 +86,24 @@ namespace Drosy.Application.UseCases.Authentication.Services
             }
         }
 
-      
+        public async Task<Result> ChangePasswordAsync(int userId, ChangePasswordDTO dto, CancellationToken ct)
+        {
+            try
+            {
+                ct.ThrowIfCancellationRequested();
+
+
+                var changePasswordResult = await _identityService.ChangePasswordAsync(userId, dto.OldPassword, dto.NewPassword);
+
+                return changePasswordResult.IsSuccess ?
+                    Result.Success()
+                  : Result.Failure(changePasswordResult.Error);
+            }
+            catch (OperationCanceledException) 
+            {
+                _logger.LogWarning(CommonErrors.OperationCancelled.Message, "Operation Canceld While chagning user password {userId}", userId);
+                return Result.Failure(CommonErrors.OperationCancelled);
+            }
+        }
     }
 }

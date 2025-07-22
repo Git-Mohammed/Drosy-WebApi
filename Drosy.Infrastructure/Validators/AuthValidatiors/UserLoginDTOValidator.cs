@@ -1,7 +1,7 @@
 ﻿using Drosy.Application.UsesCases.Users.DTOs;
 using FluentValidation;
 
-namespace Drosy.Infrastructure.Validators.RefreshTokenValidator
+namespace Drosy.Infrastructure.Validators.AuthValidatiors
 {
     public class UserLoginDTOValidator : AbstractValidator<UserLoginDTO>
     {
