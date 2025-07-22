@@ -1,6 +1,8 @@
 ﻿using Drosy.Api.Commons.Responses;
 using Drosy.Application.UseCases.Attendences.DTOs;
 using Drosy.Application.UseCases.Attendences.Interfaces;
+using Drosy.Domain.Entities;
+using Drosy.Domain.Enums;
 using Drosy.Domain.Shared.ErrorComponents;
 using Drosy.Domain.Shared.ErrorComponents.Common;
 using Microsoft.AspNetCore.Mvc;
@@ -19,12 +21,22 @@ namespace Drosy.Api.Controllers
         }
 
 
-        [HttpGet("{id:int}", Name = "GetAttendencetById")]
-        public async Task<IActionResult> GetByIdAsync([FromRoute] int sessionId, [FromQuery] int id, CancellationToken ct)
+        [HttpGet("{studentId:int}", Name = "GetAttendenceById")]
+        public async Task<IActionResult> GetByIdAsync([FromRoute] int sessionId, [FromRoute] int studentId, CancellationToken ct)
         {
+            if (studentId < 1)
+            {
+                var error = new ApiError("studentId", ErrorMessageResourceRepository.GetMessage(CommonErrors.Invalid.Message, AppError.CurrentLanguage));
+                return ApiResponseFactory.BadRequestResponse("studentId", "Invalid student ID.", error.Message);
+            }
+
             try
             {
-                return Ok();
+                var result = await _attendencesService.GetByIdAsync(sessionId, studentId, ct);
+                if (result.IsFailure)
+                    return ApiResponseFactory.FromFailure(result, nameof(GetByIdAsync), "Attendence");
+
+                return ApiResponseFactory.SuccessResponse(result.Value);
             }
             catch (Exception ex)
             {
@@ -38,7 +50,61 @@ namespace Drosy.Api.Controllers
         {
             try
             {
-                return Ok();
+                var result = await _attendencesService.GetAllForSessionAsync(sessionId, ct);
+                if (result.IsFailure)
+                    return ApiResponseFactory.FromFailure(result, nameof(GetAllForSessionAsync), "Attendences");
+
+                return ApiResponseFactory.SuccessResponse(result.Value);
+            }
+            catch (Exception ex)
+            {
+                return ApiResponseFactory.FromException(ex);
+            }
+        }
+
+
+        [HttpGet("student/{studentId:int}", Name = "GetSessionStudentAttendences")]
+        public async Task<IActionResult> GetAllForStudentInSessionAsync([FromRoute] int sessionId, [FromRoute] int studentId, CancellationToken ct)
+        {
+            if (studentId < 1)
+            {
+                var error = new ApiError("studentId", ErrorMessageResourceRepository.GetMessage(CommonErrors.Invalid.Message, AppError.CurrentLanguage));
+                return ApiResponseFactory.BadRequestResponse("studentId", "Invalid student ID.", error.Message);
+            }
+            try
+            {
+                var result = await _attendencesService.GetAllForStudentAsync(sessionId, studentId, ct);
+                if (result.IsFailure)
+                    return ApiResponseFactory.FromFailure(result, nameof(GetAllForStudentInSessionAsync), "Attendences");
+
+                return ApiResponseFactory.SuccessResponse(result.Value);
+            }
+            catch (Exception ex)
+            {
+                return ApiResponseFactory.FromException(ex);
+            }
+        }
+
+
+        [HttpGet("status", Name = "GetSessionAttendencesByStatus")]
+        public async Task<IActionResult> GetAllForSessionByStatusAsync([FromRoute] int sessionId,  [FromQuery] AttendenceStatus status, CancellationToken ct)
+        {
+            if (status == null || !Enum.IsDefined(typeof(AttendenceStatus), status))
+            {
+                var error = new ApiError(
+                    "status",
+                    ErrorMessageResourceRepository.GetMessage(CommonErrors.Invalid.Message, AppError.CurrentLanguage)
+                );
+                return ApiResponseFactory.BadRequestResponse("status", "Invalid attendence status.", error.Message);
+            }
+
+            try
+            {
+                var result = await _attendencesService.GetAllForSessionByStatusAsync(sessionId,  status, ct);
+                if (result.IsFailure)
+                    return ApiResponseFactory.FromFailure(result, nameof(GetAllForSessionByStatusAsync), "Attendences");
+
+                return ApiResponseFactory.SuccessResponse(result.Value);
             }
             catch (Exception ex)
             {
@@ -109,13 +175,13 @@ namespace Drosy.Api.Controllers
         }
 
 
-        [HttpPut("{id:int}", Name = "UpdateAttendence")]
-        public async Task<IActionResult> UpdateAsync([FromRoute] int sessionId, [FromQuery] int id, [FromBody] UpdateAttendencenDto dto, CancellationToken ct)
+        [HttpPut("{studentId:int}", Name = "UpdateAttendence")]
+        public async Task<IActionResult> UpdateAsync([FromRoute] int sessionId, [FromRoute] int studentId, [FromBody] UpdateAttendencenDto dto, CancellationToken ct)
         {
-            if (id < 1)
+            if (studentId < 1)
             {
-                var error = new ApiError("id", ErrorMessageResourceRepository.GetMessage(CommonErrors.Invalid.Message, AppError.CurrentLanguage));
-                return ApiResponseFactory.BadRequestResponse("id", "Invalid student ID.", error.Message);
+                var error = new ApiError("studentId", ErrorMessageResourceRepository.GetMessage(CommonErrors.Invalid.Message, AppError.CurrentLanguage));
+                return ApiResponseFactory.BadRequestResponse("studentId", "Invalid student ID.", error.Message);
             }
 
             if (dto == null)
@@ -126,7 +192,7 @@ namespace Drosy.Api.Controllers
 
             try
             {
-                var result = await _attendencesService.UpdateAsync(sessionId, id,dto, ct);
+                var result = await _attendencesService.UpdateAsync(sessionId, studentId , dto, ct);
 
                 if (result.IsFailure)
                 {
@@ -140,5 +206,29 @@ namespace Drosy.Api.Controllers
                 return ApiResponseFactory.FromException(ex);
             }
         }
+
+
+        [HttpDelete("{studentId:int}", Name = "DeleteAttendence")]
+        public async Task<IActionResult> DeleteAsync( [FromRoute] int sessionId,   [FromRoute] int studentId,  CancellationToken ct) {
+     
+            if (studentId < 1)
+            {
+                var error = new ApiError(  "studentId",   ErrorMessageResourceRepository.GetMessage(CommonErrors.Invalid.Message, AppError.CurrentLanguage)    );
+                return ApiResponseFactory.BadRequestResponse(     "studentId",  "Invalid student ID.",error.Message);
+            }
+
+            try {
+                var result = await _attendencesService.DeleteAsync(sessionId, studentId, ct);
+                if (result.IsFailure)
+                    return ApiResponseFactory.FromFailure(  result,    nameof(DeleteAsync), "Attendence" );
+
+                return ApiResponseFactory.SuccessResponse("Attendence deleted successfully.");
+            }
+            catch (Exception ex)
+            {
+                return ApiResponseFactory.FromException(ex);
+            }
+        }
+
     }
 }
