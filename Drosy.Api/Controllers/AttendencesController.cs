@@ -110,7 +110,7 @@ namespace Drosy.Api.Controllers
 
 
         [HttpPut("{id:int}", Name = "AddRangeOfStudentAttendenceForSession")]
-        public async Task<IActionResult> UpdateAsync([FromRoute] int sessionId,[FromQuery] int id, [FromBody] UpdateAttendencenDto dto, CancellationToken ct)
+        public async Task<IActionResult> UpdateAsync([FromRoute] int sessionId, [FromQuery] int id, [FromBody] UpdateAttendencenDto dto, CancellationToken ct)
         {
             if (id < 1)
             {

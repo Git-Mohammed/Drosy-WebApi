@@ -6,7 +6,6 @@ namespace Drosy.Application.UseCases.Attendences.DTOs
     {
         public AttendenceStatus Status { get; set; }
         public string Note { get; set; } = null!;
-        public DateTime UpdatedAt { get; set; }
     }
 }
 

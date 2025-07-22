@@ -114,13 +114,14 @@ namespace Drosy.Application.UseCases.Attendences.Services
                 // Get all already existing attendances for this session and students
                 var studentIds = dtos.Select(d => d.StudentId).Distinct().ToList();
                 var existingAttendences = await _attendencesRepository
-                    .GetAllForStudentBySessionAsync(sessionId, studentIds, ct); // You may need to implement this repo method
+                    .GetAllForStudentBySessionAsync(sessionId, studentIds, ct); 
 
                 var existingStudentIds = existingAttendences.Select(a => a.StudentId).ToHashSet();
 
                 // Filter out students who already have attendances in this session
                 var newDtos = dtos.Where(dto => !existingStudentIds.Contains(dto.StudentId)).ToList();
 
+                // 
                 if (!newDtos.Any())
                 {
                     _logger.LogWarning("All provided students already have attendances in session {SessionId}", sessionId);

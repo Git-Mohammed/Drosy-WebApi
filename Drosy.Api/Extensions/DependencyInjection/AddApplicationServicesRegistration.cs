@@ -49,7 +49,7 @@ namespace Drosy.Api.Extensions.DependencyInjection
                         ValidateAudience = true,
                         ValidateLifetime = true,
                         ValidateIssuerSigningKey = true,
-                        ValidIssuer = authOption.Issuer,
+                        ValidIssuer = authOption!.Issuer,
                         ValidAudience = authOption.Audience,
                         ClockSkew = TimeSpan.Zero,
                         IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(authOption.SigningKey))
