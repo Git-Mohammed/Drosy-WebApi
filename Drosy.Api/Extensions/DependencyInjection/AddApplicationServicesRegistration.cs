@@ -1,22 +1,22 @@
 ﻿
-using Drosy.Application.Interfaces;
+using System.Text;
 using Drosy.Application.Interfaces.Common;
 using Drosy.Application.UseCases.Authentication.Interfaces;
 using Drosy.Application.UseCases.Authentication.Services;
+using Drosy.Application.UseCases.Email.DTOs;
+using Drosy.Application.UseCases.Email.Interfaces;
+using Drosy.Application.UseCases.Plans.Interfaces;
+using Drosy.Application.UseCases.Plans.Services;
 using Drosy.Application.UseCases.PlanStudents.Interfaces;
 using Drosy.Application.UseCases.PlanStudents.Services;
 using Drosy.Application.UseCases.Students.Interfaces;
 using Drosy.Application.UseCases.Students.Services;
 using Drosy.Application.UsesCases.Authentication.DTOs;
-using Drosy.Domain.Interfaces.Repository;
+using Drosy.Infrastructure.Email.Mailkit;
 using Drosy.Infrastructure.Identity;
 using Drosy.Infrastructure.JWT;
-using Drosy.Infrastructure.Persistence.Repositories;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
-using System.Text;
-using Drosy.Application.UseCases.Plans.Interfaces;
-using Drosy.Application.UseCases.Plans.Services;
 
 namespace Drosy.Api.Extensions.DependencyInjection
 {
@@ -34,9 +34,16 @@ namespace Drosy.Api.Extensions.DependencyInjection
             services.AddScoped<IStudentService, StudentService>();
             services.AddScoped<IPlanStudentsService, PlanStudentsService>();
             services.AddScoped<IPlanService, PlanService>();
+            services.AddScoped<IEmailService, EmailService>();
+            #endregion
+
+            #region Email Configurations
+            services.Configure<EmailOptions>(
+            configuration.GetSection("EmailSettings"));
             #endregion
 
             #region JWT Registration
+
 
             var authOption = configuration.GetSection("JWT").Get<AuthOptions>();
             services.AddSingleton(authOption);

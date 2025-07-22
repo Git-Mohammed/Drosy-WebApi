@@ -80,5 +80,15 @@ namespace Drosy.Infrastructure.Identity
 
             return Result.Success();
         }
+
+        public async Task<Result> ForgetPasswordAsync(string email)
+        {
+            var user = await _userManager.FindByEmailAsync(email);
+
+            if (user == null) 
+                return Result.Failure(CommonErrors.NullValue);
+
+
+        }
     }
 }

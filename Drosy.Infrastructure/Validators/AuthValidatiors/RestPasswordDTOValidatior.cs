@@ -1,16 +1,11 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using Drosy.Application.UsesCases.Users.DTOs;
+﻿using Drosy.Application.UsesCases.Users.DTOs;
 using FluentValidation;
 
 namespace Drosy.Infrastructure.Validators.UserValidatiors
 {
-    public class ChangePasswordDTOValidatior : AbstractValidator<ChangePasswordDTO> 
+    public class RestPasswordDTOValidatior : AbstractValidator<RestPasswordDTO>
     {
-        public ChangePasswordDTOValidatior()
+        public RestPasswordDTOValidatior()
         {
             RuleFor(x => x.NewPassword)
             .NotEmpty().WithMessage("New Password is required.")
@@ -21,8 +16,10 @@ namespace Drosy.Infrastructure.Validators.UserValidatiors
             .Matches(@"[\W]").WithMessage("New Password must contain at least one special character.");
 
             RuleFor(x => x.ConfirmedPassword).Equal(x => x.NewPassword).WithMessage("Confirmed Password Should match New Password");
-
-            RuleFor(x => x.OldPassword).NotEmpty().WithMessage("Old Password should not be empty");
+            
+            RuleFor(x => x.Email)
+                .NotEmpty().WithMessage("Email is required.")
+                .EmailAddress().WithMessage("A valid email address is required.");
         }
 
     }

@@ -1,10 +1,11 @@
-﻿using Drosy.Application.Interfaces.Common;
+﻿using System.Security.Claims;
+using Drosy.Application.Interfaces.Common;
 using Drosy.Application.UseCases.Authentication.Interfaces;
+using Drosy.Application.UseCases.Email.Interfaces;
 using Drosy.Application.UsesCases.Authentication.DTOs;
 using Drosy.Application.UsesCases.Users.DTOs;
 using Drosy.Domain.Interfaces.Repository;
 using Drosy.Domain.Shared.ApplicationResults;
-using System.Security.Claims;
 using Drosy.Domain.Shared.ErrorComponents.Common;
 
 namespace Drosy.Application.UseCases.Authentication.Services
@@ -15,13 +16,15 @@ namespace Drosy.Application.UseCases.Authentication.Services
         private readonly IAppUserRepository _userRepository;
         private readonly IJwtService _jwtService;
         private readonly ILogger<AuthService> _logger;
+        private readonly IEmailService _emailService;
 
-        public AuthService(IJwtService jwtService, IAppUserRepository userRepository, IIdentityService identity, ILogger<AuthService> logger)
+        public AuthService(IJwtService jwtService, IAppUserRepository userRepository, IIdentityService identity, ILogger<AuthService> logger, IEmailService emailService)
         {
             _jwtService = jwtService;
             _userRepository = userRepository;
             _identityService = identity;
             _logger = logger;
+            _emailService = emailService;
         }
 
         public async Task<Result<AuthModel>> LoginAsync(UserLoginDTO user, CancellationToken token)
@@ -104,6 +107,11 @@ namespace Drosy.Application.UseCases.Authentication.Services
                 _logger.LogWarning(CommonErrors.OperationCancelled.Message, "Operation Canceld While chagning user password {userId}", userId);
                 return Result.Failure(CommonErrors.OperationCancelled);
             }
+        }
+
+        public Task<Result> ForgetPasswordAsync(string email)
+        {
+            throw new NotImplementedException();
         }
     }
 }

@@ -1,6 +1,7 @@
 ﻿using System.Security.Claims;
 using Drosy.Api.Commons.Responses;
 using Drosy.Application.UseCases.Authentication.Interfaces;
+using Drosy.Application.UseCases.Email.Interfaces;
 using Drosy.Application.UsesCases.Users.DTOs;
 using Drosy.Domain.Shared.ApplicationResults;
 using Drosy.Domain.Shared.ErrorComponents.Common;
@@ -15,6 +16,7 @@ namespace Drosy.Api.Controllers
     public class AuthsController : ControllerBase
     {
         private readonly IAuthService _authService;
+
         public AuthsController(IAuthService authService)
         {
             _authService = authService;
@@ -64,7 +66,6 @@ namespace Drosy.Api.Controllers
 
             return ApiResponseFactory.SuccessResponse(result.Value, "Token refreshed successfully");
         }
-
 
         [HttpPost("logout")]
         public async Task<IActionResult> Logout(CancellationToken cancellationToken)
