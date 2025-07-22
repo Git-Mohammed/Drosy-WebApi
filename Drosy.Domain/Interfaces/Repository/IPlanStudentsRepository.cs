@@ -15,7 +15,7 @@ namespace Drosy.Domain.Interfaces.Repository
         /// <param name="predicate">The condition to match.</param>
         /// <param name="cancellationToken">A token to cancel the asynchronous operation.</param>
         /// <returns><c>true</c> if any matching entity exists; otherwise, <c>false</c>.</returns>
-        Task<bool> ExistsAsync(int planId,int studentId, CancellationToken cancellationToken);
+        Task<bool> ExistsAsync(int planId,int studentId, CancellationToken ct);
 
         /// <summary>
         /// Retrieves a list of student IDs that are already assigned to the specified plan.
