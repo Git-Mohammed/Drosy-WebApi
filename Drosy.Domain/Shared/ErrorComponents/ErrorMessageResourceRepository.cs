@@ -7,6 +7,7 @@ using Drosy.Domain.Shared.ErrorComponents.User.Resources;
 using Drosy.Domain.Shared.ErrorComponents.Validation.Resources;
 using System.Globalization;
 using System.Resources;
+using Drosy.Domain.Shared.ErrorComponents.Payments.Resources;
 
 namespace Drosy.Domain.Shared.ErrorComponents
 {
@@ -22,7 +23,8 @@ namespace Drosy.Domain.Shared.ErrorComponents
             ErrorMessages_EFCore.ResourceManager,
             ValidationMessages.ResourceManager,
             ErrorMessages_Plan.ResourceManager,
-            ErrorMessages_Session.ResourceManager
+            ErrorMessages_Session.ResourceManager,
+            ErrorMessages_Payment.ResourceManager,
         ];
 
         private static readonly ResourceManager FallbackResourceManager = ErrorMessages_Common.ResourceManager;
