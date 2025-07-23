@@ -8,7 +8,8 @@ public class PaymentMappingConfig : IRegister
 {
     public void Register(TypeAdapterConfig config)
     {
-        config.NewConfig<Payment,PaymentDto>();
+        config.NewConfig<Payment,PaymentDto>()
+            .Map(dest => dest.PaymentDate, src => src.CreatedAt);
         config.NewConfig<CreatePaymentDto,Payment>();
     }
 }

@@ -13,7 +13,6 @@
 
     <ItemGroup>
       <Folder Include="ExternalServices\" />
-      <Folder Include="Validators\PaymentValidators\" />
     </ItemGroup>
 
     <ItemGroup>

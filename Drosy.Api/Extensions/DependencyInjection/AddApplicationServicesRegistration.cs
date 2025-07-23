@@ -8,6 +8,8 @@ using Drosy.Application.UseCases.Authentication.Interfaces;
 using Drosy.Application.UseCases.Authentication.Services;
 using Drosy.Application.UseCases.Email.DTOs;
 using Drosy.Application.UseCases.Email.Interfaces;
+using Drosy.Application.UseCases.Payments.Interfaces;
+using Drosy.Application.UseCases.Payments.Services;
 using Drosy.Application.UseCases.Plans.Interfaces;
 using Drosy.Application.UseCases.Plans.Services;
 using Drosy.Application.UseCases.PlanStudents.Interfaces;
@@ -38,6 +40,7 @@ namespace Drosy.Api.Extensions.DependencyInjection
             services.AddScoped<IPlanStudentsService, PlanStudentsService>();
             services.AddScoped<IPlanService, PlanService>();
             services.AddScoped<IAttendencesService, AttendencesService>();
+            services.AddScoped<IPaymentService, PaymentService>();
             services.AddScoped<IEmailService, EmailService>();
             #endregion
 
