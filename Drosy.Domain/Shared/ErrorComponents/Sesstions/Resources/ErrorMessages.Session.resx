@@ -117,6 +117,9 @@
   <resheader name="writer">
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
+  <data name="Error_Session_ExpectedDateInThePast" xml:space="preserve">
+    <value>يجب أن لا يكون التاريخ المتوقع في الماضي.</value>
+  </data>
   <data name="Error_Session_InvalidTimeRange" xml:space="preserve">
     <value>النطاق الزمني المحدد للجلسة غير صالح.</value>
   </data>

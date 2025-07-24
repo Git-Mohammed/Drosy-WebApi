@@ -21,7 +21,7 @@ namespace Drosy.Infrastructure.Validators.SessionValidatiors
 
             // 📌 Expected Date must not be in the past
             RuleFor(x => x.ExcepectedDate.Date)
-                .GreaterThanOrEqualTo(DateTime.Today).WithMessage(SessionErrors.OutsideExpectedDate.Message);
+                .GreaterThanOrEqualTo(DateTime.Today).WithMessage(SessionErrors.ExpectedDateInThePast.Message);
 
             // 📌 StartTime must be before EndTime
             RuleFor(x => x)
