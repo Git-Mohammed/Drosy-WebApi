@@ -7,6 +7,7 @@ using Drosy.Infrastructure.Identity.Entities;
 using Drosy.Infrastructure.Logging;
 using Drosy.Infrastructure.Mapping.Configs;
 using Drosy.Infrastructure.Persistence.DbContexts;
+using Drosy.Infrastructure.Persistence.Intercepters;
 using Drosy.Infrastructure.Persistence.Repositories;
 using Drosy.Infrastructure.Persistence.Uow;
 using Drosy.Infrastructure.Validators;
@@ -48,11 +49,15 @@ namespace Drosy.Api.Extensions.DependencyInjection
                 .AddDefaultTokenProviders();
             #endregion
 
+            #region  Interceptors
+            services.AddScoped<AuditAtInterceptor>();
+            #endregion
+            
             #region Register Ef Core
-
             services.AddDbContext<ApplicationDbContext>(option =>
             {
-                option.UseSqlServer(configuration.GetConnectionString("DefaultConnection"));
+                option.UseSqlServer(configuration.GetConnectionString("DefaultConnection"))
+                    .AddInterceptors(new AuditAtInterceptor());
             });
             #endregion
 
@@ -66,8 +71,8 @@ namespace Drosy.Api.Extensions.DependencyInjection
             services.AddScoped<IPasswordResetTokenRepository, PasswordResetTokenRepository>();
             services.AddScoped<IPaymentRepository, PaymentRepository>();
             services.AddScoped<IAttendencesRepository, AttendencesRepository>();
-            #endregion 
-
+            #endregion
+            
             return services;
         }
     }
