@@ -1,22 +1,39 @@
 ﻿using Drosy.Application.UseCases.Attendences.DTOs;
 using Drosy.Domain.Enums;
 using FluentValidation;
+using System;
 
-namespace Drosy.Infrastructure.Validators.AttendencesValidators
+/// <summary>
+/// Validator for <see cref="AddAttendencenDto"/> used to validate attendance data before processing.
+/// </summary>
+public class AddAttendencenDtoValidator : AbstractValidator<AddAttendencenDto>
 {
-    public class UpdateAttendencenDtoValidator : AbstractValidator<UpdateAttendencenDto>
+    /// <summary>
+    /// Initializes a new instance of the <see cref="AddAttendencenDtoValidator"/> class
+    /// and defines validation rules for AddAttendencenDto properties.
+    /// </summary>
+    public AddAttendencenDtoValidator()
     {
-        public UpdateAttendencenDtoValidator()
-        {
-            RuleFor(x => x.Status)
-                .Must(status => Enum.IsDefined(typeof(AttendenceStatus), status))
-                .WithMessage("Invalid attendence status value. Allowed: Present, Absent.");
+        /// <summary>
+        /// Validates that <see cref="AddAttendencenDto.StudentId"/> is greater than zero.
+        /// </summary>
+        RuleFor(x => x.StudentId)
+            .GreaterThan(0)
+            .WithMessage("Please specify a valid student id.");
 
-            RuleFor(x => x.Note)
-                .NotNull()
-                .WithMessage("Note cannot be null.")
-                .MaximumLength(500)
-                .WithMessage("Note cannot exceed 500 characters.");
-        }
+        /// <summary>
+        /// Validates that <see cref="AddAttendencenDto.Note"/> does not exceed 500 characters.
+        /// The note is optional (nullable), so no null check is enforced here.
+        /// </summary>
+        RuleFor(x => x.Note)
+            .MaximumLength(500)
+            .WithMessage("Note cannot exceed 500 characters.");
+
+        /// <summary>
+        /// Validates that <see cref="AddAttendencenDto.Status"/> is a valid value defined in the <see cref="AttendenceStatus"/> enum.
+        /// </summary>
+        RuleFor(x => x.Status)
+            .Must(status => Enum.IsDefined(typeof(AttendenceStatus), status))
+            .WithMessage("Invalid attendance status. Allowed values are: Present, Absent.");
     }
 }
