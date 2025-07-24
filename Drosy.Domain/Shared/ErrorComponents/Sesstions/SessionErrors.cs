@@ -11,7 +11,9 @@
         public static AppError TitleRequired => new(SessionErrorCodes.TitleRequired);
         public static AppError InvalidTimeRange => new(SessionErrorCodes.InvalidTimeRange);
         public static AppError PlanNotFound => new(SessionErrorCodes.PlanNotFound);
-        public static AppError SessionNotFound => new(SessionErrorCodes.SessionNotFound); 
+        public static AppError SessionNotFound => new(SessionErrorCodes.SessionNotFound);
+        public static AppError ExpectedDateInThePast => new(SessionErrorCodes.ExpectedDateInThePast);
+
 
     }
 }

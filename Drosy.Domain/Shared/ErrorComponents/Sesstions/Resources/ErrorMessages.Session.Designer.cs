@@ -61,6 +61,15 @@ namespace Drosy.Domain.Shared.ErrorComponents.Sesstions.Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to يجب أن لا يكون التاريخ المتوقع في الماضي..
+        /// </summary>
+        internal static string Error_Session_ExpectedDateInThePast {
+            get {
+                return ResourceManager.GetString("Error_Session_ExpectedDateInThePast", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to النطاق الزمني المحدد للجلسة غير صالح..
         /// </summary>
         internal static string Error_Session_InvalidTimeRange {
