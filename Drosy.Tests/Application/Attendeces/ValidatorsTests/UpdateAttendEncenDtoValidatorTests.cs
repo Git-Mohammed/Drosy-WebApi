@@ -21,15 +21,17 @@ namespace Drosy.Tests.Application.Attendeces.ValidatorsTests
         }
 
         [Theory]
-        [InlineData(null, false)]
+        [InlineData(null, true)]  // allow null note as valid
         [InlineData("", true)]
         [InlineData("ok", true)]
         public void NoteValidation(string note, bool valid)
         {
             var model = new UpdateAttendencenDto { Status = AttendenceStatus.Present, Note = note };
             var result = _validator.TestValidate(model);
-            if (valid) result.ShouldNotHaveValidationErrorFor(x => x.Note);
-            else result.ShouldHaveValidationErrorFor(x => x.Note);
+            if (valid)
+                result.ShouldNotHaveValidationErrorFor(x => x.Note);
+            else
+                result.ShouldHaveValidationErrorFor(x => x.Note);
         }
 
     }

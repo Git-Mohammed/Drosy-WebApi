@@ -11,6 +11,11 @@
     </ItemGroup>
 
     <ItemGroup>
+      <Compile Update="Shared\ErrorComponents\Attendence\Resources\ErrorMessages.Attendance.Designer.cs">
+        <DesignTime>True</DesignTime>
+        <AutoGen>True</AutoGen>
+        <DependentUpon>ErrorMessages.Attendance.resx</DependentUpon>
+      </Compile>
       <Compile Update="Shared\ErrorComponents\Common\Resources\ErrorMessages.Common.Designer.cs">
         <DesignTime>True</DesignTime>
         <AutoGen>True</AutoGen>
@@ -99,6 +104,10 @@
     </ItemGroup>
 
     <ItemGroup>
+      <EmbeddedResource Update="Shared\ErrorComponents\Attendence\Resources\ErrorMessages.Attendance.resx">
+        <Generator>ResXFileCodeGenerator</Generator>
+        <LastGenOutput>ErrorMessages.Attendance.Designer.cs</LastGenOutput>
+      </EmbeddedResource>
       <EmbeddedResource Update="Shared\ErrorComponents\Common\Resources\ErrorMessages.Common.resx">
         <Generator>PublicResXFileCodeGenerator</Generator>
         <LastGenOutput>ErrorMessages.Common.Designer.cs</LastGenOutput>
