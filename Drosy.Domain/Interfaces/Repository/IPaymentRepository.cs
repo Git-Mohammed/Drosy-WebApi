@@ -5,5 +5,5 @@ namespace Drosy.Domain.Interfaces.Repository;
 
 public interface IPaymentRepository : IRepository<Payment>
 {
-    
+    Task<Payment> GetByIdAsync(int id, CancellationToken cancellationToken);
 }
