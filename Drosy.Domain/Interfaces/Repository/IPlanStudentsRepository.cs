@@ -9,6 +9,8 @@ namespace Drosy.Domain.Interfaces.Repository
     /// </summary>
     public interface IPlanStudentsRepository : IRepository<PlanStudent>
     {
+        Task<PlanStudent?> GetById(int planId, int studentId, CancellationToken ct);
+
         /// <summary>
         /// Checks whether any <see cref="PlanStudent"/> exists that matches the given predicate.
         /// </summary>

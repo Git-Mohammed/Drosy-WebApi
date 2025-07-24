@@ -30,6 +30,38 @@ namespace Drosy.Application.UseCases.PlanStudents.Services
             _logger = logger;
         }
 
+        public async Task<Result<PlanStudentDto>> GetById(int planId, int studentId, CancellationToken ct)
+        {
+            _logger.LogInformation("Starting GetById for PlanId={PlanId}, StudentId={StudentId}", planId, studentId);
+
+            try
+            {
+                ct.ThrowIfCancellationRequested();
+
+                PlanStudent? entity = await _planStudentRepository.GetById(planId,studentId, ct);
+
+                if (entity != null)
+                {
+                    _logger.LogInformation("Student {StudentId} not in Plan {PlanId}", studentId, planId);
+                    return Result.Failure<PlanStudentDto>(CommonErrors.NotFound);
+                }
+
+                var dto = _mapper.Map<PlanStudent,PlanStudentDto>(entity!);
+
+                return Result.Success(dto);
+            }
+            catch (OperationCanceledException)
+            {
+                _logger.LogWarning("Operation canceled in GetById for PlanId={PlanId}", planId);
+                return Result.Failure<PlanStudentDto>(CommonErrors.OperationCancelled);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex.Message, "Unexpected error in GetById for PlanId={PlanId}, StudentId={StudentId}", planId, studentId);
+                return Result.Failure<PlanStudentDto>(AppError.Failure);
+            }
+        }
+
         public async Task<Result> IsStudentInPlanAsync(int planId, int studentId, CancellationToken ct)
         {
             _logger.LogInformation("Starting IsStudentInPlanAsync for PlanId={PlanId}, StudentId={StudentId}", planId, studentId);

@@ -8,6 +8,7 @@ namespace Drosy.Application.UseCases.PlanStudents.Interfaces
     /// </summary>
     public interface IPlanStudentsService
     {
+        Task<Result<PlanStudentDto>> GetById(int planId, int studentId, CancellationToken ct);
         /// <summary>
         /// Checks whether a student is already assigned to a specific plan.
         /// </summary>
