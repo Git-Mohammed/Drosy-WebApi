@@ -11,6 +11,7 @@ using Drosy.Domain.Interfaces.Common.Uow;
 using Drosy.Domain.Interfaces.Repository;
 using Drosy.Domain.Shared.ApplicationResults;
 using Drosy.Domain.Shared.ErrorComponents;
+using Drosy.Domain.Shared.ErrorComponents.Attendence;
 using Drosy.Domain.Shared.ErrorComponents.Common;
 using Drosy.Domain.Shared.ErrorComponents.EFCore;
 using System.Numerics;
@@ -83,9 +84,6 @@ namespace Drosy.Application.UseCases.Attendences.Services
 
                 var attendences = (await _attendencesRepository.GetAllForSessionAsync(sessionId, ct)).ToList();
 
-                //validation
-                //
-
                 var dtos = _mapper.Map<List<Attendence>, List<AttendenceDto>>(attendences);
                 var result = new DataResult<AttendenceDto>
                 {
@@ -104,44 +102,6 @@ namespace Drosy.Application.UseCases.Attendences.Services
             catch (Exception ex)
             {
                 _logger.LogError(ex.Message, "Error in GetAllForSessionAsync for SessionId={SessionId}", sessionId);
-                return Result.Failure<DataResult<AttendenceDto>>(AppError.Failure);
-            }
-        }
-
-        public async Task<Result<DataResult<AttendenceDto>>> GetAllForStudentAsync(int sessionId, int studentId, CancellationToken ct)
-        {
-            _logger.LogInformation("Fetching all attendences for SessionId={SessionId}, StudentId={StudentId}", sessionId, studentId);
-            
-            try
-            {
-                ct.ThrowIfCancellationRequested();
-
-                if (studentId < 1)
-                {
-                    _logger.LogWarning("Invalid studentId {StudentId} provided to GetAllForStudentAsync", studentId);
-                    return Result.Failure<DataResult<AttendenceDto>>(CommonErrors.Invalid);
-                }
-
-                var attendences = (await _attendencesRepository.GetAllForStudentAsync(sessionId, studentId, ct)).ToList();
-
-                var dtos = _mapper.Map<List<Attendence>, List<AttendenceDto>>(attendences);
-                var result = new DataResult<AttendenceDto>
-                {
-                    Data = dtos,
-                    TotalRecordsCount = dtos.Count
-                };
-
-                _logger.LogInformation("Fetched {Count} attendences for SessionId={SessionId}, StudentId={StudentId}", dtos.Count, sessionId, studentId);
-                return Result.Success(result);
-            }
-            catch (OperationCanceledException)
-            {
-                _logger.LogWarning("GetAllForStudentAsync canceled for SessionId={SessionId}, StudentId={StudentId}", sessionId, studentId);
-                return Result.Failure<DataResult<AttendenceDto>>(CommonErrors.OperationCancelled);
-            }
-            catch (Exception ex)
-            {
-                _logger.LogError(ex.Message, "Error in GetAllForStudentAsync for SessionId={SessionId}, StudentId={StudentId}", sessionId, studentId);
                 return Result.Failure<DataResult<AttendenceDto>>(AppError.Failure);
             }
         }
@@ -200,7 +160,7 @@ namespace Drosy.Application.UseCases.Attendences.Services
                 if (existing)
                 {
                     _logger.LogWarning("Attendence already exists for SessionId={SessionId}, StudentId={StudentId}", sessionId, dto.StudentId);
-                    return Result.Failure<AttendenceDto>(CommonErrors.Conflict);
+                    return Result.Failure<AttendenceDto>(AttendenceErrors.AlreadyExists);
                 }
 
                 #endregion
@@ -256,7 +216,7 @@ namespace Drosy.Application.UseCases.Attendences.Services
                 if (!newDtos.Any())
                 {
                     _logger.LogWarning("All provided students already have attendances in session {SessionId}", sessionId);
-                    return Result.Failure<DataResult<AttendenceDto>>(CommonErrors.Conflict);
+                    return Result.Failure<DataResult<AttendenceDto>>(AttendenceErrors.ConflictOnBatchAdd);
                 }
                 #endregion
 

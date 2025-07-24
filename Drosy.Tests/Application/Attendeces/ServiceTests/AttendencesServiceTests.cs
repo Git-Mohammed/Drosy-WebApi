@@ -7,6 +7,7 @@ using Drosy.Domain.Enums;
 using Drosy.Domain.Interfaces.Common.Uow;
 using Drosy.Domain.Interfaces.Repository;
 using Drosy.Domain.Shared.ErrorComponents;
+using Drosy.Domain.Shared.ErrorComponents.Attendence;
 using Drosy.Domain.Shared.ErrorComponents.Common;
 using Drosy.Domain.Shared.ErrorComponents.EFCore;
 using Moq;
@@ -144,59 +145,6 @@ namespace Drosy.Tests.Application.Attendeces.Service
         #endregion
 
 
-        #region GetAllForStudentAsync
-        [Fact]
-        public async Task GetAllForStudentAsync_ShouldReturnInvalid_WhenStudentIdLessThanOne()
-        {
-            var result = await _service.GetAllForStudentAsync(1, 0, CancellationToken.None);
-            Assert.True(result.IsFailure);
-            Assert.Equal(CommonErrors.Invalid, result.Error);
-        }
-
-        [Fact]
-        public async Task GetAllForStudentAsync_ShouldReturnData_WhenValid()
-        {
-            var entities = new List<Attendence> { new() { SessionId = 5, StudentId = 6 } };
-            var dtos = new List<AttendenceDto> { new() { SessionId = 5, StudentId = 6 } };
-            _repoMock
-                .Setup(r => r.GetAllForStudentAsync(5, 6, It.IsAny<CancellationToken>()))
-                .ReturnsAsync(entities);
-            _mapperMock
-                .Setup(m => m.Map<List<Attendence>, List<AttendenceDto>>(entities))
-                .Returns(dtos);
-
-            var result = await _service.GetAllForStudentAsync(5, 6, CancellationToken.None);
-
-            Assert.True(result.IsSuccess);
-            Assert.Equal(1, result.Value.TotalRecordsCount);
-            Assert.Equal(dtos, result.Value.Data);
-        }
-
-        [Fact]
-        public async Task GetAllForStudentAsync_ShouldReturnCancelled_OnCancellation()
-        {
-            var cts = new CancellationTokenSource();
-            cts.Cancel();
-            var result = await _service.GetAllForStudentAsync(1, 2, cts.Token);
-            Assert.True(result.IsFailure);
-            Assert.Equal(CommonErrors.OperationCancelled, result.Error);
-        }
-
-        [Fact]
-        public async Task GetAllForStudentAsync_ShouldReturnFailure_OnException()
-        {
-            _repoMock
-                .Setup(r => r.GetAllForStudentAsync(It.IsAny<int>(), It.IsAny<int>(), It.IsAny<CancellationToken>()))
-                .ThrowsAsync(new Exception("boom"));
-
-            var result = await _service.GetAllForStudentAsync(1, 2, CancellationToken.None);
-            Assert.True(result.IsFailure);
-            Assert.Equal(AppError.Failure, result.Error);
-        }
-
-        #endregion
-
-
         #region GetAllForSessionByStatusAsync
         [Fact]
         public async Task GetAllForSessionByStatusAsync_ShouldReturnInvalid_WhenStatusUndefined()
@@ -261,7 +209,7 @@ namespace Drosy.Tests.Application.Attendeces.Service
 
             var result = await _service.AddAsync(1, dto, CancellationToken.None);
             Assert.True(result.IsFailure);
-            Assert.Equal(CommonErrors.Conflict, result.Error);
+            Assert.Equal(AttendenceErrors.AlreadyExists, result.Error);
         }
 
         [Fact]
@@ -345,7 +293,7 @@ namespace Drosy.Tests.Application.Attendeces.Service
 
             var result = await _service.AddRangeAsync(5, dtos, CancellationToken.None);
             Assert.True(result.IsFailure);
-            Assert.Equal(CommonErrors.Conflict, result.Error);
+            Assert.Equal(AttendenceErrors.ConflictOnBatchAdd, result.Error);
         }
 
         [Fact]
