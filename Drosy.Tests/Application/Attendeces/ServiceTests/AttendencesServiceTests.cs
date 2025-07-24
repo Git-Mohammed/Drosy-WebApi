@@ -7,6 +7,7 @@ using Drosy.Domain.Enums;
 using Drosy.Domain.Interfaces.Common.Uow;
 using Drosy.Domain.Interfaces.Repository;
 using Drosy.Domain.Shared.ErrorComponents;
+using Drosy.Domain.Shared.ErrorComponents.Attendence;
 using Drosy.Domain.Shared.ErrorComponents.Common;
 using Drosy.Domain.Shared.ErrorComponents.EFCore;
 using Moq;
@@ -208,7 +209,7 @@ namespace Drosy.Tests.Application.Attendeces.Service
 
             var result = await _service.AddAsync(1, dto, CancellationToken.None);
             Assert.True(result.IsFailure);
-            Assert.Equal(CommonErrors.Conflict, result.Error);
+            Assert.Equal(AttendenceErrors.AlreadyExists, result.Error);
         }
 
         [Fact]
@@ -292,7 +293,7 @@ namespace Drosy.Tests.Application.Attendeces.Service
 
             var result = await _service.AddRangeAsync(5, dtos, CancellationToken.None);
             Assert.True(result.IsFailure);
-            Assert.Equal(CommonErrors.Conflict, result.Error);
+            Assert.Equal(AttendenceErrors.ConflictOnBatchAdd, result.Error);
         }
 
         [Fact]

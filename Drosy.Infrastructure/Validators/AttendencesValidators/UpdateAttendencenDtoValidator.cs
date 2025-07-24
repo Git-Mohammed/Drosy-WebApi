@@ -1,39 +1,30 @@
 ﻿using Drosy.Application.UseCases.Attendences.DTOs;
 using Drosy.Domain.Enums;
 using FluentValidation;
-using System;
 
-/// <summary>
-/// Validator for <see cref="AddAttendencenDto"/> used to validate attendance data before processing.
-/// </summary>
-public class AddAttendencenDtoValidator : AbstractValidator<AddAttendencenDto>
+namespace Drosy.Infrastructure.Validators.AttendencesValidators
 {
     /// <summary>
-    /// Initializes a new instance of the <see cref="AddAttendencenDtoValidator"/> class
-    /// and defines validation rules for AddAttendencenDto properties.
+    /// Validator for the <see cref="UpdateAttendencenDto"/> class.
+    /// Validates the attendance update data ensuring the status is valid and note length constraints.
     /// </summary>
-    public AddAttendencenDtoValidator()
+    public class UpdateAttendencenDtoValidator : AbstractValidator<UpdateAttendencenDto>
     {
         /// <summary>
-        /// Validates that <see cref="AddAttendencenDto.StudentId"/> is greater than zero.
+        /// Initializes a new instance of the <see cref="UpdateAttendencenDtoValidator"/> class
+        /// and configures validation rules.
         /// </summary>
-        RuleFor(x => x.StudentId)
-            .GreaterThan(0)
-            .WithMessage("Please specify a valid student id.");
+        public UpdateAttendencenDtoValidator()
+        {
+            // Validate that the Status is a defined value in the AttendenceStatus enum
+            RuleFor(x => x.Status)
+                .Must(status => Enum.IsDefined(typeof(AttendenceStatus), status))
+                .WithMessage("The attendance status provided is not valid. Accepted values are: Present or Absent.");
 
-        /// <summary>
-        /// Validates that <see cref="AddAttendencenDto.Note"/> does not exceed 500 characters.
-        /// The note is optional (nullable), so no null check is enforced here.
-        /// </summary>
-        RuleFor(x => x.Note)
-            .MaximumLength(500)
-            .WithMessage("Note cannot exceed 500 characters.");
-
-        /// <summary>
-        /// Validates that <see cref="AddAttendencenDto.Status"/> is a valid value defined in the <see cref="AttendenceStatus"/> enum.
-        /// </summary>
-        RuleFor(x => x.Status)
-            .Must(status => Enum.IsDefined(typeof(AttendenceStatus), status))
-            .WithMessage("Invalid attendance status. Allowed values are: Present, Absent.");
+            // Validate that the Note property does not exceed 500 characters
+            RuleFor(x => x.Note)
+                .MaximumLength(500)
+                .WithMessage("Note cannot exceed 500 characters.");
+        }
     }
 }
