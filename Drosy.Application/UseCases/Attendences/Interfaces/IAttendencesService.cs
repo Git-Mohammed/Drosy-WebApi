@@ -9,7 +9,6 @@ namespace Drosy.Application.UseCases.Attendences.Interfaces
         #region Read
         Task<Result<AttendenceDto>> GetByIdAsync(int sessionId, int studentId, CancellationToken ct);
         Task<Result<DataResult<AttendenceDto>>> GetAllForSessionAsync(int sessionId, CancellationToken ct);
-        Task<Result<DataResult<AttendenceDto>>> GetAllForStudentAsync(int sessionId, int studentId, CancellationToken ct);
         Task<Result<DataResult<AttendenceDto>>> GetAllForSessionByStatusAsync(int sessionId, AttendenceStatus status, CancellationToken ct);
         #endregion
 

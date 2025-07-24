@@ -96,45 +96,6 @@ namespace Drosy.Api.Controllers
 
 
         /// <summary>
-        /// Retrieves all attendance records for a specific student in a session.
-        /// </summary>
-        /// <param name="sessionId">Identifier of the session.</param>
-        /// <param name="studentId">Identifier of the student.</param>
-        /// <param name="ct">Cancellation token.</param>
-        /// <returns>
-        /// 200 OK with a list of <see cref="AttendenceDto"/> and total count.  
-        /// 400 Bad Request if <paramref name="studentId"/> is invalid.  
-        /// 422 Unprocessable Entity for other failures.  
-        /// 500 Internal Server Error on exceptions.
-        /// </returns>
-        [HttpGet("student", Name = "GetSessionStudentAttendences")]
-        [ProducesResponseType(typeof(ApiResponse<DataResult<AttendenceDto>>), 200)]
-        [ProducesResponseType(typeof(ApiResponse<object>), 400)]
-        [ProducesResponseType(typeof(ApiResponse<object>), 422)]
-        [ProducesResponseType(typeof(ApiResponse<object>), 500)]
-        public async Task<IActionResult> GetAllForStudentInSessionAsync([FromRoute] int sessionId, [FromQuery] int studentId, CancellationToken ct)
-        {
-            if (studentId < 1)
-            {
-                var error = new ApiError("studentId", ErrorMessageResourceRepository.GetMessage(CommonErrors.Invalid.Message, AppError.CurrentLanguage));
-                return ApiResponseFactory.BadRequestResponse("studentId", "Invalid student ID.", error.Message);
-            }
-            try
-            {
-                var result = await _attendencesService.GetAllForStudentAsync(sessionId, studentId, ct);
-                if (result.IsFailure)
-                    return ApiResponseFactory.FromFailure(result, nameof(GetAllForStudentInSessionAsync), "Attendences");
-
-                return ApiResponseFactory.SuccessResponse(result.Value);
-            }
-            catch (Exception ex)
-            {
-                return ApiResponseFactory.FromException(ex);
-            }
-        }
-
-
-        /// <summary>
         /// Retrieves attendance records filtered by status for a session.
         /// </summary>
         /// <param name="sessionId">Identifier of the session.</param>

@@ -106,44 +106,6 @@ namespace Drosy.Application.UseCases.Attendences.Services
             }
         }
 
-        public async Task<Result<DataResult<AttendenceDto>>> GetAllForStudentAsync(int sessionId, int studentId, CancellationToken ct)
-        {
-            _logger.LogInformation("Fetching all attendences for SessionId={SessionId}, StudentId={StudentId}", sessionId, studentId);
-            
-            try
-            {
-                ct.ThrowIfCancellationRequested();
-
-                if (studentId < 1)
-                {
-                    _logger.LogWarning("Invalid studentId {StudentId} provided to GetAllForStudentAsync", studentId);
-                    return Result.Failure<DataResult<AttendenceDto>>(CommonErrors.Invalid);
-                }
-
-                var attendences = (await _attendencesRepository.GetAllForStudentAsync(sessionId, studentId, ct)).ToList();
-
-                var dtos = _mapper.Map<List<Attendence>, List<AttendenceDto>>(attendences);
-                var result = new DataResult<AttendenceDto>
-                {
-                    Data = dtos,
-                    TotalRecordsCount = dtos.Count
-                };
-
-                _logger.LogInformation("Fetched {Count} attendences for SessionId={SessionId}, StudentId={StudentId}", dtos.Count, sessionId, studentId);
-                return Result.Success(result);
-            }
-            catch (OperationCanceledException)
-            {
-                _logger.LogWarning("GetAllForStudentAsync canceled for SessionId={SessionId}, StudentId={StudentId}", sessionId, studentId);
-                return Result.Failure<DataResult<AttendenceDto>>(CommonErrors.OperationCancelled);
-            }
-            catch (Exception ex)
-            {
-                _logger.LogError(ex.Message, "Error in GetAllForStudentAsync for SessionId={SessionId}, StudentId={StudentId}", sessionId, studentId);
-                return Result.Failure<DataResult<AttendenceDto>>(AppError.Failure);
-            }
-        }
-
         public async Task<Result<DataResult<AttendenceDto>>> GetAllForSessionByStatusAsync(int sessionId, AttendenceStatus status, CancellationToken ct)
         {
             _logger.LogInformation("Fetching attendences for SessionId={SessionId} with Status={Status}", sessionId, status);

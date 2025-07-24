@@ -12,9 +12,6 @@ namespace Drosy.Domain.Interfaces.Repository
         /// <summary>All attendences for a given session.</summary>
         Task<IEnumerable<Attendence>> GetAllForSessionAsync(int sessionId, CancellationToken ct);
 
-        /// <summary>All attendences for a given student in a given session.</summary>
-        Task<IEnumerable<Attendence>> GetAllForStudentAsync(int sessionId, int studentId, CancellationToken ct);
-
         /// <summary>All attendences for a given student + status in a given session.</summary>
         Task<IEnumerable<Attendence>> GetAllForSessionByStatusAsync(int sessionId,  AttendenceStatus status, CancellationToken ct);
     }
