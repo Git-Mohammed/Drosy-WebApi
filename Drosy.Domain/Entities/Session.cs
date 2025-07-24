@@ -10,6 +10,7 @@
 
         #region Navigations
         public Plan Plan { get; set; } = null!;
+        public List<Attendence> Attendences { get; set; } = new();
         #endregion
     }
 }

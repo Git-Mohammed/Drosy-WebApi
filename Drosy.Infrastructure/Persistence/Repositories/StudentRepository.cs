@@ -8,11 +8,6 @@ namespace Drosy.Infrastructure.Persistence.Repositories
     public class StudentRepository : BaseRepository<Student>, IStudentRepository
     {
         public StudentRepository(ApplicationDbContext dbContext) : base(dbContext) { }
-        public Student? GetById(int id)
-        {
-           return DbSet.FirstOrDefault(x => x.Id ==  id);
-        }
-
         public async Task<Student?> GetByIdAsync(int id, CancellationToken cancellationToken)
         {
             return await DbSet.Include(x => x.City).Include(x => x.Grade).FirstOrDefaultAsync(x => x.Id == id, cancellationToken);

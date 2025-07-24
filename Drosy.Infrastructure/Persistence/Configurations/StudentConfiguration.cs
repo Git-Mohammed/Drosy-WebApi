@@ -38,6 +38,8 @@ namespace Drosy.Infrastructure.Persistence.Configurations
                 .IsRequired()
                 .HasMaxLength(20);
 
+            builder.Property(x => x.IsDeleted).HasDefaultValue(false);
+
             builder.HasOne(x => x.City)
                 .WithMany()
                 .HasForeignKey(x => x.CityId)

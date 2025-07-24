@@ -1,10 +1,11 @@
-﻿using Drosy.Application.Interfaces.Common;
+﻿using System.Security.Claims;
+using Drosy.Application.Interfaces.Common;
 using Drosy.Application.UseCases.Authentication.Interfaces;
+using Drosy.Application.UseCases.Email.Interfaces;
 using Drosy.Application.UsesCases.Authentication.DTOs;
 using Drosy.Application.UsesCases.Users.DTOs;
 using Drosy.Domain.Interfaces.Repository;
 using Drosy.Domain.Shared.ApplicationResults;
-using System.Security.Claims;
 using Drosy.Domain.Shared.ErrorComponents.Common;
 
 namespace Drosy.Application.UseCases.Authentication.Services
@@ -86,6 +87,60 @@ namespace Drosy.Application.UseCases.Authentication.Services
             }
         }
 
-      
+        public async Task<Result> ChangePasswordAsync(int userId, ChangePasswordDTO dto, CancellationToken ct)
+        {
+            try
+            {
+                ct.ThrowIfCancellationRequested();
+
+
+                var changePasswordResult = await _identityService.ChangePasswordAsync(userId, dto.OldPassword, dto.NewPassword);
+
+                return changePasswordResult.IsSuccess ?
+                    Result.Success()
+                  : Result.Failure(changePasswordResult.Error);
+            }
+            catch (OperationCanceledException) 
+            {
+                _logger.LogWarning(CommonErrors.OperationCancelled.Message, "Operation Canceld While chagning user password {userId}", userId);
+                return Result.Failure(CommonErrors.OperationCancelled);
+            }
+        }
+
+        public async Task<Result> ForgetPasswordAsync(string email, string link, CancellationToken ct)
+        {
+            try
+            {
+                ct.ThrowIfCancellationRequested();
+                var result = await _identityService.ForgetPasswordAsync(email, link, ct);
+                if (result.IsFailure)
+                    return Result.Failure(result.Error);
+
+                return result;
+            }
+            catch(OperationCanceledException)
+            {
+                _logger.LogWarning(CommonErrors.OperationCancelled.Message, "Operation Canceld While Forget Password Work For user email {email}", email);
+                return Result.Failure(CommonErrors.OperationCancelled);
+            }
+        }
+
+        public async Task<Result> ResetPasswordAsync(RestPasswordDTO dto, CancellationToken ct)
+        {
+            try
+            {
+                ct.ThrowIfCancellationRequested();
+                var result = await _identityService.RestPasswordAsync(dto, ct);
+                if (result.IsFailure)
+                    return Result.Failure(result.Error);
+
+                return result;
+            }
+            catch (OperationCanceledException)
+            {
+                _logger.LogWarning(CommonErrors.OperationCancelled.Message, "Operation Canceld While Rest Password Work");
+                return Result.Failure(CommonErrors.OperationCancelled);
+            }
+        }
     }
 }

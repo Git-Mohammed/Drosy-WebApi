@@ -20,8 +20,10 @@ namespace Drosy.Infrastructure.Persistence.DbContexts
         public DbSet<Country> Countries { get; set; }
         public DbSet<Grade> Grades { get; set; }
         public DbSet<RefreshToken> RefreshTokens { get; set; }
-
+        public DbSet<PasswordResetToken> PasswordResetTokens { get; set; }
         public DbSet<Session> Sessions { get; set; }
+        public DbSet<Attendence> Attendences { get; set; }
+        public DbSet<Payment> Payments { get; set; }
 
         protected override void OnModelCreating(ModelBuilder builder)
         {

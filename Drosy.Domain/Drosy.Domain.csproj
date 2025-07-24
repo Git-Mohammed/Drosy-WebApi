@@ -11,6 +11,11 @@
     </ItemGroup>
 
     <ItemGroup>
+      <Compile Update="Shared\ErrorComponents\Attendence\Resources\ErrorMessages.Attendance.Designer.cs">
+        <DesignTime>True</DesignTime>
+        <AutoGen>True</AutoGen>
+        <DependentUpon>ErrorMessages.Attendance.resx</DependentUpon>
+      </Compile>
       <Compile Update="Shared\ErrorComponents\Common\Resources\ErrorMessages.Common.Designer.cs">
         <DesignTime>True</DesignTime>
         <AutoGen>True</AutoGen>
@@ -51,9 +56,58 @@
         <AutoGen>True</AutoGen>
         <DependentUpon>ErrorMessages.Plan.en.resx</DependentUpon>
       </Compile>
+      <Compile Update="Shared\ErrorComponents\Payments\Resources\ErrorMessages.Plan.ar.Designer.cs">
+        <DesignTime>True</DesignTime>
+        <AutoGen>True</AutoGen>
+        <DependentUpon>ErrorMessages.Plan.ar.resx</DependentUpon>
+      </Compile>
+      <Compile Update="Shared\ErrorComponents\Payments\Resources\ErrorMessages.Plan.Designer.cs">
+        <DesignTime>True</DesignTime>
+        <AutoGen>True</AutoGen>
+        <DependentUpon>ErrorMessages.Plan.resx</DependentUpon>
+      </Compile>
+      <Compile Update="Shared\ErrorComponents\Payments\Resources\ErrorMessages.Plan.en.Designer.cs">
+        <DesignTime>True</DesignTime>
+        <AutoGen>True</AutoGen>
+        <DependentUpon>ErrorMessages.Plan.en.resx</DependentUpon>
+      </Compile>
+      <Compile Update="Shared\ErrorComponents\Payments\Resources\ErrorMessages.Plan.ar.Designer.cs">
+        <DesignTime>True</DesignTime>
+        <AutoGen>True</AutoGen>
+        <DependentUpon>ErrorMessages.Plan.ar.resx</DependentUpon>
+      </Compile>
+      <Compile Update="Shared\ErrorComponents\Payments\Resources\ErrorMessages.Plan.en.Designer.cs">
+        <DesignTime>True</DesignTime>
+        <AutoGen>True</AutoGen>
+        <DependentUpon>ErrorMessages.Plan.en.resx</DependentUpon>
+      </Compile>
+      <Compile Update="Shared\ErrorComponents\Payments\Resources\ErrorMessages.Plan.Designer.cs">
+        <DesignTime>True</DesignTime>
+        <AutoGen>True</AutoGen>
+        <DependentUpon>ErrorMessages.Plan.resx</DependentUpon>
+      </Compile>
+      <Compile Update="Shared\ErrorComponents\Payments\Resources\ErrorMessages.Payment.Designer.cs">
+        <DesignTime>True</DesignTime>
+        <AutoGen>True</AutoGen>
+        <DependentUpon>ErrorMessages.Payment.resx</DependentUpon>
+      </Compile>
+      <Compile Update="Shared\ErrorComponents\Payments\Resources\ErrorMessages.Payment.ar.Designer.cs">
+        <DesignTime>True</DesignTime>
+        <AutoGen>True</AutoGen>
+        <DependentUpon>ErrorMessages.Payment.ar.resx</DependentUpon>
+      </Compile>
+      <Compile Update="Shared\ErrorComponents\Payments\Resources\ErrorMessages.Payment.en.Designer.cs">
+        <DesignTime>True</DesignTime>
+        <AutoGen>True</AutoGen>
+        <DependentUpon>ErrorMessages.Payment.en.resx</DependentUpon>
+      </Compile>
     </ItemGroup>
 
     <ItemGroup>
+      <EmbeddedResource Update="Shared\ErrorComponents\Attendence\Resources\ErrorMessages.Attendance.resx">
+        <Generator>ResXFileCodeGenerator</Generator>
+        <LastGenOutput>ErrorMessages.Attendance.Designer.cs</LastGenOutput>
+      </EmbeddedResource>
       <EmbeddedResource Update="Shared\ErrorComponents\Common\Resources\ErrorMessages.Common.resx">
         <Generator>PublicResXFileCodeGenerator</Generator>
         <LastGenOutput>ErrorMessages.Common.Designer.cs</LastGenOutput>
@@ -85,6 +139,30 @@
       <EmbeddedResource Update="Shared\ErrorComponents\Plans\Resources\ErrorMessages.Plan.en.resx">
         <Generator>ResXFileCodeGenerator</Generator>
         <LastGenOutput>PlansMessages.en.Designer.cs</LastGenOutput>
+      </EmbeddedResource>
+      <EmbeddedResource Update="Shared\ErrorComponents\Payments\Resources\ErrorMessages.Plan.ar.resx">
+        <Generator>ResXFileCodeGenerator</Generator>
+        <LastGenOutput>PlansMessages.ar.Designer.cs</LastGenOutput>
+      </EmbeddedResource>
+      <EmbeddedResource Update="Shared\ErrorComponents\Payments\Resources\ErrorMessages.Plan.en.resx">
+        <Generator>ResXFileCodeGenerator</Generator>
+        <LastGenOutput>PlansMessages.en.Designer.cs</LastGenOutput>
+      </EmbeddedResource>
+      <EmbeddedResource Update="Shared\ErrorComponents\Payments\Resources\ErrorMessages.Plan.resx">
+        <Generator>ResXFileCodeGenerator</Generator>
+        <LastGenOutput>ErrorMessages.Plan.Designer.cs</LastGenOutput>
+      </EmbeddedResource>
+      <EmbeddedResource Update="Shared\ErrorComponents\Payments\Resources\ErrorMessages.Payment.resx">
+        <Generator>ResXFileCodeGenerator</Generator>
+        <LastGenOutput>ErrorMessages.Payment.Designer.cs</LastGenOutput>
+      </EmbeddedResource>
+      <EmbeddedResource Update="Shared\ErrorComponents\Payments\Resources\ErrorMessages.Payment.ar.resx">
+        <Generator>ResXFileCodeGenerator</Generator>
+        <LastGenOutput>ErrorMessages.Payment.ar.Designer.cs</LastGenOutput>
+      </EmbeddedResource>
+      <EmbeddedResource Update="Shared\ErrorComponents\Payments\Resources\ErrorMessages.Payment.en.resx">
+        <Generator>ResXFileCodeGenerator</Generator>
+        <LastGenOutput>ErrorMessages.Payment.en.Designer.cs</LastGenOutput>
       </EmbeddedResource>
     </ItemGroup>
 

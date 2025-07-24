@@ -187,5 +187,26 @@ namespace Drosy.Application.UseCases.Students.Services
             return sessions;
         }
 
+        public async Task<Result> ArchiveStudentAsync(int id, CancellationToken ct)
+        {
+            try
+            {
+                ct.ThrowIfCancellationRequested();
+                var student = await _studentRepository.GetByIdAsync(id, ct);
+
+                if (student is null)
+                    return Result.Failure(CommonErrors.NullValue);
+
+                await _studentRepository.SoftDeleteAsync(student, ct);
+                var isSaved = await _unitOfWork.SaveChangesAsync(ct);
+
+                return isSaved ? Result.Success() : Result.Failure(CommonErrors.Failure);
+            }
+            catch (OperationCanceledException)
+            {
+                _logger.LogError("Operation canceled while archving the student {id}", id);
+                return Result.Failure(CommonErrors.OperationCancelled);
+            }
+        }
     }
 }
