@@ -6,4 +6,5 @@ namespace Drosy.Application.UseCases.Payments.Interfaces;
 public interface IPaymentService
 {
     Task<Result<PaymentDto>> CreatePaymentAsync(CreatePaymentDto paymentDto, CancellationToken  cancellation);
+    Task<Result<PaymentDto>> GetByIdAsync(int id, CancellationToken  cancellation);
 }
