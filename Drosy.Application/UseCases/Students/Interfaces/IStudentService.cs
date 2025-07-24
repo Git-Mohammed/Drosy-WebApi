@@ -54,7 +54,7 @@ namespace Drosy.Application.UseCases.Students.Interfaces
         /// </returns>
         Task<Result> UpdateAsync(UpdateStudentDTO dto, int id, CancellationToken cancellationToken);
 
-        Task<Result> ArchiveStudentAsync(int id, CancellationToken ct);
+        Task<Result> DeleteStudentAsync(int id, int deltedBy, CancellationToken ct);
 
         #endregion
 

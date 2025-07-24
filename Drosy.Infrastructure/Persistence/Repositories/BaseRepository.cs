@@ -50,11 +50,13 @@ namespace Drosy.Infrastructure.Persistence.Repositories
             return await DbSet.ToListAsync(cancellationToken);
         }
 
-        public async Task SoftDeleteAsync(TEntity entity, CancellationToken ct)
+        public async Task SoftDeleteAsync(TEntity entity, int deletedBy, CancellationToken ct)
         {
             if (entity is ISoftDeleteble softDeletableEntity)
             {
                 softDeletableEntity.IsDeleted = true;
+                softDeletableEntity.DeletedAt = DateTime.Now;
+                softDeletableEntity.DeletedBy = deletedBy;
                 await UpdateAsync(entity, ct);
             }
             else

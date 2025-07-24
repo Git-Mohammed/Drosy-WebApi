@@ -187,7 +187,7 @@ namespace Drosy.Application.UseCases.Students.Services
             return sessions;
         }
 
-        public async Task<Result> ArchiveStudentAsync(int id, CancellationToken ct)
+        public async Task<Result> DeleteStudentAsync(int id, int deltedBy, CancellationToken ct)
         {
             try
             {
@@ -197,7 +197,7 @@ namespace Drosy.Application.UseCases.Students.Services
                 if (student is null)
                     return Result.Failure(CommonErrors.NullValue);
 
-                await _studentRepository.SoftDeleteAsync(student, ct);
+                await _studentRepository.SoftDeleteAsync(student, deltedBy, ct);
                 var isSaved = await _unitOfWork.SaveChangesAsync(ct);
 
                 return isSaved ? Result.Success() : Result.Failure(CommonErrors.Failure);

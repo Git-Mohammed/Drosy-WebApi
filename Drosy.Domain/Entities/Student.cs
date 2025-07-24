@@ -16,6 +16,8 @@ namespace Drosy.Domain.Entities
         public int GradeId { get; set; }
         public int? UserId { get; set; } 
         public int CityId { get; set; }
+        public int? DeletedBy { get; set; }
+        public DateTime? DeletedAt { get; set; }
 
         #region Nav Properties
         public AppUser? AppUser;
@@ -24,7 +26,6 @@ namespace Drosy.Domain.Entities
         public List<PlanStudent> Plans { get; set; } = new();
         public List<Payment> Payments { get; set; } = new();
         public bool IsDeleted { get; set; } = false;
-
         #endregion
     }
 }

@@ -1,4 +1,5 @@
-﻿using Drosy.Api.Commons.Responses;
+﻿using System.Security.Claims;
+using Drosy.Api.Commons.Responses;
 using Drosy.Application.UseCases.Students.DTOs;
 using Drosy.Application.UseCases.Students.Interfaces;
 using Drosy.Domain.Shared.ApplicationResults;
@@ -176,17 +177,18 @@ namespace Drosy.Api.Controllers
             }
         }
 
-        [HttpPut("archive/{id:int}")]
-        public async Task<IActionResult> ArchiveStudentAsync(int id, CancellationToken ct)
+        [HttpDelete("{id:int}")]
+        public async Task<IActionResult> DeleteStudentAsync(int id, CancellationToken ct)
         {
             if (ct.IsCancellationRequested)
             {
-                return ApiResponseFactory.FromFailure(Result.Failure(CommonErrors.OperationCancelled), nameof(ArchiveStudentAsync));
+                return ApiResponseFactory.FromFailure(Result.Failure(CommonErrors.OperationCancelled), nameof(DeleteStudentAsync));
             }
+            var userId = 0;
+            int.TryParse(User.FindFirst(ClaimTypes.NameIdentifier)?.Value, out userId);
+            var result = await _studentService.DeleteStudentAsync(id, userId, ct);
 
-            var result = await _studentService.ArchiveStudentAsync(id, ct);
-
-            return result.IsSuccess ? ApiResponseFactory.SuccessResponse() : ApiResponseFactory.FromFailure(result, nameof(ArchiveStudentAsync));
+            return result.IsSuccess ? ApiResponseFactory.SuccessResponse() : ApiResponseFactory.FromFailure(result, nameof(DeleteStudentAsync));
         }
         #endregion
     }
