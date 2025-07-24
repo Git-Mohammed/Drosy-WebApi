@@ -35,12 +35,6 @@ namespace Drosy.Infrastructure.Persistence.Repositories
                  .Where(a => a.SessionId == sessionId)
                  .ToListAsync(ct);
 
-        public async Task<IEnumerable<Attendence>> GetAllForStudentAsync(int sessionId, int studentId, CancellationToken ct)
-            => await DbSet
-                 .Include(a => a.Student)
-                 .Include(a => a.Session)
-                 .Where(a => a.SessionId == sessionId && a.StudentId == studentId)
-                 .ToListAsync(ct);
 
         public async Task<IEnumerable<Attendence>> GetAllForSessionByStatusAsync(int sessionId, AttendenceStatus status, CancellationToken ct)
             => await DbSet

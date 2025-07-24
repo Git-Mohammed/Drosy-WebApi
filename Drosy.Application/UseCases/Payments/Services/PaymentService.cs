@@ -63,4 +63,16 @@ public class PaymentService(
             return Result.Failure<PaymentDto>(CommonErrors.OperationCancelled);
         }
     }
+
+    public async Task<Result<PaymentDto>> GetByIdAsync(int id, CancellationToken cancellation)
+    {
+        var paymentExisting = await _paymentRepository.GetByIdAsync(id, cancellation);
+        if (paymentExisting is null)
+        {
+            _logger.LogError($"Payment with id {id} not found");
+            return Result.Failure<PaymentDto>(CommonErrors.NotFound);
+        }
+        var payment = _mapper.Map<Payment, PaymentDto>(paymentExisting);
+        return Result.Success(payment);
+    }
 }
