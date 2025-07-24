@@ -65,7 +65,7 @@ namespace Drosy.Application.UseCases.Sessions.Services
 
                 // 🕒 Check for overlapping sessions using optimized existence query
                 bool hasOverlap = await _sessionRepository
-                    .SessionExistsAsync(sessionDTO.ExcepectedDate, sessionDTO.PlanId, sessionDTO.StartTime, sessionDTO.EndTime, cancellationToken);
+                    .SessionExistsAsync(sessionDTO.ExcepectedDate, sessionDTO.StartTime, sessionDTO.EndTime, cancellationToken);
 
                 if (hasOverlap)
                     return Result.Failure<SessionDTO>(SessionErrors.TimeOverlap);

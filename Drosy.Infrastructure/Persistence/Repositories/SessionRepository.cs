@@ -15,16 +15,24 @@ namespace Drosy.Infrastructure.Persistence.Repositories
         }
 
         public async Task<IEnumerable<Session>> GetSessionsByDateAndPlanAsync(DateTime date, int planId, CancellationToken cancellationToken)
-        {
-            return await DbSet
+                 => await DbSet
                 .Where(s => s.PlanId == planId && s.ExcepectedDate.Date == date.Date)
                 .ToListAsync(cancellationToken);
-        }
+        
 
         public async Task<bool> SessionExistsAsync(DateTime date, int planId, DateTime startTime, DateTime endTime, CancellationToken cancellationToken)
         {
             return await DbSet.AnyAsync(s =>
                 s.PlanId == planId &&
+                s.ExcepectedDate.Date == date.Date &&
+                startTime < s.EndTime &&
+                endTime > s.StartTime,
+                cancellationToken);
+        }
+
+        public async Task<bool> SessionExistsAsync(DateTime date, DateTime startTime, DateTime endTime, CancellationToken cancellationToken)
+        {
+            return await DbSet.AnyAsync(s =>
                 s.ExcepectedDate.Date == date.Date &&
                 startTime < s.EndTime &&
                 endTime > s.StartTime,

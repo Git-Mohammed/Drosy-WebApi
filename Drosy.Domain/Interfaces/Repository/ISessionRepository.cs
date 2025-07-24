@@ -45,6 +45,16 @@ namespace Drosy.Domain.Interfaces.Repository
         /// <returns>True if an overlapping session exists; otherwise, false.</returns>
         Task<bool> SessionExistsAsync(DateTime date, int planId, DateTime startTime, DateTime endTime, CancellationToken cancellationToken);
 
+        /// <summary>
+        /// Checks whether any session overlaps with a given time range for a specific date.
+        /// </summary>
+        /// <param name="date">The date to check for overlapping sessions.</param>
+        /// <param name="startTime">The proposed start time of the session.</param>
+        /// <param name="endTime">The proposed end time of the session.</param>
+        /// <param name="cancellationToken">Token to cancel the async operation.</param>
+        /// <returns>True if an overlapping session exists; otherwise, false.</returns>
+        Task<bool> SessionExistsAsync(DateTime date, DateTime startTime, DateTime endTime, CancellationToken cancellationToken);
+
         #endregion
     }
 }
