@@ -18,6 +18,7 @@ public class Plan : BaseEntity<int>
     #region Navigation Properties
     public List<PlanStudent> Students { get; set; } = new();
     public List<Session> Sessions { get; set; } = new();
+    public List<Payment> Payments { get; set; } = new();
 
     #endregion
 }

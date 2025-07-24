@@ -63,7 +63,6 @@ namespace Drosy.Infrastructure.Migrations
                         .HasColumnType("datetime2");
 
                     b.Property<string>("Note")
-                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("Status")
@@ -210,6 +209,35 @@ namespace Drosy.Infrastructure.Migrations
                     b.HasIndex("UserId");
 
                     b.ToTable("PasswordResetTokens");
+                });
+
+            modelBuilder.Entity("Drosy.Domain.Entities.Payment", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<decimal>("Amount")
+                        .HasColumnType("decimal(18,2)");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<int>("PlanId")
+                        .HasColumnType("int");
+
+                    b.Property<int>("StudentId")
+                        .HasColumnType("int");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("PlanId");
+
+                    b.HasIndex("StudentId");
+
+                    b.ToTable("Payments", "Finance");
                 });
 
             modelBuilder.Entity("Drosy.Domain.Entities.Plan", b =>
@@ -682,6 +710,25 @@ namespace Drosy.Infrastructure.Migrations
                         .IsRequired();
                 });
 
+            modelBuilder.Entity("Drosy.Domain.Entities.Payment", b =>
+                {
+                    b.HasOne("Drosy.Domain.Entities.Plan", "Plan")
+                        .WithMany("Payments")
+                        .HasForeignKey("PlanId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("Drosy.Domain.Entities.Student", "Student")
+                        .WithMany("Payments")
+                        .HasForeignKey("StudentId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Plan");
+
+                    b.Navigation("Student");
+                });
+
             modelBuilder.Entity("Drosy.Domain.Entities.PlanStudent", b =>
                 {
                     b.HasOne("Drosy.Domain.Entities.Plan", "Plan")
@@ -816,6 +863,8 @@ namespace Drosy.Infrastructure.Migrations
 
             modelBuilder.Entity("Drosy.Domain.Entities.Plan", b =>
                 {
+                    b.Navigation("Payments");
+
                     b.Navigation("Sessions");
 
                     b.Navigation("Students");
@@ -828,6 +877,8 @@ namespace Drosy.Infrastructure.Migrations
 
             modelBuilder.Entity("Drosy.Domain.Entities.Student", b =>
                 {
+                    b.Navigation("Payments");
+
                     b.Navigation("Plans");
                 });
 

@@ -29,4 +29,6 @@ public interface IPlanService
     /// or error information if the plan does not exist.
     /// </returns>
     Task<Result<PlanDto>> GetPlanByIdAsync(int id, CancellationToken cancellationToken);
+    
+    Task<Result> ExistsAsync(int id, CancellationToken cancellationToken);
 }

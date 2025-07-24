@@ -20,8 +20,9 @@ namespace Drosy.Domain.Entities
         #region Nav Properties
         public AppUser? AppUser;
         public City City { get; set; } = null!;
-       public Grade Grade { get; set; } = null!;
+        public Grade Grade { get; set; } = null!;
         public List<PlanStudent> Plans { get; set; } = new();
+        public List<Payment> Payments { get; set; } = new();
         public bool IsDeleted { get; set; } = false;
 
         #endregion
