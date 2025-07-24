@@ -5,7 +5,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace Drosy.Infrastructure.Persistence.Repositories
 {
-    internal class SessionRepository : BaseRepository<Session>, ISessionRepository
+    public class SessionRepository : BaseRepository<Session>, ISessionRepository
     {
 
         public SessionRepository(ApplicationDbContext applicationDbContext) : base(applicationDbContext) { }

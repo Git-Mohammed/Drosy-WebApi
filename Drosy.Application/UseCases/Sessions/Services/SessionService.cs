@@ -36,7 +36,7 @@ namespace Drosy.Application.UseCases.Sessions.Services
 
                 if (session == null)
                 {
-                    return Result.Failure<SessionDTO>(SessionErrors.PlanNotFound); // or define SessionErrors.SessionNotFound if more precise
+                    return Result.Failure<SessionDTO>(SessionErrors.SessionNotFound); // or define SessionErrors.SessionNotFound if more precise
                 }
 
                 var sessionDTO = _mapper.Map<Session, SessionDTO>(session);
@@ -48,7 +48,7 @@ namespace Drosy.Application.UseCases.Sessions.Services
                 return Result.Failure<SessionDTO>(CommonErrors.Unexpected);
             }
         }
-        public async Task<Result<SessionDTO>> AddAsync(AddSessionDTO sessionDTO, CancellationToken cancellationToken)
+        public async Task<Result<SessionDTO>> CreateAsync(AddSessionDTO sessionDTO, CancellationToken cancellationToken)
         {
             try
             {

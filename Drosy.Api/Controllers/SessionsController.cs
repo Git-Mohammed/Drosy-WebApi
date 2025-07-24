@@ -64,8 +64,8 @@ namespace Drosy.Api.Controllers
         /// <param name="dto">Session data transfer object.</param>
         /// <param name="ct">A cancellation token.</param>
         /// <returns>Created session details or error.</returns>
-        [HttpPost(Name = "AddSessionAsync")]
-        public async Task<IActionResult> AddAsync([FromBody] AddSessionDTO dto, CancellationToken ct)
+        [HttpPost(Name = "CreateSessionAsync")]
+        public async Task<IActionResult> CreateAsync([FromBody] AddSessionDTO dto, CancellationToken ct)
         {
             if (dto == null)
             {
@@ -75,11 +75,11 @@ namespace Drosy.Api.Controllers
 
             try
             {
-                var result = await _sessionService.AddAsync(dto, ct);
+                var result = await _sessionService.CreateAsync(dto, ct);
 
                 if (result.IsFailure)
                 {
-                    return ApiResponseFactory.FromFailure(result, nameof(AddAsync), "Session");
+                    return ApiResponseFactory.FromFailure(result, nameof(CreateAsync), "Session");
                 }
 
                 return ApiResponseFactory.CreatedResponse(

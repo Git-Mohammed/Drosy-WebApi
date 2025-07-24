@@ -1,6 +1,4 @@
 ﻿using Drosy.Application.Interfaces.Common;
-using Drosy.Application.UseCases.Students.Interfaces;
-using Drosy.Application.UseCases.Students.Services;
 using Drosy.Domain.Interfaces.Common.Uow;
 using Drosy.Domain.Interfaces.Repository;
 using Drosy.Infrastructure.Identity.Entities;
@@ -11,7 +9,6 @@ using Drosy.Infrastructure.Persistence.Intercepters;
 using Drosy.Infrastructure.Persistence.Repositories;
 using Drosy.Infrastructure.Persistence.Uow;
 using Drosy.Infrastructure.Validators;
-using Drosy.Infrastructure.Validators.StudentValidator;
 using FluentValidation;
 using Mapster;
 using Microsoft.AspNetCore.Identity;
@@ -68,11 +65,13 @@ namespace Drosy.Api.Extensions.DependencyInjection
             services.AddScoped<IRefreshTokenRepository, RefreshTokenRepository>();
             services.AddScoped<IAppUserRepository, AppUserRepository>();
             services.AddScoped<IPlanRepository, PlanRepository>();
+            services.AddScoped<ISessionRepository, SessionRepository>();
             services.AddScoped<IPasswordResetTokenRepository, PasswordResetTokenRepository>();
             services.AddScoped<IPaymentRepository, PaymentRepository>();
             services.AddScoped<IAttendencesRepository, AttendencesRepository>();
+
             #endregion
-            
+
             return services;
         }
     }

@@ -59,5 +59,68 @@ namespace Drosy.Domain.Shared.ErrorComponents.Sesstions.Resources {
                 resourceCulture = value;
             }
         }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to النطاق الزمني المحدد للجلسة غير صالح..
+        /// </summary>
+        internal static string Error_Session_InvalidTimeRange {
+            get {
+                return ResourceManager.GetString("Error_Session_InvalidTimeRange", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to يجب أن تكون توقيتات الجلسة ضمن التاريخ المتوقع..
+        /// </summary>
+        internal static string Error_Session_OutsideExpectedDate {
+            get {
+                return ResourceManager.GetString("Error_Session_OutsideExpectedDate", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to لم يتم العثور على خطة مرتبطة بهذه الجلسة..
+        /// </summary>
+        internal static string Error_Session_PlanNotFound {
+            get {
+                return ResourceManager.GetString("Error_Session_PlanNotFound", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to لم يتم العثور على الجلسة..
+        /// </summary>
+        internal static string Error_Session_SessionNotFound {
+            get {
+                return ResourceManager.GetString("Error_Session_SessionNotFound", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to  يجب أن يكون وقت بدء الجلسة قبل وقت انتهائها..
+        /// </summary>
+        internal static string Error_Session_StartAfterEnd {
+            get {
+                return ResourceManager.GetString("Error_Session_StartAfterEnd", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to توجد جلسة بالفعل في نفس الفترة الزمنية المحددة..
+        /// </summary>
+        internal static string Error_Session_TimeOverlap {
+            get {
+                return ResourceManager.GetString("Error_Session_TimeOverlap", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to عنوان الجلسة مطلوب..
+        /// </summary>
+        internal static string Error_Session_TitleRequired {
+            get {
+                return ResourceManager.GetString("Error_Session_TitleRequired", resourceCulture);
+            }
+        }
     }
 }
