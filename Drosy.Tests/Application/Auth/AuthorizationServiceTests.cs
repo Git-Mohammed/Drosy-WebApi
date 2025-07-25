@@ -1,3 +1,4 @@
+using System.Security.Claims;
 using Drosy.Application.Interfaces.Common;
 using Drosy.Application.UseCases.Authentication.Services;
 using Drosy.Application.UsesCases.Authentication.DTOs;
@@ -6,10 +7,12 @@ using Drosy.Domain.Entities;
 using Drosy.Domain.Interfaces.Repository;
 using Drosy.Domain.Shared.ApplicationResults;
 using Drosy.Domain.Shared.ErrorComponents;
-using Drosy.Domain.Shared.System.Roles;
-using Moq;
-using System.Security.Claims;
 using Drosy.Domain.Shared.ErrorComponents.Common;
+using Drosy.Domain.Shared.ErrorComponents.User;
+using Drosy.Domain.Shared.System.Roles;
+using Drosy.Infrastructure.Identity;
+using Drosy.Infrastructure.JWT;
+using Moq;
 
 namespace Drosy.Tests.Application.Auth
 {
@@ -69,27 +72,26 @@ namespace Drosy.Tests.Application.Auth
             {
                 var user = new AppUser { UserName = "khaled" };
 
-                _userRepoMock.Setup(r => r.FindByUsernameAsync("khaled"))
-                             .ReturnsAsync(user, default);
+             
 
-                //if (password == "correctpass")
-                //{
-                //    _identityServiceMock.Setup(i => i.PasswordSignInAsync("khaled", "correctpass", true, true))
-                //                        .ReturnsAsync(Result.Success());
+                if (password == "correctpass")
+                {
+                    _identityServiceMock.Setup(i => i.PasswordSignInAsync("khaled", "correctpass", true, true))
+                                        .ReturnsAsync(Result.Success(user));
 
-                //    _jwtServiceMock.Setup(j => j.CreateTokenAsync(user, default))
-                //                   .ReturnsAsync(Result.Success(new AuthModel()));
-                //}
-                //else
-                //{
-                //    _identityServiceMock.Setup(i => i.PasswordSignInAsync("khaled", password, true, true))
-                //                        .ReturnsAsync(Result.Failure(Error.User.InvalidCredentials));
-                //}
+                    _jwtServiceMock.Setup(j => j.CreateTokenAsync(user, default))
+                                   .ReturnsAsync(Result.Success(new AuthModel()));
+                }
+                else
+                {
+                    _identityServiceMock.Setup(i => i.PasswordSignInAsync("khaled", password, true, true))
+                                        .ReturnsAsync(Result.Failure<AppUser>(UserErrors.InvalidCredentials));
+                }
             }
             else
             {
-                _userRepoMock.Setup(r => r.FindByUsernameAsync(username))
-                             .ReturnsAsync((AppUser)null);
+                _identityServiceMock.Setup(r => r.PasswordSignInAsync(input.UserName, input.Password, true, true))
+                             .ReturnsAsync(Result.Failure<AppUser>(UserErrors.InvalidCredentials));
             }
 
             // Act
@@ -142,6 +144,18 @@ namespace Drosy.Tests.Application.Auth
                 Assert.False(result.IsSuccess);
                 Assert.Equal(CommonErrors.Unauthorized, result.Error);
             }
+        }
+
+
+        [Fact]
+        public async Task LoginAsync_ReturnsNull_WhenUserNull()
+        {
+            // Arrange
+            UserLoginDTO user = null;
+            // Act
+            var result = await _authService.LoginAsync(user, CancellationToken.None);
+            // Assert
+            Assert.Equal(CommonErrors.NullValue, result.Error);
         }
 
     }
