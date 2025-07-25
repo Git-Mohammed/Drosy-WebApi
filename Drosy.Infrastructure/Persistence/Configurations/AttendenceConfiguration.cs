@@ -26,7 +26,7 @@ namespace Drosy.Infrastructure.Persistence.Configurations
 
             // Relationships
             builder.HasOne(x => x.Student)
-                .WithMany()
+                .WithMany(x => x.Attendences)
                 .HasForeignKey(x => x.StudentId)
                 .IsRequired();
 

@@ -8,5 +8,6 @@ namespace Drosy.Domain.Interfaces.Repository
         public Task<Student?> GetByIdAsync(int id, CancellationToken cancellationToken);
         public Task<bool> ExistsAsync(int id, CancellationToken cancellationToken);
         public Task<List<Student>> GetAllStudentsInfoCardsAsync(CancellationToken cancellationToken);
+        public Task<Student?> GetStudentInfoDetailsAsync(int studentId ,CancellationToken cancellationToken);
     }
 }

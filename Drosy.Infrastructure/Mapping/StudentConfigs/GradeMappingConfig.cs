@@ -1,6 +1,6 @@
-﻿using Mapster;
+﻿using Drosy.Application.UseCases.Grades.DTOs;
 using Drosy.Domain.Entities;
-using Drosy.Application.UseCases.Grades.DTOs;
+using Mapster;
 
 namespace Drosy.Infrastructure.Mapping.StudentConfigs
 {
@@ -12,4 +12,5 @@ namespace Drosy.Infrastructure.Mapping.StudentConfigs
             config.NewConfig<Grade, GradeDTO>();
         }
     }
+
 }
