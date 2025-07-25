@@ -9,8 +9,10 @@ public class SessionDTO
     public DateTime ExcepectedDate { get; set; }
     public DateTime StartTime { get; set; }
     public DateTime EndTime { get; set; }
+    public string? Notes { get; set; }
 
     #region Navigations
     public PlanDto Plan { get; set; } = null!;
     #endregion
 }
+
