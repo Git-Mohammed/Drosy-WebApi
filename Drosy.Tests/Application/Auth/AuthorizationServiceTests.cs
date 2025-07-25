@@ -1,5 +1,6 @@
 using System.Security.Claims;
 using Drosy.Application.Interfaces.Common;
+using Drosy.Application.UseCases.Authentication.Interfaces;
 using Drosy.Application.UseCases.Authentication.Services;
 using Drosy.Application.UsesCases.Authentication.DTOs;
 using Drosy.Application.UsesCases.Users.DTOs;
@@ -12,6 +13,7 @@ using Drosy.Domain.Shared.ErrorComponents.User;
 using Drosy.Domain.Shared.System.Roles;
 using Drosy.Infrastructure.Identity;
 using Drosy.Infrastructure.JWT;
+using Microsoft.AspNetCore.Identity;
 using Moq;
 
 namespace Drosy.Tests.Application.Auth
@@ -22,7 +24,7 @@ namespace Drosy.Tests.Application.Auth
         private readonly Mock<IAppUserRepository> _userRepoMock;
         private readonly Mock<IIdentityService> _identityServiceMock;
         private readonly Mock<ILogger<AuthService>> _logger;
-        private readonly AuthService _authService;
+        private readonly IAuthService _authService;
 
         public AuthorizationServiceTests()
         {
@@ -157,6 +159,62 @@ namespace Drosy.Tests.Application.Auth
             // Assert
             Assert.Equal(CommonErrors.NullValue, result.Error);
         }
+
+        [Theory]
+        [InlineData(1, "oldPass", "newPass", true)]
+        [InlineData(2, "wrongOldPass", "newPass", false)]
+        public async Task ChangePasswordAsync_ResultCheck(int userId, string oldPass, string newPass, bool expectedSuccess)
+        {
+            // Arrange
+            var dto = new ChangePasswordDTO
+            {
+                OldPassword = oldPass,
+                NewPassword = newPass
+            };
+
+            var cancellationToken = CancellationToken.None;
+
+            _identityServiceMock
+                .Setup(x => x.ChangePasswordAsync(userId, oldPass, newPass))
+                .ReturnsAsync(expectedSuccess ? Result.Success() : Result.Failure(CommonErrors.Failure));
+
+
+            // Act
+            var result = await _authService.ChangePasswordAsync(userId, dto, cancellationToken);
+
+            // Assert
+            if (expectedSuccess)
+            {
+                Assert.True(result.IsSuccess);
+            }
+            else
+            {
+                Assert.True(result.IsFailure);
+                Assert.Equal(CommonErrors.Failure, result.Error);
+            }
+        }
+
+        [Theory]
+        [InlineData("test", "link", true)]
+        [InlineData("test2", "link1", false)]
+        public async Task ForgetPasswordAsync_ResultCheck(string email, string link, bool isSucced)
+        {
+            // Arrange
+            if (isSucced)
+            {
+                _identityServiceMock.Setup(x => x.ForgetPasswordAsync(email, link, It.IsAny<CancellationToken>())).ReturnsAsync(Result.Success());
+            }
+
+            else
+            {
+                _identityServiceMock.Setup(x => x.ForgetPasswordAsync(email, link, It.IsAny<CancellationToken>())).ReturnsAsync(Result.Failure(CommonErrors.Failure));
+            }
+            // Act
+            var result = await _authService.ForgetPasswordAsync(email, link, It.IsAny<CancellationToken>());
+            // Assert
+            Assert.NotNull(result.Error);
+        }
+
 
     }
 }
