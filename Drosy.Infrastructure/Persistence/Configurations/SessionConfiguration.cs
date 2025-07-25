@@ -22,10 +22,14 @@ namespace Drosy.Infrastructure.Persistence.Configurations
                 .IsRequired();
 
             builder.Property(x => x.StartTime)
-            .IsRequired();
+                .IsRequired();
 
             builder.Property(x => x.EndTime)
-            .IsRequired();
+                .IsRequired();
+
+            builder.Property(x => x.Notes)
+                .IsRequired(false);
+
 
             // Relationships
             builder.HasOne(x => x.Plan)
