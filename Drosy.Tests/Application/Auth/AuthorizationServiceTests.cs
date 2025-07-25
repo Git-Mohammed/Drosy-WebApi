@@ -215,6 +215,33 @@ namespace Drosy.Tests.Application.Auth
             Assert.NotNull(result.Error);
         }
 
+        [Theory]
+        [InlineData("token" ,"newPass", "confirmedPass", true)]
+        [InlineData("token" ,"newPass", "confirmedPass", false)]
+        public async Task ResetPasswordAsync(string token, string newPass, string confirmedPass, bool isSuccessed)
+        {
+            // Arrange
+            var dto = new RestPasswordDTO
+            {
+                NewPassword = newPass,
+                ConfirmedPassword = confirmedPass,
+                Token = token
+            };
+            if (isSuccessed)
+            {
+                _identityServiceMock.Setup(x => x.RestPasswordAsync(dto, It.IsAny<CancellationToken>())).ReturnsAsync(Result.Success());
+            }
+            else
+            {
+                _identityServiceMock.Setup(x => x.RestPasswordAsync(dto, It.IsAny<CancellationToken>())).ReturnsAsync(Result.Failure(CommonErrors.Failure));
+            }
+
+            // Act
+            var result = await _authService.ResetPasswordAsync(dto, CancellationToken.None);
+
+            // Assert
+            Assert.NotNull(result.Error);
+        }
 
     }
 }
