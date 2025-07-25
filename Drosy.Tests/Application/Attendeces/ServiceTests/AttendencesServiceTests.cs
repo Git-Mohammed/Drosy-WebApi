@@ -271,7 +271,6 @@ namespace Drosy.Tests.Application.Attendeces.Service
         }
 
 
-        // AddRangeAsync, UpdateAsync, DeleteAsync tests follow similar pattern
         #endregion
 
 

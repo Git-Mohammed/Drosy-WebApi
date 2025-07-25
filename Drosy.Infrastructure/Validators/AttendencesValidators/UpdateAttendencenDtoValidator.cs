@@ -1,5 +1,6 @@
 ﻿using Drosy.Application.UseCases.Attendences.DTOs;
 using Drosy.Domain.Enums;
+using Drosy.Domain.Shared.System.Validation.Rules;
 using FluentValidation;
 
 namespace Drosy.Infrastructure.Validators.AttendencesValidators
@@ -11,7 +12,7 @@ namespace Drosy.Infrastructure.Validators.AttendencesValidators
     public class UpdateAttendencenDtoValidator : AbstractValidator<UpdateAttendencenDto>
     {
         /// <summary>
-        /// Initializes a new instance of the <see cref="UpdateAttendencenDtoValidator"/> class
+        /// Initializes a new instance of the <see cref="UpdateAttendencenDtoValidator"/> class 
         /// and configures validation rules.
         /// </summary>
         public UpdateAttendencenDtoValidator()
@@ -23,8 +24,8 @@ namespace Drosy.Infrastructure.Validators.AttendencesValidators
 
             // Validate that the Note property does not exceed 500 characters
             RuleFor(x => x.Note)
-                .MaximumLength(500)
-                .WithMessage("Note cannot exceed 500 characters.");
+                 .MaximumLength(TextValidationRules.MaxNotesLength)
+                 .WithMessage($"Note cannot exceed {TextValidationRules.MaxNotesLength} characters.");
         }
     }
 }

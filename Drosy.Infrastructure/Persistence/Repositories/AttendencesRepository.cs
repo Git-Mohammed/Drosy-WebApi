@@ -3,7 +3,6 @@ using Drosy.Domain.Enums;
 using Drosy.Domain.Interfaces.Repository;
 using Drosy.Infrastructure.Persistence.DbContexts;
 using Microsoft.EntityFrameworkCore;
-using System.Threading;
 
 namespace Drosy.Infrastructure.Persistence.Repositories
 {
@@ -34,7 +33,6 @@ namespace Drosy.Infrastructure.Persistence.Repositories
                  .Include(a => a.Session)
                  .Where(a => a.SessionId == sessionId)
                  .ToListAsync(ct);
-
 
         public async Task<IEnumerable<Attendence>> GetAllForSessionByStatusAsync(int sessionId, AttendenceStatus status, CancellationToken ct)
             => await DbSet

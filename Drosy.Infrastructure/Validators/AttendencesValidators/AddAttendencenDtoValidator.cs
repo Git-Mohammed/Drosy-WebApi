@@ -1,5 +1,6 @@
 ﻿using Drosy.Application.UseCases.Attendences.DTOs;
 using Drosy.Domain.Enums;
+using Drosy.Domain.Shared.System.Validation.Rules;
 using FluentValidation;
 
 namespace Drosy.Infrastructure.Validators.AttendencesValidators
@@ -22,8 +23,8 @@ namespace Drosy.Infrastructure.Validators.AttendencesValidators
 
             // Validates that Note, if provided, does not exceed 500 characters in length.
             RuleFor(x => x.Note)
-                .MaximumLength(500)
-                .WithMessage("Note cannot exceed 500 characters.");
+                .MaximumLength(TextValidationRules.MaxNotesLength)
+                .WithMessage($"Note cannot exceed {TextValidationRules.MaxNotesLength} characters.");
 
             // Validates that Status is a defined value in the AttendenceStatus enum.
             RuleFor(x => x.Status)

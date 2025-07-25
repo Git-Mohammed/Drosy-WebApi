@@ -236,7 +236,6 @@ namespace Drosy.Api.Controllers
         }
 
 
-
         /// <summary>
         /// Updates an existing attendance record for a student in a session.
         /// </summary>

@@ -54,7 +54,8 @@ if (app.Environment.IsDevelopment())
 }
 #region Localication Middleware
 var options = app.Services.GetService<IOptions<RequestLocalizationOptions>>();
-app.UseRequestLocalization(options.Value);
+app.UseRequestLocalization(options!.Value);
+
 #endregion
 
 app.UseHttpsRedirection();
@@ -78,7 +79,7 @@ app.UseAuthorization();
 
 app.MapControllers();
 
-app.setupDBInitializer();
+app.SetupDbInitializer();
 
 
 
