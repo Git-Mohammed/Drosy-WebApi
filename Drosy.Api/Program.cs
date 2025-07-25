@@ -79,7 +79,7 @@ app.UseAuthorization();
 
 app.MapControllers();
 
-app.setupDBInitializer();
+app.SetupDbInitializer();
 
 
 
