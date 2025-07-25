@@ -36,7 +36,7 @@ namespace Drosy.Application.UseCases.Sessions.Services
 
                 if (session == null)
                 {
-                    return Result.Failure<SessionDTO>(SessionErrors.PlanNotFound); // or define SessionErrors.SessionNotFound if more precise
+                    return Result.Failure<SessionDTO>(SessionErrors.SessionNotFound); // or define SessionErrors.SessionNotFound if more precise
                 }
 
                 var sessionDTO = _mapper.Map<Session, SessionDTO>(session);
@@ -48,7 +48,7 @@ namespace Drosy.Application.UseCases.Sessions.Services
                 return Result.Failure<SessionDTO>(CommonErrors.Unexpected);
             }
         }
-        public async Task<Result<SessionDTO>> AddAsync(AddSessionDTO sessionDTO, CancellationToken cancellationToken)
+        public async Task<Result<SessionDTO>> CreateAsync(AddSessionDTO sessionDTO, CancellationToken cancellationToken)
         {
             try
             {
@@ -65,7 +65,7 @@ namespace Drosy.Application.UseCases.Sessions.Services
 
                 // 🕒 Check for overlapping sessions using optimized existence query
                 bool hasOverlap = await _sessionRepository
-                    .SessionExistsAsync(sessionDTO.ExcepectedDate, sessionDTO.PlanId, sessionDTO.StartTime, sessionDTO.EndTime, cancellationToken);
+                    .SessionExistsAsync(sessionDTO.ExcepectedDate, sessionDTO.StartTime, sessionDTO.EndTime, cancellationToken);
 
                 if (hasOverlap)
                     return Result.Failure<SessionDTO>(SessionErrors.TimeOverlap);

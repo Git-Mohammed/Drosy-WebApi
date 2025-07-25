@@ -12,6 +12,6 @@
         public const string InvalidTimeRange = "Error_Session_InvalidTimeRange";
         public const string PlanNotFound = "Error_Session_PlanNotFound";
         public const string SessionNotFound = "Error_Session_SessionNotFound";
-
+        public const string ExpectedDateInThePast = "Error_Session_ExpectedDateInThePast";
     }
 }

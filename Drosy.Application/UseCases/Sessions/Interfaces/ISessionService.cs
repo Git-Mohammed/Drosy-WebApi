@@ -10,6 +10,6 @@ public interface ISessionService
     #endregion
 
     #region Write 
-    public Task<Result<SessionDTO>> AddAsync(AddSessionDTO sessionDTO, CancellationToken cancellationToken);
+    public Task<Result<SessionDTO>> CreateAsync(AddSessionDTO sessionDTO, CancellationToken cancellationToken);
     #endregion
 }
