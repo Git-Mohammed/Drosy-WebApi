@@ -1,5 +1,4 @@
 ﻿namespace Drosy.Application.UseCases.Sessions.DTOs;
-
 public class AddSessionDTO
 {
     public int PlanId { get; set; }

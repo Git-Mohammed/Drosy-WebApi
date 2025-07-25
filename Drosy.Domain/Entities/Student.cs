@@ -25,6 +25,7 @@ namespace Drosy.Domain.Entities
         public Grade Grade { get; set; } = null!;
         public List<PlanStudent> Plans { get; set; } = new();
         public List<Payment> Payments { get; set; } = new();
+        public List<Attendence> Attendences { get; set; } = new();
         public bool IsDeleted { get; set; } = false;
         #endregion
     }

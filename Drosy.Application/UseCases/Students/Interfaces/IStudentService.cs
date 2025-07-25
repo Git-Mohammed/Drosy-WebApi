@@ -1,4 +1,5 @@
 ﻿using Drosy.Application.UseCases.Students.DTOs;
+using Drosy.Domain.Entities;
 using Drosy.Domain.Shared.ApplicationResults;
 
 namespace Drosy.Application.UseCases.Students.Interfaces
@@ -28,6 +29,8 @@ namespace Drosy.Application.UseCases.Students.Interfaces
         /// A result containing a list of <see cref="StudentCardInfoDTO"/> objects if successful; otherwise, an error result.
         /// </returns>
         Task<Result<List<StudentCardInfoDTO>>> GetAllStudentsInfoCardsAsync(CancellationToken cancellationToken);
+
+        public Task<Result<StudentDetailsDto?>> GetStudentInfoDetailsAsync(int studentId, CancellationToken cancellationToken);
 
         #endregion
 

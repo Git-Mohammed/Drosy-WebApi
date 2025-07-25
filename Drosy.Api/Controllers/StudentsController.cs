@@ -97,6 +97,26 @@ namespace Drosy.Api.Controllers
             }
             return ApiResponseFactory.SuccessResponse<List<StudentCardInfoDTO>>(result.Value);
         }
+
+        [HttpGet("{studentId:int}/details", Name = "GetStudentInfoDetailsAsync")]
+        public async Task<IActionResult> GetStudentInfoDetailsAsync(int studentId, CancellationToken ct)
+        {
+            if (ct.IsCancellationRequested)
+            {
+                return ApiResponseFactory.FromFailure(Result.Failure(CommonErrors.OperationCancelled), nameof(GetStudentInfoDetailsAsync));
+            }
+
+            var result = await _studentService.GetStudentInfoDetailsAsync(studentId, ct);
+
+            if (result.IsFailure)
+            {
+                return ApiResponseFactory.FromFailure(result, nameof(GetAllStudentsInfoCardsAsync));
+            }
+            return ApiResponseFactory.SuccessResponse(result.Value);
+        }
+
+
+
         #endregion
 
         #region Write
