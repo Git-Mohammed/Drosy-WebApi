@@ -1,5 +1,4 @@
 ﻿namespace Drosy.Application.UseCases.Payments.DTOs;
-
 public class PaymentDto
 {
     public int Id { get; set; }
