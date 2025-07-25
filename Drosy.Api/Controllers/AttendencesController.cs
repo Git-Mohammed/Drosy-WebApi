@@ -11,7 +11,7 @@ using System.Threading;
 
 namespace Drosy.Api.Controllers
 {
-    [Route("api/sessions/{sessionId:int}/attendeces")]
+    [Route("api/sessions/{sessionId:int}/attendences")]
     [ApiController]
     public class AttendencesController : ControllerBase
     {
@@ -71,50 +71,18 @@ namespace Drosy.Api.Controllers
         /// <param name="ct">Cancellation token.</param>
         /// <returns>
         /// 200 OK with a list of <see cref="AttendenceDto"/> and total count.  
+        /// 400 Bad Request if <paramref name="status"/> is invalid.  .  
         /// 422 Unprocessable Entity for domain failures.  
         /// 500 Internal Server Error on exceptions.
         /// </returns>
         [HttpGet(Name = "GetSessionAttendences")]
         [ProducesResponseType(typeof(ApiResponse<DataResult<AttendenceDto>>), 200)]
-        [ProducesResponseType(typeof(ApiResponse<object>), 422)]
-        [ProducesResponseType(typeof(ApiResponse<object>), 500)]
-        public async Task<IActionResult> GetAllForSessionAsync([FromRoute] int sessionId, CancellationToken ct)
-        {
-            try
-            {
-                var result = await _attendencesService.GetAllForSessionAsync(sessionId, ct);
-                if (result.IsFailure)
-                    return ApiResponseFactory.FromFailure(result, nameof(GetAllForSessionAsync), "Attendences");
-
-                return ApiResponseFactory.SuccessResponse(result.Value);
-            }
-            catch (Exception ex)
-            {
-                return ApiResponseFactory.FromException(ex);
-            }
-        }
-
-
-        /// <summary>
-        /// Retrieves attendance records filtered by status for a session.
-        /// </summary>
-        /// <param name="sessionId">Identifier of the session.</param>
-        /// <param name="status">Attendance status to filter by.</param>
-        /// <param name="ct">Cancellation token.</param>
-        /// <returns>
-        /// 200 OK with filtered <see cref="AttendenceDto"/> list.  
-        /// 400 Bad Request if <paramref name="status"/> is invalid.  
-        /// 422 Unprocessable Entity for service errors.  
-        /// 500 Internal Server Error on exceptions.
-        /// </returns>
-        [HttpGet("status", Name = "GetSessionAttendencesByStatus")]
-        [ProducesResponseType(typeof(ApiResponse<DataResult<AttendenceDto>>), 200)]
         [ProducesResponseType(typeof(ApiResponse<object>), 400)]
         [ProducesResponseType(typeof(ApiResponse<object>), 422)]
         [ProducesResponseType(typeof(ApiResponse<object>), 500)]
-        public async Task<IActionResult> GetAllForSessionByStatusAsync([FromRoute] int sessionId,  [FromQuery] AttendenceStatus status, CancellationToken ct)
+        public async Task<IActionResult> GetAllForSessionAsync([FromRoute] int sessionId, [FromQuery] AttendenceStatus? status, CancellationToken ct)
         {
-            if (status == null || !Enum.IsDefined(typeof(AttendenceStatus), status))
+            if (status != null && !Enum.IsDefined(typeof(AttendenceStatus), status))
             {
                 var error = new ApiError(
                     "status",
@@ -125,9 +93,14 @@ namespace Drosy.Api.Controllers
 
             try
             {
-                var result = await _attendencesService.GetAllForSessionByStatusAsync(sessionId,  status, ct);
+                Result<DataResult<AttendenceDto>> result;
+              
+                result = status != null
+                    ? await _attendencesService.GetAllForSessionByStatusAsync(sessionId, status.Value, ct)
+                    : await _attendencesService.GetAllForSessionAsync(sessionId, ct);
+
                 if (result.IsFailure)
-                    return ApiResponseFactory.FromFailure(result, nameof(GetAllForSessionByStatusAsync), "Attendences");
+                    return ApiResponseFactory.FromFailure(result, nameof(GetAllForSessionAsync), "Attendences");
 
                 return ApiResponseFactory.SuccessResponse(result.Value);
             }
