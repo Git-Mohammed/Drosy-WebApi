@@ -6,8 +6,10 @@ using Drosy.Application.Interfaces.Common;
 using Drosy.Application.UseCases.Payments.Services;
 using Drosy.Application.UseCases.Payments.Interfaces;
 using Drosy.Application.UseCases.Payments.DTOs;
+using Drosy.Application.UseCases.Plans.DTOs;
 using Drosy.Application.UseCases.Students.Interfaces;
 using Drosy.Application.UseCases.Plans.Interfaces;
+using Drosy.Application.UseCases.PlanStudents.Interfaces;
 using Drosy.Domain.Interfaces.Common.Uow;
 using Drosy.Domain.Interfaces.Repository;
 using Drosy.Domain.Entities;
@@ -25,6 +27,7 @@ public class PaymentServiceTests
     private readonly Mock<IUnitOfWork> _unitOfWorkMock = new();
     private readonly Mock<IStudentService> _studentServiceMock = new();
     private readonly Mock<IPlanService> _planServiceMock = new();
+    private readonly Mock<IPlanStudentsService> _planStudentsServiceMock = new();
 
     private readonly PaymentService _paymentService;
 
@@ -36,7 +39,8 @@ public class PaymentServiceTests
             _mapperMock.Object,
             _unitOfWorkMock.Object,
             _studentServiceMock.Object,
-            _planServiceMock.Object
+            _planServiceMock.Object,
+            _planStudentsServiceMock.Object
         );
     }
 
@@ -57,7 +61,11 @@ public class PaymentServiceTests
         _studentServiceMock.Setup(x => x.ExistsAsync(createPaymentDto.StudentId, It.IsAny<CancellationToken>()))
             .ReturnsAsync(Result.Success(true));
 
-        _planServiceMock.Setup(x => x.ExistsAsync(createPaymentDto.PlanId, It.IsAny<CancellationToken>()))
+        _planServiceMock.Setup(x => x.GetPlanByIdAsync(createPaymentDto.PlanId, It.IsAny<CancellationToken>()))
+            .ReturnsAsync(Result.Success(new PlanDto()));
+        
+        _planStudentsServiceMock.Setup(x =>
+                x.IsStudentInPlanAsync(createPaymentDto.PlanId, createPaymentDto.StudentId, It.IsAny<CancellationToken>()))
             .ReturnsAsync(Result.Success(true));
 
         _mapperMock.Setup(x => x.Map<CreatePaymentDto, Payment>(createPaymentDto))
@@ -122,8 +130,8 @@ public class PaymentServiceTests
         _studentServiceMock.Setup(x => x.ExistsAsync(createPaymentDto.StudentId, It.IsAny<CancellationToken>()))
             .ReturnsAsync(Result.Success(true));
 
-        _planServiceMock.Setup(x => x.ExistsAsync(createPaymentDto.PlanId, It.IsAny<CancellationToken>()))
-            .ReturnsAsync(Result.Failure(CommonErrors.NotFound));
+        _planServiceMock.Setup(x => x.GetPlanByIdAsync(createPaymentDto.PlanId, It.IsAny<CancellationToken>()))
+            .ReturnsAsync(Result.Failure<PlanDto>(CommonErrors.NotFound));
         
         // Act
         var result = await _paymentService.CreatePaymentAsync(createPaymentDto, CancellationToken.None);
@@ -154,7 +162,11 @@ public class PaymentServiceTests
         _studentServiceMock.Setup(x => x.ExistsAsync(createPaymentDto.StudentId, It.IsAny<CancellationToken>()))
             .ReturnsAsync(Result.Success(true));
 
-        _planServiceMock.Setup(x => x.ExistsAsync(createPaymentDto.PlanId, It.IsAny<CancellationToken>()))
+        _planServiceMock.Setup(x => x.GetPlanByIdAsync(createPaymentDto.PlanId, It.IsAny<CancellationToken>()))
+            .ReturnsAsync(Result.Success(new PlanDto()));
+        
+        _planStudentsServiceMock.Setup(x =>
+                x.IsStudentInPlanAsync(createPaymentDto.PlanId, createPaymentDto.StudentId, It.IsAny<CancellationToken>()))
             .ReturnsAsync(Result.Success(true));
         
         _mapperMock.Setup(x => x.Map<CreatePaymentDto, Payment>(createPaymentDto))
@@ -207,6 +219,35 @@ public class PaymentServiceTests
         _paymentRepositoryMock.Verify(x => x.AddAsync(It.IsAny<Payment>(), It.IsAny<CancellationToken>()), Times.Never);
         _unitOfWorkMock.Verify(x => x.SaveChangesAsync(It.IsAny<CancellationToken>()), Times.Never);
         _mapperMock.Verify(x => x.Map<Payment, PaymentDto>(It.IsAny<Payment>()), Times.Never);
+    }
+
+    [Fact]
+    public async Task CreatePaymentAsync_Should_ReturnFailure_WhenStudentNotAssignToPlan()
+    {
+        // arrange
+        var createPayment = new CreatePaymentDto
+        {
+            PlanId = 1,
+            StudentId = 3,
+            Amount = 300,
+        };
+        
+        _studentServiceMock.Setup(x => x.ExistsAsync(createPayment.StudentId, It.IsAny<CancellationToken>()))
+            .ReturnsAsync(Result.Success(true));
+        _planServiceMock.Setup(x => x.GetPlanByIdAsync(createPayment.PlanId, It.IsAny<CancellationToken>()))
+            .ReturnsAsync(Result.Success(new PlanDto()));
+        _planStudentsServiceMock.Setup(x =>
+                x.IsStudentInPlanAsync(createPayment.PlanId, createPayment.StudentId, It.IsAny<CancellationToken>()))
+            .ReturnsAsync(Result.Failure(CommonErrors.NotFound));
+        
+        var result = await _paymentService.CreatePaymentAsync(createPayment, CancellationToken.None);
+        Assert.False(result.IsSuccess);
+        Assert.Equal(CommonErrors.NotFound, result.Error);
+        _loggerMock.Verify(x => x.LogError($"Student with id: {createPayment.StudentId} not assign to this plan", It.IsAny<object[]>()), Times.Once);
+        _mapperMock.Verify(x => x.Map<Payment, PaymentDto>(It.IsAny<Payment>()), Times.Never);
+        _unitOfWorkMock.Verify(x => x.SaveChangesAsync(It.IsAny<CancellationToken>()), Times.Never);
+        _mapperMock.Verify(x => x.Map<Payment, PaymentDto>(It.IsAny<Payment>()), Times.Never);
+        _paymentRepositoryMock.Verify(x => x.AddAsync(It.IsAny<Payment>(), It.IsAny<CancellationToken>()), Times.Never);
     }
 
 }
