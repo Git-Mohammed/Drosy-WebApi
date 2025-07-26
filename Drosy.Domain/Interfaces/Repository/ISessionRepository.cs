@@ -1,59 +1,72 @@
 ﻿using Drosy.Domain.Entities;
 using Drosy.Domain.Interfaces.Common.Repository;
+using System;
+using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
-using System.Collections.Generic;
 
 namespace Drosy.Domain.Interfaces.Repository
 {
     /// <summary>
-    /// Defines data access operations for Session entities.
+    /// Defines data access operations for session entities.
     /// </summary>
     public interface ISessionRepository : IRepository<Session>
     {
-        #region 🔍 Single Retrieval
+        #region Read Operations
 
         /// <summary>
         /// Retrieves a session entity by its unique identifier.
         /// </summary>
-        /// <param name="id">The unique identifier of the session.</param>
+        /// <param name="id">The session's unique identifier.</param>
         /// <param name="cancellationToken">Token to cancel the async operation.</param>
-        /// <returns>The session entity if found; otherwise, null.</returns>
+        /// <returns>The matching session if found; otherwise, null.</returns>
         Task<Session?> GetByIdAsync(int id, CancellationToken cancellationToken);
+
+        /// <summary>
+        /// Retrieves all sessions scheduled for a given date and plan.
+        /// </summary>
+        /// <param name="date">Target date.</param>
+        /// <param name="planId">Associated plan ID.</param>
+        /// <param name="cancellationToken">Token to cancel the async operation.</param>
+        /// <returns>A list of sessions scheduled for the specified date and plan.</returns>
+        Task<IEnumerable<Session>> GetByDateAndPlanAsync(DateTime date, int planId, CancellationToken cancellationToken);
+
+        /// <summary>
+        /// Checks whether any session overlaps with a specified time range on a given date and plan.
+        /// </summary>
+        /// <param name="date">Date to check.</param>
+        /// <param name="planId">Associated plan ID.</param>
+        /// <param name="startTime">Proposed start time.</param>
+        /// <param name="endTime">Proposed end time.</param>
+        /// <param name="cancellationToken">Token to cancel the async operation.</param>
+        /// <returns>True if an overlap is found; otherwise, false.</returns>
+        Task<bool> ExistsAsync(DateTime date, int planId, DateTime startTime, DateTime endTime, CancellationToken cancellationToken);
+
+        /// <summary>
+        /// Checks whether any session overlaps with a specified time range on a given date and plan,
+        /// excluding the session with the provided identifier.
+        /// </summary>
+        /// <param name="excludeSessionId">Session ID to exclude from the check.</param>
+        /// <param name="date">Date to check.</param>
+        /// <param name="startTime">Proposed start time.</param>
+        /// <param name="endTime">Proposed end time.</param>
+        /// <param name="cancellationToken">Token to cancel the async operation.</param>
+        /// <returns>True if another overlapping session exists; otherwise, false.</returns>
+        Task<bool> ExistsAsync(int excludeSessionId, DateTime date, DateTime startTime, DateTime endTime,  CancellationToken cancellationToken);
+
+        /// <summary>
+        /// Checks whether any session overlaps with a specified time range on a given date, regardless of plan.
+        /// </summary>
+        /// <param name="date">Date to check.</param>
+        /// <param name="startTime">Proposed start time.</param>
+        /// <param name="endTime">Proposed end time.</param>
+        /// <param name="cancellationToken">Token to cancel the async operation.</param>
+        /// <returns>True if an overlap is found; otherwise, false.</returns>
+        Task<bool> ExistsAsync(DateTime date, DateTime startTime, DateTime endTime, CancellationToken cancellationToken);
 
         #endregion
 
-        #region 📅 Session Queries
-
-        /// <summary>
-        /// Retrieves all sessions scheduled for a specific date and plan.
-        /// </summary>
-        /// <param name="date">The target date to filter sessions.</param>
-        /// <param name="planId">The associated plan identifier.</param>
-        /// <param name="cancellationToken">Token to cancel the async operation.</param>
-        /// <returns>A list of matching session entities.</returns>
-        Task<IEnumerable<Session>> GetSessionsByDateAndPlanAsync(DateTime date, int planId, CancellationToken cancellationToken);
-
-        /// <summary>
-        /// Checks whether any session overlaps with a given time range for a specific date and plan.
-        /// </summary>
-        /// <param name="date">The date to check for overlapping sessions.</param>
-        /// <param name="planId">The associated plan identifier.</param>
-        /// <param name="startTime">The proposed start time of the session.</param>
-        /// <param name="endTime">The proposed end time of the session.</param>
-        /// <param name="cancellationToken">Token to cancel the async operation.</param>
-        /// <returns>True if an overlapping session exists; otherwise, false.</returns>
-        Task<bool> SessionExistsAsync(DateTime date, int planId, DateTime startTime, DateTime endTime, CancellationToken cancellationToken);
-
-        /// <summary>
-        /// Checks whether any session overlaps with a given time range for a specific date.
-        /// </summary>
-        /// <param name="date">The date to check for overlapping sessions.</param>
-        /// <param name="startTime">The proposed start time of the session.</param>
-        /// <param name="endTime">The proposed end time of the session.</param>
-        /// <param name="cancellationToken">Token to cancel the async operation.</param>
-        /// <returns>True if an overlapping session exists; otherwise, false.</returns>
-        Task<bool> SessionExistsAsync(DateTime date, DateTime startTime, DateTime endTime, CancellationToken cancellationToken);
+        #region Write Operations
 
         #endregion
     }

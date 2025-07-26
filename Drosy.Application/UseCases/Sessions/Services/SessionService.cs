@@ -7,6 +7,7 @@ using Drosy.Domain.Interfaces.Common.Uow;
 using Drosy.Domain.Interfaces.Repository;
 using Drosy.Domain.Shared.ApplicationResults;
 using Drosy.Domain.Shared.ErrorComponents.Common;
+using Drosy.Domain.Shared.ErrorComponents.EFCore;
 using Drosy.Domain.Shared.ErrorComponents.Sesstions;
 
 
@@ -48,7 +49,7 @@ namespace Drosy.Application.UseCases.Sessions.Services
                 return Result.Failure<SessionDTO>(CommonErrors.Unexpected);
             }
         }
-        public async Task<Result<SessionDTO>> CreateAsync(AddSessionDTO sessionDTO, CancellationToken cancellationToken)
+        public async Task<Result<SessionDTO>> CreateAsync(CreateSessionDTO sessionDTO, CancellationToken cancellationToken)
         {
             try
             {
@@ -65,12 +66,12 @@ namespace Drosy.Application.UseCases.Sessions.Services
 
                 // 🕒 Check for overlapping sessions using optimized existence query
                 bool hasOverlap = await _sessionRepository
-                    .SessionExistsAsync(sessionDTO.ExcepectedDate, sessionDTO.StartTime, sessionDTO.EndTime, cancellationToken);
+                    .ExistsAsync(sessionDTO.ExcepectedDate, sessionDTO.StartTime, sessionDTO.EndTime, cancellationToken);
 
                 if (hasOverlap)
                     return Result.Failure<SessionDTO>(SessionErrors.TimeOverlap);
                 // 🧱 Mapping using IMapper
-                var newSession = _mapper.Map<AddSessionDTO, Session>(sessionDTO);
+                var newSession = _mapper.Map<CreateSessionDTO, Session>(sessionDTO);
 
                 await _sessionRepository.AddAsync(newSession, cancellationToken);
 
@@ -86,6 +87,54 @@ namespace Drosy.Application.UseCases.Sessions.Services
             catch (Exception ex)
             {
                 _logger.LogError(ex.Message, "Error adding session");
+                return Result.Failure<SessionDTO>(CommonErrors.Unexpected);
+            }
+        }
+
+        public async Task<Result<SessionDTO>> RescheduleAsync(int sessionId, RescheduleSessionDTO dto, CancellationToken cancellationToken)
+        {
+            try
+            {
+                // 🔍 Retrieve session
+                var session = await _sessionRepository.GetByIdAsync(sessionId, cancellationToken);
+                if (session == null)
+                    return Result.Failure<SessionDTO>(SessionErrors.SessionNotFound);
+
+                // ✅ Validate time range
+                if (dto.NewStartTime >= dto.NewEndTime)
+                    return Result.Failure<SessionDTO>(SessionErrors.StartAfterEnd);
+
+                if (dto.NewStartTime.Date != dto.NewDate.Date || dto.NewEndTime.Date != dto.NewDate.Date)
+                    return Result.Failure<SessionDTO>(SessionErrors.OutsideExpectedDate);
+
+                // ⛔ Check for overlap
+                bool overlapExists = await _sessionRepository.ExistsAsync(sessionId,
+                    dto.NewDate, dto.NewStartTime, dto.NewEndTime, cancellationToken);
+
+                if (overlapExists)
+                    return Result.Failure<SessionDTO>(SessionErrors.TimeOverlap);
+
+                // 🕒 Update values
+                session.ExcepectedDate = dto.NewDate;
+                session.StartTime = dto.NewStartTime;
+                session.EndTime = dto.NewEndTime;
+
+                await _sessionRepository.UpdateAsync(session, cancellationToken);
+                var saved = await _unitOfWork.SaveChangesAsync(cancellationToken);
+
+                if (!saved)
+                    return Result.Failure<SessionDTO>(EfCoreErrors.CanNotSaveChanges);
+
+                // 📝 Log reason
+                _logger.LogInformation("Session {SessionId} rescheduled to {NewDate} {NewStart}–{NewEnd}", sessionId, dto.NewDate, dto.NewStartTime, dto.NewEndTime);
+
+                // 📦 Return DTO
+                var resultDTO = _mapper.Map<Session, SessionDTO>(session);
+                return Result.Success(resultDTO);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex.Message, "Error rescheduling session {SessionId}", sessionId);
                 return Result.Failure<SessionDTO>(CommonErrors.Unexpected);
             }
         }
