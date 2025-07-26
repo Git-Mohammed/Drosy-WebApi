@@ -10,6 +10,7 @@ using Drosy.Domain.Shared.ApplicationResults;
 using Drosy.Domain.Shared.ErrorComponents.Common;
 using Drosy.Domain.Shared.ErrorComponents.EFCore;
 using Drosy.Domain.Shared.ErrorComponents.Sesstions;
+using System.Globalization;
 
 
 
@@ -106,9 +107,43 @@ namespace Drosy.Application.UseCases.Sessions.Services
             }
         }
 
-        public Task<Result<DataResult<SessionDTO>>> GetSessionsByWeek(int planId, int year, int weekNumber, CancellationToken ct)
+        public async Task<Result<DataResult<SessionDTO>>> GetSessionsByWeek(int planId, int year, int weekNumber, CancellationToken ct)
         {
-            throw new NotImplementedException();
+            _logger.LogInformation("Fetching sessions for PlanId={PlanId}, Year={Year}, Week={Week}", planId, year, weekNumber);
+            try
+            {
+                ct.ThrowIfCancellationRequested();
+                if (weekNumber < 1 || weekNumber > 53)
+                {
+                    _logger.LogWarning("Invalid week number {Week} for year {Year}", weekNumber, year);
+                    return Result.Failure<DataResult<SessionDTO>>(CommonErrors.Invalid);
+                }
+                var first = GetFirstDateOfIsoWeek(year, weekNumber);
+                var last = first.AddDays(6);
+                var list = (await _sessionRepository.GetSessionsInRangeAsync(planId, first, last, ct)).ToList();
+                var dtos = _mapper.Map<List<Session>, List<SessionDTO>>(list);
+                var result = new DataResult<SessionDTO> { Data = dtos, TotalRecordsCount = dtos.Count };
+                return Result.Success(result);
+            }
+            catch (OperationCanceledException)
+            {
+                _logger.LogWarning("GetSessionsByWeek canceled for PlanId={PlanId}", planId);
+                return Result.Failure<DataResult<SessionDTO>>(CommonErrors.OperationCancelled);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex.Message, "Error in GetSessionsByWeek for PlanId={PlanId}", planId);
+                return Result.Failure<DataResult<SessionDTO>>(CommonErrors.Unexpected);
+            }
+        }
+        // Helper to compute Monday of ISO week
+        private static DateTime GetFirstDateOfIsoWeek(int year, int weekNumber)
+        {
+            // ISO 8601: week 1 is the week with the year's first Thursday
+            var jan4 = new DateTime(year, 1, 4);
+            int dayOfWeek = ((int)jan4.DayOfWeek + 6) % 7; // Monday=0
+            var monday = jan4.AddDays(-dayOfWeek);
+            return monday.AddDays((weekNumber - 1) * 7);
         }
 
         public Task<Result<DataResult<SessionDTO>>> GetSessionsByMonth(int planId, int year, int month, CancellationToken ct)
