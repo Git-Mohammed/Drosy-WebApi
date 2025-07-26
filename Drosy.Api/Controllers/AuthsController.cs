@@ -50,15 +50,12 @@ namespace Drosy.Api.Controllers
             }
             string? refreshToken = Request.Cookies["refreshToken"];
             if (string.IsNullOrEmpty(refreshToken))
-                return ApiResponseFactory.UnauthorizedResponse("Access Token", "Unauthorized");
+                return ApiResponseFactory.UnauthorizedResponse("Refresh Token", "Unauthorized");
 
             var result = await _authService.RefreshTokenAsync(refreshToken, cancellationToken);
 
             if (result.IsFailure)
             {
-                if (result.Error.Code == "NullValue")
-                    return ApiResponseFactory.BadRequestResponse("token", result.Error.Message);
-
                 return ApiResponseFactory.UnauthorizedResponse("token", result.Error.Message);
             }
 
@@ -70,9 +67,6 @@ namespace Drosy.Api.Controllers
         [HttpPost("logout")]
         public async Task<IActionResult> Logout(CancellationToken cancellationToken)
         {
-            // if (!int.TryParse(User.FindFirstValue(ClaimTypes.NameIdentifier), out int userId) || userId <= 0)
-            //     return ResponseHandler.UnauthorizedResponse("user", "Invalid or missing user ID");
-
             if (cancellationToken.IsCancellationRequested)
             {
                 return ApiResponseFactory.FromFailure(Result.Failure(CommonErrors.OperationCancelled), nameof(LoginAsync));
@@ -82,11 +76,12 @@ namespace Drosy.Api.Controllers
             if (string.IsNullOrEmpty(refreshToken))
                 return ApiResponseFactory.UnauthorizedResponse("Access Token", "Unauthorized");
 
+            
             var result = await _authService.LogoutAsync(refreshToken, cancellationToken);
 
             if (result.IsFailure)
                 return ApiResponseFactory.CreateStatusResponse(500, "logout", "An error occurred during logout");
-
+            Response.Cookies.Delete("refreshToken");
             return ApiResponseFactory.SuccessResponse("Logged out successfully");
         }
 

@@ -224,17 +224,31 @@ namespace Drosy.Application.UseCases.Students.Services
                 var dto = _mapper.Map<Student, StudentDetailsDto>(result);
 
                 // Ensure PaymentStats is not null before accessing its properties
-                if (dto.PaymentStats != null)
-                {
-                    //dto.PaymentStats.TotalAmount = _paymentService.GetPaymentTotalAmount(studentId); // Assuming this method exists
-                    dto.PaymentStats.DueAmount = dto.PaymentStats.TotalAmount - dto.PaymentStats.PaidAmount;
-                }
+                //if (dto.PaymentStats != null)
+                //{
+                //    //dto.PaymentStats.TotalAmount = _paymentService.GetPaymentTotalAmount(studentId); // Assuming this method exists
+                //    dto.PaymentStats.DueAmount = dto.PaymentStats.TotalAmount - dto.PaymentStats.PaidAmount;
+                //}
 
-                if (dto.LessonStats != null)
+                dto.PaymentStats = new Payments.DTOs.PaymentStatsDto
                 {
-                    dto.LessonStats.TotalLessons = _CalculateTotalSessionsForStudent(result);
-                    dto.LessonStats.UpcomingLessons = dto.LessonStats.TotalLessons - dto.LessonStats.CompletedLessons;
-                }
+                    DueAmount = 5,
+                    PaidAmount = 5,
+                    TotalAmount = 10
+                };
+
+                dto.LessonStats = new Sessions.DTOs.LessonStatsDto
+                {
+                    CompletedLessons = 5,
+                    TotalLessons = 10,
+                    UpcomingLessons = 5
+
+                };
+                //if (dto.LessonStats != null)
+                //{
+                //    dto.LessonStats.TotalLessons = _CalculateTotalSessionsForStudent(result);
+                //    dto.LessonStats.UpcomingLessons = dto.LessonStats.TotalLessons - dto.LessonStats.CompletedLessons;
+                //}
                 return Result.Success<StudentDetailsDto?>(dto);
             }
             catch (OperationCanceledException)
