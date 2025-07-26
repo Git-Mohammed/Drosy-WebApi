@@ -30,7 +30,16 @@ namespace Drosy.Application.UseCases.Students.Interfaces
         /// </returns>
         Task<Result<List<StudentCardInfoDTO>>> GetAllStudentsInfoCardsAsync(CancellationToken cancellationToken);
 
+        /// <summary>
+        /// Retrieves detailed information for a specific student by their ID.
+        /// </summary>
+        /// <param name="studentId">The unique identifier of the student.</param>
+        /// <param name="cancellationToken">Token to monitor for cancellation requests.</param>
+        /// <returns>
+        /// A result containing the student's detailed information if found, or a failure result if not.
+        /// </returns>
         public Task<Result<StudentDetailsDto?>> GetStudentInfoDetailsAsync(int studentId, CancellationToken cancellationToken);
+
 
         #endregion
 
@@ -57,7 +66,17 @@ namespace Drosy.Application.UseCases.Students.Interfaces
         /// </returns>
         Task<Result> UpdateAsync(UpdateStudentDTO dto, int id, CancellationToken cancellationToken);
 
-        Task<Result> DeleteStudentAsync(int id, int deltedBy, CancellationToken ct);
+        /// <summary>
+        /// Deletes a student record based on the specified student ID.
+        /// </summary>
+        /// <param name="id">The ID of the student to be deleted.</param>
+        /// <param name="deletedBy">The ID of the user performing the deletion.</param>
+        /// <param name="ct">Token to monitor for cancellation requests.</param>
+        /// <returns>
+        /// A result indicating success or failure of the deletion operation.
+        /// </returns>
+        Task<Result> DeleteStudentAsync(int id, int deletedBy, CancellationToken ct);
+
 
         #endregion
 
