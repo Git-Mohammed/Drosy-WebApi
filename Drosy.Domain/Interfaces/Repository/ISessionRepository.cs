@@ -36,6 +36,9 @@ namespace Drosy.Domain.Interfaces.Repository
             int planId,
             DateTime date,
             CancellationToken cancellationToken);
+        Task<IEnumerable<Session>> GetSessionsByDateAsync(
+           DateTime date,
+           CancellationToken cancellationToken);
 
         /// <summary>
         /// Retrieves all sessions for a given plan between two dates (inclusive).
@@ -45,7 +48,6 @@ namespace Drosy.Domain.Interfaces.Repository
         /// <param name="cancellationToken">Token to cancel the async operation.</param>
         /// </summary>
         Task<IEnumerable<Session>> GetSessionsInRangeAsync(
-            int planId,
             DateTime start,
             DateTime end,
             CancellationToken cancellationToken);
@@ -57,7 +59,6 @@ namespace Drosy.Domain.Interfaces.Repository
         /// <param name="cancellationToken">Token to cancel the async operation.</param>
         /// </summary>
         Task<IEnumerable<Session>> GetSessionsByStatusAsync(
-            int planId,
             SessionStatus status,
             CancellationToken cancellationToken);
 

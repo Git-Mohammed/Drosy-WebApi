@@ -53,14 +53,13 @@ namespace Drosy.Application.UseCases.Sessions.Services
                 return Result.Failure<SessionDTO>(CommonErrors.Unexpected);
             }
         }
-        public async Task<Result<DataResult<SessionDTO>>> GetSessionsByDate(int planId, DateTime date, CancellationToken ct)
+        public async Task<Result<DataResult<SessionDTO>>> GetSessionsByDate( DateTime date, CancellationToken ct)
         {
-            _logger.LogInformation("Fetching sessions for PlanId={PlanId} on {Date}", planId, date);
             try
             {
                 ct.ThrowIfCancellationRequested();
 
-                var list = (await _sessionRepository.GetSessionsByDateAsync(planId, date, ct)).ToList();
+                var list = (await _sessionRepository.GetSessionsByDateAsync( date, ct)).ToList();
 
                 var dtos = _mapper.Map<List<Session>, List<SessionDTO>>(list);
 
@@ -69,19 +68,16 @@ namespace Drosy.Application.UseCases.Sessions.Services
             }
             catch (OperationCanceledException)
             {
-                _logger.LogWarning("GetSessionsByDate canceled for PlanId={PlanId}", planId);
                 return Result.Failure<DataResult<SessionDTO>>(CommonErrors.OperationCancelled);
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex.Message, "Error in GetSessionsByDate for PlanId={PlanId}", planId);
                 return Result.Failure<DataResult<SessionDTO>>(CommonErrors.Unexpected);
             }
         }
 
-        public async Task<Result<DataResult<SessionDTO>>> GetSessionsInRange(int planId, DateTime start, DateTime end, CancellationToken ct)
+        public async Task<Result<DataResult<SessionDTO>>> GetSessionsInRange( DateTime start, DateTime end, CancellationToken ct)
         {
-            _logger.LogInformation("Fetching sessions for PlanId={PlanId} from {Start} to {End}", planId, start, end);
             try
             {
                 ct.ThrowIfCancellationRequested();
@@ -90,26 +86,23 @@ namespace Drosy.Application.UseCases.Sessions.Services
                     _logger.LogWarning("Invalid range Start {Start} after End {End}", start, end);
                     return Result.Failure<DataResult<SessionDTO>>(CommonErrors.Invalid);
                 }
-                var list = (await _sessionRepository.GetSessionsInRangeAsync(planId, start, end, ct)).ToList();
+                var list = (await _sessionRepository.GetSessionsInRangeAsync(start, end, ct)).ToList();
                 var dtos = _mapper.Map<List<Session>, List<SessionDTO>>(list);
                 var result = new DataResult<SessionDTO> { Data = dtos, TotalRecordsCount = dtos.Count };
                 return Result.Success(result);
             }
             catch (OperationCanceledException)
             {
-                _logger.LogWarning("GetSessionsInRange canceled for PlanId={PlanId}", planId);
                 return Result.Failure<DataResult<SessionDTO>>(CommonErrors.OperationCancelled);
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex.Message, "Error in GetSessionsInRange for PlanId={PlanId}", planId);
                 return Result.Failure<DataResult<SessionDTO>>(CommonErrors.Unexpected);
             }
         }
 
-        public async Task<Result<DataResult<SessionDTO>>> GetSessionsByWeek(int planId, int year, int weekNumber, CancellationToken ct)
+        public async Task<Result<DataResult<SessionDTO>>> GetSessionsByWeek(int year, int weekNumber, CancellationToken ct)
         {
-            _logger.LogInformation("Fetching sessions for PlanId={PlanId}, Year={Year}, Week={Week}", planId, year, weekNumber);
             try
             {
                 ct.ThrowIfCancellationRequested();
@@ -120,19 +113,17 @@ namespace Drosy.Application.UseCases.Sessions.Services
                 }
                 var first = GetFirstDateOfIsoWeek(year, weekNumber);
                 var last = first.AddDays(6);
-                var list = (await _sessionRepository.GetSessionsInRangeAsync(planId, first, last, ct)).ToList();
+                var list = (await _sessionRepository.GetSessionsInRangeAsync( first, last, ct)).ToList();
                 var dtos = _mapper.Map<List<Session>, List<SessionDTO>>(list);
                 var result = new DataResult<SessionDTO> { Data = dtos, TotalRecordsCount = dtos.Count };
                 return Result.Success(result);
             }
             catch (OperationCanceledException)
             {
-                _logger.LogWarning("GetSessionsByWeek canceled for PlanId={PlanId}", planId);
                 return Result.Failure<DataResult<SessionDTO>>(CommonErrors.OperationCancelled);
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex.Message, "Error in GetSessionsByWeek for PlanId={PlanId}", planId);
                 return Result.Failure<DataResult<SessionDTO>>(CommonErrors.Unexpected);
             }
         }
@@ -146,9 +137,8 @@ namespace Drosy.Application.UseCases.Sessions.Services
             return monday.AddDays((weekNumber - 1) * 7);
         }
 
-        public async Task<Result<DataResult<SessionDTO>>> GetSessionsByMonth(int planId, int year, int month, CancellationToken ct)
+        public async Task<Result<DataResult<SessionDTO>>> GetSessionsByMonth( int year, int month, CancellationToken ct)
         {
-            _logger.LogInformation("Fetching sessions for PlanId={PlanId}, Year={Year}, Month={Month}", planId, year, month);
             try
             {
                 ct.ThrowIfCancellationRequested();
@@ -159,26 +149,23 @@ namespace Drosy.Application.UseCases.Sessions.Services
                 }
                 var start = new DateTime(year, month, 1);
                 var end = start.AddMonths(1).AddTicks(-1);
-                var list = (await _sessionRepository.GetSessionsInRangeAsync(planId, start, end, ct)).ToList();
+                var list = (await _sessionRepository.GetSessionsInRangeAsync(start, end, ct)).ToList();
                 var dtos = _mapper.Map<List<Session>, List<SessionDTO>>(list);
                 var result = new DataResult<SessionDTO> { Data = dtos, TotalRecordsCount = dtos.Count };
                 return Result.Success(result);
             }
             catch (OperationCanceledException)
             {
-                _logger.LogWarning("GetSessionsByMonth canceled for PlanId={PlanId}", planId);
                 return Result.Failure<DataResult<SessionDTO>>(CommonErrors.OperationCancelled);
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex.Message, "Error in GetSessionsByMonth for PlanId={PlanId}", planId);
                 return Result.Failure<DataResult<SessionDTO>>(CommonErrors.Unexpected);
             }
         }
 
-        public async Task<Result<DataResult<SessionDTO>>> GetSessionsByStatus(int planId, SessionStatus status, CancellationToken ct)
+        public async Task<Result<DataResult<SessionDTO>>> GetSessionsByStatus(SessionStatus status, CancellationToken ct)
         {
-            _logger.LogInformation("Fetching sessions for PlanId={PlanId} with Status={Status}", planId, status);
             try
             {
                 ct.ThrowIfCancellationRequested();
@@ -187,19 +174,17 @@ namespace Drosy.Application.UseCases.Sessions.Services
                     _logger.LogWarning("Invalid status {Status} provided", status);
                     return Result.Failure<DataResult<SessionDTO>>(CommonErrors.Invalid);
                 }
-                var list = (await _sessionRepository.GetSessionsByStatusAsync(planId, status, ct)).ToList();
+                var list = (await _sessionRepository.GetSessionsByStatusAsync( status, ct)).ToList();
                 var dtos = _mapper.Map<List<Session>, List<SessionDTO>>(list);
                 var result = new DataResult<SessionDTO> { Data = dtos, TotalRecordsCount = dtos.Count };
                 return Result.Success(result);
             }
             catch (OperationCanceledException)
             {
-                _logger.LogWarning("GetSessionsByStatus canceled for PlanId={PlanId}", planId);
                 return Result.Failure<DataResult<SessionDTO>>(CommonErrors.OperationCancelled);
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex.Message, "Error in GetSessionsByStatus for PlanId={PlanId}", planId);
                 return Result.Failure<DataResult<SessionDTO>>(CommonErrors.Unexpected);
             }
         }

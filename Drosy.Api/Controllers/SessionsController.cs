@@ -68,13 +68,13 @@ namespace Drosy.Api.Controllers
         }
 
 
-        [HttpGet("by-date/{planId:int}", Name = "GetSessionsByDateAsync")]
+        [HttpGet("by-date", Name = "GetSessionsByDateAsync")]
         [ProducesResponseType(typeof(ApiResponse<DataResult<SessionDTO>>), 200)]
         [ProducesResponseType(typeof(ApiResponse<object>), 400)]
         [ProducesResponseType(typeof(ApiResponse<object>), 422)]
         [ProducesResponseType(typeof(ApiResponse<object>), 500)]
         public async Task<IActionResult> GetSessionsByDateAsync(
-            int planId,
+            [FromQuery] int planId,
             [FromQuery] DateTime date,
             CancellationToken ct)
         {
@@ -95,13 +95,13 @@ namespace Drosy.Api.Controllers
             }
         }
 
-        [HttpGet("range/{planId:int}", Name = "GetSessionsInRangeAsync")]
+        [HttpGet("by-date-range", Name = "GetSessionsInRangeAsync")]
         [ProducesResponseType(typeof(ApiResponse<DataResult<SessionDTO>>), 200)]
         [ProducesResponseType(typeof(ApiResponse<object>), 400)]
         [ProducesResponseType(typeof(ApiResponse<object>), 422)]
         [ProducesResponseType(typeof(ApiResponse<object>), 500)]
         public async Task<IActionResult> GetSessionsInRangeAsync(
-        int planId,
+        [FromQuery] int planId,
         [FromQuery] DateTime start,
         [FromQuery] DateTime end,
         CancellationToken ct)
