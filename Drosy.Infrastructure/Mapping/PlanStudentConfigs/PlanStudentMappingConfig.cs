@@ -2,7 +2,7 @@
 using Drosy.Domain.Entities;
 using Drosy.Application.UseCases.PlanStudents.DTOs;
 
-namespace Drosy.Infrastructure.Mapping.StudentConfigs
+namespace Drosy.Infrastructure.Mapping.PlanStudentConfigs
 {
     /// <summary>
     /// Registers Mapster mappings for <see cref="PlanStudent"/>-related DTOs.
@@ -28,7 +28,6 @@ namespace Drosy.Infrastructure.Mapping.StudentConfigs
             // Map incoming DTO to domain entity for create/update operations
             config.NewConfig<AddStudentToPlanDto, PlanStudent>() ;
 
-            config.NewConfig<AddStudentToPlanDto, PlanStudent>();
             //// suppose you want to set `PlanId` from a parameter instead of from the DTO:
             //.Map((src, dest, ctx) =>
             //{

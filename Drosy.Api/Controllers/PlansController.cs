@@ -1,6 +1,7 @@
 ﻿using Drosy.Api.Commons.Responses;
 using Drosy.Application.UseCases.Plans.DTOs;
 using Drosy.Application.UseCases.Plans.Interfaces;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Drosy.Api.Controllers;
@@ -10,6 +11,7 @@ namespace Drosy.Api.Controllers;
 /// </summary>
 [ApiController]
 [Route("api/plans")]
+[Authorize]
 public class PlansController(IPlanService planService, ILogger<PlansController> logger) : ControllerBase
 {
     private readonly IPlanService _planService = planService;

@@ -46,4 +46,12 @@ public class PlanService(
         var planDto = _mapper.Map<Plan, PlanDto>(existingPlan);
         return Result.Success(planDto);
     }
+
+    public async Task<Result> ExistsAsync(int id, CancellationToken cancellationToken)
+    {
+        var existingPlan = await _planRepository.ExistsAsync(id, cancellationToken);
+        if (!existingPlan)
+            return Result.Failure(PlanErrors.PlanNotFound);
+        return Result.Success();
+    }
 }

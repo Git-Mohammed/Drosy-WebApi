@@ -1,4 +1,5 @@
 ﻿using Drosy.Application.UseCases.Students.DTOs;
+using Drosy.Domain.Entities;
 using Drosy.Domain.Shared.ApplicationResults;
 
 namespace Drosy.Application.UseCases.Students.Interfaces
@@ -29,6 +30,8 @@ namespace Drosy.Application.UseCases.Students.Interfaces
         /// </returns>
         Task<Result<List<StudentCardInfoDTO>>> GetAllStudentsInfoCardsAsync(CancellationToken cancellationToken);
 
+        public Task<Result<StudentDetailsDto?>> GetStudentInfoDetailsAsync(int studentId, CancellationToken cancellationToken);
+
         #endregion
 
         #region Write
@@ -53,6 +56,8 @@ namespace Drosy.Application.UseCases.Students.Interfaces
         /// A result indicating success or failure of the update operation.
         /// </returns>
         Task<Result> UpdateAsync(UpdateStudentDTO dto, int id, CancellationToken cancellationToken);
+
+        Task<Result> DeleteStudentAsync(int id, int deltedBy, CancellationToken ct);
 
         #endregion
 

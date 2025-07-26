@@ -40,9 +40,12 @@ namespace Drosy.Infrastructure.JWT
                 new Claim(ClaimTypes.NameIdentifier, userId.ToString()),
             };
 
-            foreach (var role in userRoles)
+            if (userRoles is not null)
             {
-                claims.Add(new Claim(ClaimTypes.Role, role));
+                foreach (var role in userRoles)
+                {
+                    claims.Add(new Claim(ClaimTypes.Role, role));
+                }
             }
 
             return claims;

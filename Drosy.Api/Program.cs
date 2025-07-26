@@ -1,8 +1,10 @@
 using Drosy.Api.Extensions.DependencyInjection;
 using Drosy.Api.Filters;
-using System.Globalization;
-using Microsoft.Extensions.Options;
 using Drosy.Domain.Shared.ErrorComponents;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc.Authorization;
+using Microsoft.Extensions.Options;
+using System.Globalization;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -13,6 +15,11 @@ var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddControllers(options =>
 {
     options.Filters.Add<FluentValidationFilter>();
+
+    var policy = new AuthorizationPolicyBuilder()
+                               .RequireAuthenticatedUser()
+                               .Build();
+    options.Filters.Add(new AuthorizeFilter(policy));
 });
 
 // Learn more about configuring OpenAPI at https://aka.ms/aspnet/openapi
@@ -47,7 +54,8 @@ if (app.Environment.IsDevelopment())
 }
 #region Localication Middleware
 var options = app.Services.GetService<IOptions<RequestLocalizationOptions>>();
-app.UseRequestLocalization(options.Value);
+app.UseRequestLocalization(options!.Value);
+
 #endregion
 
 app.UseHttpsRedirection();
@@ -71,7 +79,7 @@ app.UseAuthorization();
 
 app.MapControllers();
 
-app.setupDBInitializer();
+app.SetupDbInitializer();
 
 
 
