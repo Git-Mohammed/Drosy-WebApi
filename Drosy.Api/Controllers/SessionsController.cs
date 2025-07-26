@@ -150,8 +150,35 @@ namespace Drosy.Api.Controllers
                 return ApiResponseFactory.FromException(ex);
             }
         }
-       
+        [HttpGet("month/{planId:int}", Name = "GetSessionsByMonthAsync")]
+        [ProducesResponseType(typeof(ApiResponse<DataResult<SessionDTO>>), 200)]
+        [ProducesResponseType(typeof(ApiResponse<object>), 400)]
+        [ProducesResponseType(typeof(ApiResponse<object>), 422)]
+        [ProducesResponseType(typeof(ApiResponse<object>), 500)]
+        public async Task<IActionResult> GetSessionsByMonthAsync(
+         int planId,
+         [FromQuery] int year,
+         [FromQuery] int month,
+         CancellationToken ct)
+        {
+            if (planId < 1)
+                return ApiResponseFactory.BadRequestResponse("planId", "Invalid plan ID.");
 
+            try
+            {
+                var result = await _sessionService.GetSessionsByMonth(planId, year, month, ct);
+                if (result.IsFailure)
+                    return ApiResponseFactory.FromFailure(result, nameof(GetSessionsByMonthAsync));
+
+                return ApiResponseFactory.SuccessResponse(result.Value, "Sessions by month retrieved successfully.");
+            }
+            catch (Exception ex)
+            {
+                return ApiResponseFactory.FromException(ex);
+            }
+        }
+
+      
         #endregion
 
         #region 🆕 Create
