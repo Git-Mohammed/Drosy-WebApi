@@ -95,6 +95,35 @@ namespace Drosy.Api.Controllers
             }
         }
 
+        [HttpGet("range/{planId:int}", Name = "GetSessionsInRangeAsync")]
+        [ProducesResponseType(typeof(ApiResponse<DataResult<SessionDTO>>), 200)]
+        [ProducesResponseType(typeof(ApiResponse<object>), 400)]
+        [ProducesResponseType(typeof(ApiResponse<object>), 422)]
+        [ProducesResponseType(typeof(ApiResponse<object>), 500)]
+        public async Task<IActionResult> GetSessionsInRangeAsync(
+        int planId,
+        [FromQuery] DateTime start,
+        [FromQuery] DateTime end,
+        CancellationToken ct)
+        {
+            if (planId < 1)
+                return ApiResponseFactory.BadRequestResponse("planId", "Invalid plan ID.");
+
+            try
+            {
+                var result = await _sessionService.GetSessionsInRange(planId, start, end, ct);
+                if (result.IsFailure)
+                    return ApiResponseFactory.FromFailure(result, nameof(GetSessionsInRangeAsync));
+
+                return ApiResponseFactory.SuccessResponse(result.Value, "Sessions in range retrieved successfully.");
+            }
+            catch (Exception ex)
+            {
+                return ApiResponseFactory.FromException(ex);
+            }
+        }
+
+
         #endregion
 
         #region 🆕 Create
