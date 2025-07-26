@@ -187,7 +187,7 @@ namespace Drosy.Application.UseCases.Students.Services
             return sessions;
         }
 
-        public async Task<Result> ArchiveStudentAsync(int id, CancellationToken ct)
+        public async Task<Result> DeleteStudentAsync(int id, int deltedBy, CancellationToken ct)
         {
             try
             {
@@ -197,7 +197,7 @@ namespace Drosy.Application.UseCases.Students.Services
                 if (student is null)
                     return Result.Failure(CommonErrors.NullValue);
 
-                await _studentRepository.SoftDeleteAsync(student, ct);
+                await _studentRepository.SoftDeleteAsync(student, deltedBy, ct);
                 var isSaved = await _unitOfWork.SaveChangesAsync(ct);
 
                 return isSaved ? Result.Success() : Result.Failure(CommonErrors.Failure);
@@ -206,6 +206,41 @@ namespace Drosy.Application.UseCases.Students.Services
             {
                 _logger.LogError("Operation canceled while archving the student {id}", id);
                 return Result.Failure(CommonErrors.OperationCancelled);
+            }
+        }
+
+        public async Task<Result<StudentDetailsDto?>> GetStudentInfoDetailsAsync(int studentId, CancellationToken cancellationToken)
+        {
+            try
+            {
+                cancellationToken.ThrowIfCancellationRequested();
+                var result = await _studentRepository.GetStudentInfoDetailsAsync(studentId, cancellationToken);
+
+                if (result is null)
+                {
+                    return Result.Failure<StudentDetailsDto?>(CommonErrors.NotFound);
+                }
+
+                var dto = _mapper.Map<Student, StudentDetailsDto>(result);
+
+                // Ensure PaymentStats is not null before accessing its properties
+                if (dto.PaymentStats != null)
+                {
+                    //dto.PaymentStats.TotalAmount = _paymentService.GetPaymentTotalAmount(studentId); // Assuming this method exists
+                    dto.PaymentStats.DueAmount = dto.PaymentStats.TotalAmount - dto.PaymentStats.PaidAmount;
+                }
+
+                if (dto.LessonStats != null)
+                {
+                    dto.LessonStats.TotalLessons = _CalculateTotalSessionsForStudent(result);
+                    dto.LessonStats.UpcomingLessons = dto.LessonStats.TotalLessons - dto.LessonStats.CompletedLessons;
+                }
+                return Result.Success<StudentDetailsDto?>(dto);
+            }
+            catch (OperationCanceledException)
+            {
+                _logger.LogError("Operation canceled while retrieving the student {id}", studentId);
+                return Result.Failure<StudentDetailsDto?>(CommonErrors.OperationCancelled);
             }
         }
     }

@@ -60,7 +60,7 @@
         Task DeleteRangeAsync(IEnumerable<TEntity> entities, CancellationToken cancellationToken);
 
 
-        public Task SoftDeleteAsync(TEntity entity, CancellationToken ct);
+        public Task SoftDeleteAsync(TEntity entity, int deletedBy, CancellationToken ct);
         #endregion
     }
 }

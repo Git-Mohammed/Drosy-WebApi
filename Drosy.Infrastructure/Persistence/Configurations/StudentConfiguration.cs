@@ -38,7 +38,11 @@ namespace Drosy.Infrastructure.Persistence.Configurations
                 .IsRequired()
                 .HasMaxLength(20);
 
+            builder.HasQueryFilter(x => x.IsDeleted == false);  
+
             builder.Property(x => x.IsDeleted).HasDefaultValue(false);
+            builder.Property(x => x.DeletedAt).IsRequired(false);
+            builder.Property(x => x.DeletedBy).IsRequired(false);
 
             builder.HasOne(x => x.City)
                 .WithMany()
