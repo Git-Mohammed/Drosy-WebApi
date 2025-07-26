@@ -178,7 +178,33 @@ namespace Drosy.Api.Controllers
             }
         }
 
-      
+        [HttpGet("status/{planId:int}", Name = "GetSessionsByStatusAsync")]
+        [ProducesResponseType(typeof(ApiResponse<DataResult<SessionDTO>>), 200)]
+        [ProducesResponseType(typeof(ApiResponse<object>), 400)]
+        [ProducesResponseType(typeof(ApiResponse<object>), 422)]
+        [ProducesResponseType(typeof(ApiResponse<object>), 500)]
+        public async Task<IActionResult> GetSessionsByStatusAsync(
+            int planId,
+            [FromQuery] SessionStatus status,
+            CancellationToken ct)
+        {
+            if (planId < 1)
+                return ApiResponseFactory.BadRequestResponse("planId", "Invalid plan ID.");
+
+            try
+            {
+                var result = await _sessionService.GetSessionsByStatus(planId, status, ct);
+                if (result.IsFailure)
+                    return ApiResponseFactory.FromFailure(result, nameof(GetSessionsByStatusAsync));
+
+                return ApiResponseFactory.SuccessResponse(result.Value, "Sessions by status retrieved successfully.");
+            }
+            catch (Exception ex)
+            {
+                return ApiResponseFactory.FromException(ex);
+            }
+        }
+
         #endregion
 
         #region 🆕 Create
