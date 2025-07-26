@@ -67,33 +67,88 @@ namespace Drosy.Api.Controllers
             }
         }
 
-        /// <summary>
-        /// Retrieves all sessions scheduled on a specific date.
-        /// </summary>
-        /// <param name="date">The date to search sessions for.</param>
-        /// <param name="ct">A cancellation token.</param>
-        /// <returns>
-        /// 200 OK with the list of sessions.  
-        /// 400 Bad Request for invalid input.  
-        /// 422 Unprocessable Entity for domain errors.  
-        /// 500 Internal Server Error for unexpected issues.
-        /// </returns>
-        [HttpGet("by-date", Name = "GetSessionsByDateAsync")]
+     
+        // GET /api/sessions?date=2025-07-26
+        // GET /api/sessions?start=2025-07-01&end=2025-07-31
+        // GET /api/sessions?status=Planned
+        // GET /api/sessions?year=2025&week=30
+        // GET /api/sessions?year=2025&month=7
+        [HttpGet(Name = "GetSessions")]
         [ProducesResponseType(typeof(ApiResponse<DataResult<SessionDTO>>), 200)]
         [ProducesResponseType(typeof(ApiResponse<object>), 400)]
         [ProducesResponseType(typeof(ApiResponse<object>), 422)]
         [ProducesResponseType(typeof(ApiResponse<object>), 500)]
-        public async Task<IActionResult> GetSessionsByDateAsync(
-            [FromQuery] DateTime date,
-            CancellationToken ct)
+        public async Task<IActionResult> GetListAsync(
+          [FromQuery] DateTime? date,
+          [FromQuery] DateTime? start,
+          [FromQuery] DateTime? end,
+          [FromQuery] SessionStatus? status,
+          [FromQuery] int? year,
+          [FromQuery] int? week,
+          [FromQuery] int? month,
+          CancellationToken ct)
+        {
+            // 1) single‐date
+            if (date.HasValue)
+                return await GetByDate(date.Value, ct);
+
+            // 2) date‐range
+            if (start.HasValue && end.HasValue)
+                return await GetByRange(start.Value, end.Value, ct);
+
+            // 3) status
+            if (status.HasValue)
+                return await GetByStatus(status.Value, ct);
+
+            // 4) ISO‐week (needs both year+week)
+            if (year.HasValue && week.HasValue)
+                return await GetByWeek(year.Value, week.Value, ct);
+
+            // 5) month (needs both year+month)
+            if (year.HasValue && month.HasValue)
+                return await GetByMonth(year.Value, month.Value, ct);
+
+            // 6) no recognized filter → 400 Bad Request
+            return ApiResponseFactory.BadRequestResponse(
+                "filters",
+                "You must supply one of: date; start+end; status; year+week; or year+month."
+            );
+        }
+
+        private Task<IActionResult> GetByDate(DateTime date, CancellationToken ct) =>
+            Wrap(() => _sessionService.GetSessionsByDate(date, ct),
+                 $"Sessions for {date:yyyy-MM-dd}");
+
+        private Task<IActionResult> GetByRange(DateTime start, DateTime end, CancellationToken ct) =>
+            Wrap(() => _sessionService.GetSessionsInRange(start, end, ct),
+                 $"Sessions from {start:yyyy-MM-dd} to {end:yyyy-MM-dd}");
+
+        private Task<IActionResult> GetByStatus(SessionStatus status, CancellationToken ct) =>
+            Wrap(() => _sessionService.GetSessionsByStatus(status, ct),
+                 $"Sessions with status {status}");
+
+        private Task<IActionResult> GetByWeek(int year, int week, CancellationToken ct) =>
+            Wrap(() => _sessionService.GetSessionsByWeek(year, week, ct),
+                 $"Sessions for ISO week {week} of {year}");
+
+        private Task<IActionResult> GetByMonth(int year, int month, CancellationToken ct) =>
+            Wrap(() => _sessionService.GetSessionsByMonth(year, month, ct),
+                 $"Sessions for {year}-{month:D2}");
+
+        /// <summary>
+        /// Centralizes try/catch + domain‐failure handling + success→200.
+        /// </summary>
+        private async Task<IActionResult> Wrap<T>(
+            Func<Task<Result<T>>> op,
+            string successMsg)
         {
             try
             {
-                var result = await _sessionService.GetSessionsByDate( date, ct);
+                var result = await op();
                 if (result.IsFailure)
-                    return ApiResponseFactory.FromFailure(result, nameof(GetSessionsByDateAsync));
+                    return ApiResponseFactory.FromFailure(result, nameof(GetListAsync));
 
-                return ApiResponseFactory.SuccessResponse(result.Value, "Sessions for date retrieved successfully.");
+                return ApiResponseFactory.SuccessResponse(result.Value, successMsg);
             }
             catch (Exception ex)
             {
@@ -102,155 +157,6 @@ namespace Drosy.Api.Controllers
         }
 
 
-        /// <summary>
-        /// Retrieves sessions that fall within the specified date range.
-        /// </summary>
-        /// <param name="start">Start of the date range.</param>
-        /// <param name="end">End of the date range.</param>
-        /// <param name="ct">A cancellation token.</param>
-        /// <returns>
-        /// 200 OK with the list of sessions.  
-        /// 400 Bad Request for invalid date range.  
-        /// 422 Unprocessable Entity for domain issues.  
-        /// 500 Internal Server Error for unexpected problems.
-        /// </returns>
-        [HttpGet("by-date-range", Name = "GetSessionsInRangeAsync")]
-        [ProducesResponseType(typeof(ApiResponse<DataResult<SessionDTO>>), 200)]
-        [ProducesResponseType(typeof(ApiResponse<object>), 400)]
-        [ProducesResponseType(typeof(ApiResponse<object>), 422)]
-        [ProducesResponseType(typeof(ApiResponse<object>), 500)]
-        public async Task<IActionResult> GetSessionsInRangeAsync(
-        [FromQuery] DateTime start,
-        [FromQuery] DateTime end,
-        CancellationToken ct)
-        {
-        
-            try
-            {
-                var result = await _sessionService.GetSessionsInRange( start, end, ct);
-                if (result.IsFailure)
-                    return ApiResponseFactory.FromFailure(result, nameof(GetSessionsInRangeAsync));
-
-                return ApiResponseFactory.SuccessResponse(result.Value, "Sessions in range retrieved successfully.");
-            }
-            catch (Exception ex)
-            {
-                return ApiResponseFactory.FromException(ex);
-            }
-        }
-
-        /// <summary>
-        /// Retrieves sessions for a given plan in a specific calendar week.
-        /// </summary>
-        /// <param name="planId">The plan ID.</param>
-        /// <param name="year">The calendar year.</param>
-        /// <param name="weekNumber">The ISO 8601 week number.</param>
-        /// <param name="ct">A cancellation token.</param>
-        /// <returns>
-        /// 200 OK with the sessions for the specified week.  
-        /// 400 Bad Request for invalid input.  
-        /// 422 Unprocessable Entity for business rule violations.  
-        /// 500 Internal Server Error for unexpected failures.
-        /// </returns>
-        [HttpGet("week/{planId:int}", Name = "GetSessionsByWeekAsync")]
-        [ProducesResponseType(typeof(ApiResponse<DataResult<SessionDTO>>), 200)]
-        [ProducesResponseType(typeof(ApiResponse<object>), 400)]
-        [ProducesResponseType(typeof(ApiResponse<object>), 422)]
-        [ProducesResponseType(typeof(ApiResponse<object>), 500)]
-        public async Task<IActionResult> GetSessionsByWeekAsync(
-           int planId,
-           [FromQuery] int year,
-           [FromQuery] int weekNumber,
-           CancellationToken ct)
-        {
-         
-            try
-            {
-                var result = await _sessionService.GetSessionsByWeek( year, weekNumber, ct);
-                if (result.IsFailure)
-                    return ApiResponseFactory.FromFailure(result, nameof(GetSessionsByWeekAsync));
-
-                return ApiResponseFactory.SuccessResponse(result.Value, "Sessions by week retrieved successfully.");
-            }
-            catch (Exception ex)
-            {
-                return ApiResponseFactory.FromException(ex);
-            }
-        }
-
-        /// <summary>
-        /// Retrieves sessions for a specific plan in a given month and year.
-        /// </summary>
-        /// <param name="planId">The plan ID.</param>
-        /// <param name="year">The year to filter by.</param>
-        /// <param name="month">The month (1-12).</param>
-        /// <param name="ct">A cancellation token.</param>
-        /// <returns>
-        /// 200 OK with the sessions.  
-        /// 400 Bad Request for invalid parameters.  
-        /// 422 Unprocessable Entity for domain errors.  
-        /// 500 Internal Server Error for unexpected conditions.
-        /// </returns>
-        [HttpGet("month/{planId:int}", Name = "GetSessionsByMonthAsync")]
-        [ProducesResponseType(typeof(ApiResponse<DataResult<SessionDTO>>), 200)]
-        [ProducesResponseType(typeof(ApiResponse<object>), 400)]
-        [ProducesResponseType(typeof(ApiResponse<object>), 422)]
-        [ProducesResponseType(typeof(ApiResponse<object>), 500)]
-        public async Task<IActionResult> GetSessionsByMonthAsync(
-         int planId,
-         [FromQuery] int year,
-         [FromQuery] int month,
-         CancellationToken ct)
-        {
-       
-            try
-            {
-                var result = await _sessionService.GetSessionsByMonth(year, month, ct);
-                if (result.IsFailure)
-                    return ApiResponseFactory.FromFailure(result, nameof(GetSessionsByMonthAsync));
-
-                return ApiResponseFactory.SuccessResponse(result.Value, "Sessions by month retrieved successfully.");
-            }
-            catch (Exception ex)
-            {
-                return ApiResponseFactory.FromException(ex);
-            }
-        }
-
-        /// <summary>
-        /// Retrieves sessions by their status under a specific plan.
-        /// </summary>
-        /// <param name="planId">The plan ID.</param>
-        /// <param name="status">The session status to filter by.</param>
-        /// <param name="ct">A cancellation token.</param>
-        /// <returns>
-        /// 200 OK with matching sessions.  
-        /// 400 Bad Request for invalid status.  
-        /// 422 Unprocessable Entity for business logic issues.  
-        /// 500 Internal Server Error for system errors.
-        /// </returns>
-        [HttpGet("status/{planId:int}", Name = "GetSessionsByStatusAsync")]
-        [ProducesResponseType(typeof(ApiResponse<DataResult<SessionDTO>>), 200)]
-        [ProducesResponseType(typeof(ApiResponse<object>), 400)]
-        [ProducesResponseType(typeof(ApiResponse<object>), 422)]
-        [ProducesResponseType(typeof(ApiResponse<object>), 500)]
-        public async Task<IActionResult> GetSessionsByStatusAsync(
-            [FromQuery] SessionStatus status,
-            CancellationToken ct)
-        {
-            try
-            {
-                var result = await _sessionService.GetSessionsByStatus(status, ct);
-                if (result.IsFailure)
-                    return ApiResponseFactory.FromFailure(result, nameof(GetSessionsByStatusAsync));
-
-                return ApiResponseFactory.SuccessResponse(result.Value, "Sessions by status retrieved successfully.");
-            }
-            catch (Exception ex)
-            {
-                return ApiResponseFactory.FromException(ex);
-            }
-        }
 
         #endregion
 
