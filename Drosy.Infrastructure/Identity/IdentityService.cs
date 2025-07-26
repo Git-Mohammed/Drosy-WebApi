@@ -96,7 +96,7 @@ namespace Drosy.Infrastructure.Identity
                 var user = await _userManager.FindByEmailAsync(email);
 
                 if (user == null) 
-                    return Result.Failure(CommonErrors.NullValue);
+                    return Result.Failure(CommonErrors.NotFound);
 
                 var stringToken = await _userManager.GeneratePasswordResetTokenAsync(user);
                 var passwordToken = PasswordResetTokenHelper.CreateToken(user.Id, stringToken);
