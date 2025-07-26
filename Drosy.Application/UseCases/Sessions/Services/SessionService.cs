@@ -3,6 +3,7 @@ using Drosy.Application.UseCases.Plans.DTOs;
 using Drosy.Application.UseCases.Sessions.DTOs;
 using Drosy.Application.UseCases.Sessions.Interfaces;
 using Drosy.Domain.Entities;
+using Drosy.Domain.Enums;
 using Drosy.Domain.Interfaces.Common.Uow;
 using Drosy.Domain.Interfaces.Repository;
 using Drosy.Domain.Shared.ApplicationResults;
@@ -29,6 +30,8 @@ namespace Drosy.Application.UseCases.Sessions.Services
             _logger = logger;
         }
 
+
+        #region Read
         public async Task<Result<SessionDTO>> GetByIdAsync(int id, CancellationToken cancellationToken)
         {
             try
@@ -49,6 +52,36 @@ namespace Drosy.Application.UseCases.Sessions.Services
                 return Result.Failure<SessionDTO>(CommonErrors.Unexpected);
             }
         }
+        public async Task<Result<DataResult<SessionDTO>>> GetSessionsByDate(int planId, DateTime date, CancellationToken ct)
+        {
+            _logger.LogInformation("Fetching sessions for PlanId={PlanId} on {Date}", planId, date);
+            try
+            {
+                ct.ThrowIfCancellationRequested();
+
+                var list = (await _sessionRepository.GetSessionsByDateAsync(planId, date, ct)).ToList();
+
+                var dtos = _mapper.Map<List<Session>, List<SessionDTO>>(list);
+
+                var result = new DataResult<SessionDTO> { Data = dtos, TotalRecordsCount = dtos.Count };
+                return Result.Success(result);
+            }
+            catch (OperationCanceledException)
+            {
+                _logger.LogWarning("GetSessionsByDate canceled for PlanId={PlanId}", planId);
+                return Result.Failure<DataResult<SessionDTO>>(CommonErrors.OperationCancelled);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex.Message, "Error in GetSessionsByDate for PlanId={PlanId}", planId);
+                return Result.Failure<DataResult<SessionDTO>>(CommonErrors.Unexpected);
+            }
+        }
+        #endregion
+
+        #region Write
+        #endregion
+
         public async Task<Result<SessionDTO>> CreateAsync(CreateSessionDTO sessionDTO, CancellationToken cancellationToken)
         {
             try

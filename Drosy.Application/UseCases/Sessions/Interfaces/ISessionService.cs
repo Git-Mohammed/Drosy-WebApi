@@ -1,4 +1,5 @@
 ﻿using Drosy.Application.UseCases.Sessions.DTOs;
+using Drosy.Domain.Enums;
 using Drosy.Domain.Shared.ApplicationResults;
 
 namespace Drosy.Application.UseCases.Sessions.Interfaces
@@ -10,7 +11,11 @@ namespace Drosy.Application.UseCases.Sessions.Interfaces
     public interface ISessionService
     {
         #region Read
-
+        /// <summary>
+        /// Get all sessions for a given plan on a specific date.
+        /// </summary>
+        Task<Result<DataResult<SessionDTO>>> GetSessionsByDate(int planId, DateTime date, CancellationToken ct);
+       
         /// <summary>
         /// Retrieves a session by its unique identifier.
         /// </summary>

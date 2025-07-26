@@ -1,4 +1,5 @@
 ﻿using Drosy.Domain.Entities;
+using Drosy.Domain.Enums;
 using Drosy.Domain.Interfaces.Repository;
 using Drosy.Infrastructure.Persistence.DbContexts;
 using Microsoft.EntityFrameworkCore;
@@ -14,11 +15,12 @@ namespace Drosy.Infrastructure.Persistence.Repositories
            return await DbSet.Include(x => x.Plan).FirstOrDefaultAsync(x => x.Id == id, cancellationToken);
         }
 
-        public async Task<IEnumerable<Session>> GetByDateAndPlanAsync(DateTime date, int planId, CancellationToken cancellationToken)
-                 => await DbSet
-                .Where(s => s.PlanId == planId && s.ExcepectedDate.Date == date.Date)
-                .ToListAsync(cancellationToken);
-        
+        #region Read
+        public async Task<IEnumerable<Session>> GetSessionsByDateAsync(int planId, DateTime date, CancellationToken cancellationToken)
+         => await DbSet
+        .Where(s => s.PlanId == planId && s.ExcepectedDate.Date == date.Date)
+        .ToListAsync(cancellationToken);
+
 
         public async Task<bool> ExistsAsync(DateTime date, int planId, DateTime startTime, DateTime endTime, CancellationToken cancellationToken)
         {
@@ -48,5 +50,11 @@ namespace Drosy.Infrastructure.Persistence.Repositories
                             endTime > s.StartTime)
                 .AnyAsync(cancellationToken);
         }
+
+        #endregion
+
+        #region Write
+        #endregion
+
     }
 }

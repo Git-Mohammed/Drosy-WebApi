@@ -1,4 +1,5 @@
 ﻿using Drosy.Domain.Entities;
+using Drosy.Domain.Enums;
 using Drosy.Domain.Interfaces.Common.Repository;
 using System;
 using System.Collections.Generic;
@@ -20,7 +21,9 @@ namespace Drosy.Domain.Interfaces.Repository
         /// <param name="id">The session's unique identifier.</param>
         /// <param name="cancellationToken">Token to cancel the async operation.</param>
         /// <returns>The matching session if found; otherwise, null.</returns>
-        Task<Session?> GetByIdAsync(int id, CancellationToken cancellationToken);
+        Task<Session?> GetByIdAsync(
+            int id,
+            CancellationToken cancellationToken);
 
         /// <summary>
         /// Retrieves all sessions scheduled for a given date and plan.
@@ -29,7 +32,11 @@ namespace Drosy.Domain.Interfaces.Repository
         /// <param name="planId">Associated plan ID.</param>
         /// <param name="cancellationToken">Token to cancel the async operation.</param>
         /// <returns>A list of sessions scheduled for the specified date and plan.</returns>
-        Task<IEnumerable<Session>> GetByDateAndPlanAsync(DateTime date, int planId, CancellationToken cancellationToken);
+        Task<IEnumerable<Session>> GetSessionsByDateAsync(
+            int planId,
+            DateTime date,
+            CancellationToken cancellationToken);
+
 
         /// <summary>
         /// Checks whether any session overlaps with a specified time range on a given date and plan.
