@@ -1,6 +1,8 @@
 ﻿using Drosy.Api.Commons.Responses;
 using Drosy.Application.UseCases.Sessions.DTOs;
 using Drosy.Application.UseCases.Sessions.Interfaces;
+using Drosy.Domain.Enums;
+using Drosy.Domain.Shared.ApplicationResults;
 using Drosy.Domain.Shared.ErrorComponents;
 using Drosy.Domain.Shared.ErrorComponents.Common;
 using Microsoft.AspNetCore.Authorization;
@@ -58,6 +60,34 @@ namespace Drosy.Api.Controllers
                 }
 
                 return ApiResponseFactory.SuccessResponse(result.Value, "Session retrieved successfully.");
+            }
+            catch (Exception ex)
+            {
+                return ApiResponseFactory.FromException(ex);
+            }
+        }
+
+
+        [HttpGet("by-date/{planId:int}", Name = "GetSessionsByDateAsync")]
+        [ProducesResponseType(typeof(ApiResponse<DataResult<SessionDTO>>), 200)]
+        [ProducesResponseType(typeof(ApiResponse<object>), 400)]
+        [ProducesResponseType(typeof(ApiResponse<object>), 422)]
+        [ProducesResponseType(typeof(ApiResponse<object>), 500)]
+        public async Task<IActionResult> GetSessionsByDateAsync(
+            int planId,
+            [FromQuery] DateTime date,
+            CancellationToken ct)
+        {
+            if (planId < 1)
+                return ApiResponseFactory.BadRequestResponse("planId", "Invalid plan ID.");
+
+            try
+            {
+                var result = await _sessionService.GetSessionsByDate(planId, date, ct);
+                if (result.IsFailure)
+                    return ApiResponseFactory.FromFailure(result, nameof(GetSessionsByDateAsync));
+
+                return ApiResponseFactory.SuccessResponse(result.Value, "Sessions for date retrieved successfully.");
             }
             catch (Exception ex)
             {
