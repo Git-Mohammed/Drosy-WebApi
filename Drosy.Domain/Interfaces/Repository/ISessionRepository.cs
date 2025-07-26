@@ -37,6 +37,29 @@ namespace Drosy.Domain.Interfaces.Repository
             DateTime date,
             CancellationToken cancellationToken);
 
+        /// <summary>
+        /// Retrieves all sessions for a given plan between two dates (inclusive).
+        /// <param name="start">Target start date.</param>
+        /// <param name="end">Target end date.</param>
+        /// <param name="planId">Associated plan ID.</param>
+        /// <param name="cancellationToken">Token to cancel the async operation.</param>
+        /// </summary>
+        Task<IEnumerable<Session>> GetSessionsInRangeAsync(
+            int planId,
+            DateTime start,
+            DateTime end,
+            CancellationToken cancellationToken);
+
+        /// <summary>
+        /// Retrieves all sessions for a given plan that have the specified status.
+        /// <param name="status">Target status.</param>
+        /// <param name="planId">Associated plan ID.</param>
+        /// <param name="cancellationToken">Token to cancel the async operation.</param>
+        /// </summary>
+        Task<IEnumerable<Session>> GetSessionsByStatusAsync(
+            int planId,
+            SessionStatus status,
+            CancellationToken cancellationToken);
 
         /// <summary>
         /// Checks whether any session overlaps with a specified time range on a given date and plan.

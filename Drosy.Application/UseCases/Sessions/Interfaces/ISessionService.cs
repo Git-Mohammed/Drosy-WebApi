@@ -15,7 +15,22 @@ namespace Drosy.Application.UseCases.Sessions.Interfaces
         /// Get all sessions for a given plan on a specific date.
         /// </summary>
         Task<Result<DataResult<SessionDTO>>> GetSessionsByDate(int planId, DateTime date, CancellationToken ct);
-       
+        /// <summary>
+        /// Get all sessions for a given plan between two dates (inclusive).
+        /// </summary>
+        Task<Result<DataResult<SessionDTO>>> GetSessionsInRange(int planId, DateTime start, DateTime end, CancellationToken ct);
+        /// <summary>
+        /// Get all sessions for a given plan within the week that contains the anchor date.
+        /// </summary>
+        Task<Result<DataResult<SessionDTO>>> GetSessionsByWeek(int planId, int year, int weekNumber, CancellationToken ct);
+        /// <summary>
+        /// Get all sessions for a given plan within the month that contains the anchor date.
+        /// </summary>
+        Task<Result<DataResult<SessionDTO>>> GetSessionsByMonth(int planId, int year, int month, CancellationToken ct);
+        /// <summary>
+        /// Get all sessions for a given plan that match a particular status.
+        /// </summary>
+        Task<Result<DataResult<SessionDTO>>> GetSessionsByStatus(int planId, SessionStatus status, CancellationToken c);
         /// <summary>
         /// Retrieves a session by its unique identifier.
         /// </summary>

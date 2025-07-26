@@ -1,11 +1,12 @@
-﻿namespace Drosy.Domain.Entities
+﻿using Drosy.Domain.Enums;
+
+namespace Drosy.Domain.Entities
 {
     public class Session : BaseEntity<int>
     {
         public int PlanId { get; set; }
         public string Title { get; set; } = null!;
-        public SessionStatus Status { get; set; } = null!;
-        public DateTime ExcepectedDate { get; set; } 
+        public SessionStatus Status { get; set; }        public DateTime ExcepectedDate { get; set; } 
         public DateTime StartTime { get; set; }
         public DateTime EndTime { get; set; }
         public string? Notes { get; set; }

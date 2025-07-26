@@ -77,6 +77,49 @@ namespace Drosy.Application.UseCases.Sessions.Services
                 return Result.Failure<DataResult<SessionDTO>>(CommonErrors.Unexpected);
             }
         }
+
+        public async Task<Result<DataResult<SessionDTO>>> GetSessionsInRange(int planId, DateTime start, DateTime end, CancellationToken ct)
+        {
+            _logger.LogInformation("Fetching sessions for PlanId={PlanId} from {Start} to {End}", planId, start, end);
+            try
+            {
+                ct.ThrowIfCancellationRequested();
+                if (end < start)
+                {
+                    _logger.LogWarning("Invalid range Start {Start} after End {End}", start, end);
+                    return Result.Failure<DataResult<SessionDTO>>(CommonErrors.Invalid);
+                }
+                var list = (await _sessionRepository.GetSessionsInRangeAsync(planId, start, end, ct)).ToList();
+                var dtos = _mapper.Map<List<Session>, List<SessionDTO>>(list);
+                var result = new DataResult<SessionDTO> { Data = dtos, TotalRecordsCount = dtos.Count };
+                return Result.Success(result);
+            }
+            catch (OperationCanceledException)
+            {
+                _logger.LogWarning("GetSessionsInRange canceled for PlanId={PlanId}", planId);
+                return Result.Failure<DataResult<SessionDTO>>(CommonErrors.OperationCancelled);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex.Message, "Error in GetSessionsInRange for PlanId={PlanId}", planId);
+                return Result.Failure<DataResult<SessionDTO>>(CommonErrors.Unexpected);
+            }
+        }
+
+        public Task<Result<DataResult<SessionDTO>>> GetSessionsByWeek(int planId, int year, int weekNumber, CancellationToken ct)
+        {
+            throw new NotImplementedException();
+        }
+
+        public Task<Result<DataResult<SessionDTO>>> GetSessionsByMonth(int planId, int year, int month, CancellationToken ct)
+        {
+            throw new NotImplementedException();
+        }
+
+        public Task<Result<DataResult<SessionDTO>>> GetSessionsByStatus(int planId, SessionStatus status, CancellationToken c)
+        {
+            throw new NotImplementedException();
+        }
         #endregion
 
         #region Write

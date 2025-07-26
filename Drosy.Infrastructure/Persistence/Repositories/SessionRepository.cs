@@ -18,8 +18,11 @@ namespace Drosy.Infrastructure.Persistence.Repositories
         #region Read
         public async Task<IEnumerable<Session>> GetSessionsByDateAsync(int planId, DateTime date, CancellationToken cancellationToken)
          => await DbSet
-        .Where(s => s.PlanId == planId && s.ExcepectedDate.Date == date.Date)
-        .ToListAsync(cancellationToken);
+         .AsNoTracking().Include(x => x.Plan)
+                .Where(s => s.PlanId == planId
+                            && s.ExcepectedDate.Date == date.Date)
+                .OrderBy(s => s.StartTime)
+                .ToListAsync(cancellationToken);
 
 
         public async Task<bool> ExistsAsync(DateTime date, int planId, DateTime startTime, DateTime endTime, CancellationToken cancellationToken)
@@ -51,6 +54,25 @@ namespace Drosy.Infrastructure.Persistence.Repositories
                 .AnyAsync(cancellationToken);
         }
 
+        public async Task<IEnumerable<Session>> GetSessionsInRangeAsync(
+         int planId,
+         DateTime start,
+         DateTime end,
+         CancellationToken cancellationToken)
+         => await DbSet
+             .AsNoTracking().Include(x => x.Plan)
+             .Where(s => s.PlanId == planId
+                         && s.ExcepectedDate.Date >= start.Date
+                         && s.ExcepectedDate.Date <= end.Date)
+             .OrderBy(s => s.ExcepectedDate)
+             .ThenBy(s => s.StartTime)
+             .ToListAsync(cancellationToken);
+
+
+        public Task<IEnumerable<Session>> GetSessionsByStatusAsync(int planId, SessionStatus status, CancellationToken cancellationToken)
+        {
+            throw new NotImplementedException();
+        }
         #endregion
 
         #region Write
