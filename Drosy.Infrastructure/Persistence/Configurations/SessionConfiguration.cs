@@ -22,7 +22,7 @@ namespace Drosy.Infrastructure.Persistence.Configurations
                 .HasConversion<string>()
                .IsRequired();
 
-            builder.Property(x => x.ExcepectedDate)
+            builder.Property(x => x.CreatedAt)
                 .IsRequired();
 
             builder.Property(x => x.StartTime)

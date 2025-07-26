@@ -21,14 +21,14 @@ namespace Drosy.Infrastructure.Persistence.Repositories
          => await DbSet
          .AsNoTracking().Include(x => x.Plan)
                 .Where(s => s.PlanId == planId
-                            && s.ExcepectedDate.Date == date.Date)
+                            && s.CreatedAt.Date == date.Date)
                 .OrderBy(s => s.StartTime)
                 .ToListAsync(cancellationToken);
 
         public async Task<IEnumerable<Session>> GetSessionsByDateAsync( DateTime date, CancellationToken cancellationToken)
          => await DbSet
          .AsNoTracking().Include(x => x.Plan)
-                .Where(s => s.ExcepectedDate.Date == date.Date)
+                .Where(s => s.CreatedAt.Date == date.Date)
                 .OrderBy(s => s.StartTime)
                 .ToListAsync(cancellationToken);
      
@@ -39,9 +39,9 @@ namespace Drosy.Infrastructure.Persistence.Repositories
          CancellationToken cancellationToken)
          => await DbSet
              .AsNoTracking().Include(x => x.Plan)
-             .Where(s =>  s.ExcepectedDate.Date >= start.Date
-                         && s.ExcepectedDate.Date <= end.Date)
-             .OrderBy(s => s.ExcepectedDate)
+             .Where(s =>  s.CreatedAt.Date >= start.Date
+                         && s.CreatedAt.Date <= end.Date)
+             .OrderBy(s => s.CreatedAt)
              .ThenBy(s => s.StartTime)
              .ToListAsync(cancellationToken);
 
@@ -52,7 +52,7 @@ namespace Drosy.Infrastructure.Persistence.Repositories
             => await DbSet.Include(x => x.Plan)
                 .AsNoTracking()
                 .Where(s =>  s.Status == status)
-                .OrderBy(s => s.ExcepectedDate)
+                .OrderBy(s => s.CreatedAt)
                 .ThenBy(s => s.StartTime)
                 .ToListAsync(cancellationToken);
 
@@ -60,7 +60,7 @@ namespace Drosy.Infrastructure.Persistence.Repositories
         {
             return await DbSet.AnyAsync(s =>
                 s.PlanId == planId &&
-                s.ExcepectedDate.Date == date.Date &&
+                s.CreatedAt.Date == date.Date &&
                 startTime < s.EndTime &&
                 endTime > s.StartTime,
                 cancellationToken);
@@ -69,7 +69,7 @@ namespace Drosy.Infrastructure.Persistence.Repositories
         public async Task<bool> ExistsAsync(DateTime date, DateTime startTime, DateTime endTime, CancellationToken cancellationToken)
         {
             return await DbSet.AnyAsync(s =>
-                s.ExcepectedDate.Date == date.Date &&
+                s.CreatedAt.Date == date.Date &&
                 startTime < s.EndTime &&
                 endTime > s.StartTime,
                 cancellationToken);
@@ -78,7 +78,7 @@ namespace Drosy.Infrastructure.Persistence.Repositories
         public async Task<bool> ExistsAsync(int excludeSessionId, DateTime date, DateTime startTime, DateTime endTime, CancellationToken cancellationToken)
         {
             return await DbSet
-                .Where(s => s.ExcepectedDate == date &&
+                .Where(s => s.CreatedAt == date &&
                             s.Id != excludeSessionId &&
                             startTime < s.EndTime &&
                             endTime > s.StartTime)

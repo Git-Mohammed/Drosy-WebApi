@@ -1,12 +1,14 @@
 ﻿using Drosy.Domain.Enums;
+using Drosy.Domain.Interfaces.Common;
 
 namespace Drosy.Domain.Entities
 {
-    public class Session : BaseEntity<int>
+    public class Session : BaseEntity<int>,ICreateAt
     {
         public int PlanId { get; set; }
         public string Title { get; set; } = null!;
-        public SessionStatus Status { get; set; }        public DateTime ExcepectedDate { get; set; } 
+        public SessionStatus Status { get; set; }   
+        public DateTime CreatedAt { get; set; } 
         public DateTime StartTime { get; set; }
         public DateTime EndTime { get; set; }
         public string? Notes { get; set; }

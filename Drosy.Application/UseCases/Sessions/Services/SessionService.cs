@@ -288,7 +288,7 @@ namespace Drosy.Application.UseCases.Sessions.Services
                     return Result.Failure<SessionDTO>(SessionErrors.TimeOverlap);
 
                 // 🕒 Update values
-                session.ExcepectedDate = dto.NewDate;
+                session.CreatedAt = dto.NewDate;
                 session.StartTime = dto.NewStartTime;
                 session.EndTime = dto.NewEndTime;
 
