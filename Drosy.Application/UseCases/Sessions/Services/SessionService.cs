@@ -53,7 +53,8 @@ namespace Drosy.Application.UseCases.Sessions.Services
                 return Result.Failure<SessionDTO>(CommonErrors.Unexpected);
             }
         }
-        public async Task<Result<DataResult<SessionDTO>>> GetSessionsByDate( DateTime date, CancellationToken ct)
+       
+        public async Task<Result<DataResult<SessionDTO>>> GetSessionsByDate(DateTime date, CancellationToken ct)
         {
             _logger.LogInformation("Fetching sessions for date {Date}", date);
             try
@@ -81,7 +82,7 @@ namespace Drosy.Application.UseCases.Sessions.Services
             }
         }
 
-        public async Task<Result<DataResult<SessionDTO>>> GetSessionsInRange( DateTime start, DateTime end, CancellationToken ct)
+        public async Task<Result<DataResult<SessionDTO>>> GetSessionsInRange(DateTime start, DateTime end, CancellationToken ct)
         {
                 _logger.LogInformation("Fetching sessions in range {Start} to {End}", start, end);
 
@@ -114,7 +115,7 @@ namespace Drosy.Application.UseCases.Sessions.Services
 
         public async Task<Result<DataResult<SessionDTO>>> GetSessionsByWeek(int year, int weekNumber, CancellationToken ct)
         {
-                _logger.LogInformation("Fetching sessions for ISO week {Week} of year {Year}", weekNumber, year);
+            _logger.LogInformation("Fetching sessions for ISO week {Week} of year {Year}", weekNumber, year);
 
             try
             {
@@ -144,6 +145,7 @@ namespace Drosy.Application.UseCases.Sessions.Services
                 return Result.Failure<DataResult<SessionDTO>>(CommonErrors.Unexpected);
             }
         }
+        
         // Helper to compute Monday of ISO week
         private static DateTime GetFirstDateOfIsoWeek(int year, int weekNumber)
         {

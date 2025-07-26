@@ -3,7 +3,7 @@ using Drosy.Domain.Interfaces.Common;
 
 namespace Drosy.Domain.Entities
 {
-    public class Session : BaseEntity<int>,ICreateAt
+    public class Session : BaseEntity<int> , ICreateAt
     {
         public int PlanId { get; set; }
         public string Title { get; set; } = null!;

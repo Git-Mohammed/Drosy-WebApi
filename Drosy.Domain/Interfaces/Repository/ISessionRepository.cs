@@ -36,6 +36,7 @@ namespace Drosy.Domain.Interfaces.Repository
             int planId,
             DateTime date,
             CancellationToken cancellationToken);
+
         Task<IEnumerable<Session>> GetSessionsByDateAsync(
            DateTime date,
            CancellationToken cancellationToken);

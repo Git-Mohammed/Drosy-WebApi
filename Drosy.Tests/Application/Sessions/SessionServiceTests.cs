@@ -1,12 +1,13 @@
-﻿using Xunit;
+﻿using Drosy.Application.UseCases.Sessions.DTOs;
+using Drosy.Application.UseCases.Sessions.Interfaces;
+using Drosy.Domain.Enums;
+using Drosy.Domain.Shared.ApplicationResults;
+using Drosy.Domain.Shared.ErrorComponents.Common;
 using Moq;
 using System;
 using System.Threading;
 using System.Threading.Tasks;
-using Drosy.Application.UseCases.Sessions.DTOs;
-using Drosy.Application.UseCases.Sessions.Interfaces;
-using Drosy.Domain.Shared.ApplicationResults;
-using Drosy.Domain.Shared.ErrorComponents.Common;
+using Xunit;
 
 namespace Drosy.Tests.Application.Sessions
 {
@@ -170,6 +171,165 @@ namespace Drosy.Tests.Application.Sessions
                 Assert.Equal(CommonErrors.Invalid.Code, result.Error.Code);
             }
         }
+
+
+        #region GetSessionsByDate
+
+        [Fact]
+        public async Task GetSessionsByDate_ShouldReturnSuccess_WhenDataIsReturned()
+        {
+            // Arrange
+            var date = DateTime.Today;
+            var dto = new SessionDTO { Id = 1, Title = "A" };
+            var data = new DataResult<SessionDTO> { Data = new[] { dto }, TotalRecordsCount = 1 };
+            _sessionService
+                .Setup(s => s.GetSessionsByDate(date, CancellationToken.None))
+                .ReturnsAsync(Result.Success(data));
+
+            // Act
+            var result = await _sessionService.Object.GetSessionsByDate(date, CancellationToken.None);
+
+            // Assert
+            Assert.True(result.IsSuccess);
+            Assert.Equal(1, result.Value.TotalRecordsCount);
+            Assert.Single(result.Value.Data);
+        }
+
+        [Fact]
+        public async Task GetSessionsByDate_ShouldReturnFailure_WhenServiceFails()
+        {
+            // Arrange
+            var date = DateTime.Today;
+            _sessionService
+                .Setup(s => s.GetSessionsByDate(date, CancellationToken.None))
+                .ReturnsAsync(Result.Failure<DataResult<SessionDTO>>(CommonErrors.Invalid));
+
+            // Act
+            var result = await _sessionService.Object.GetSessionsByDate(date, CancellationToken.None);
+
+            // Assert
+            Assert.False(result.IsSuccess);
+        }
+        #endregion
+
+        #region GetSessionsInRange
+
+        [Theory]
+        [InlineData("2025-07-10", "2025-07-09", false)] // end before start
+        [InlineData("2025-07-10", "2025-07-11", true)]  // valid
+        public async Task GetSessionsInRange_ValidationTheory(string start, string end, bool isValid)
+        {
+            var s = DateTime.Parse(start);
+            var e = DateTime.Parse(end);
+
+            if (isValid)
+            {
+                var dto = new SessionDTO { Id = 2, Title = "B" };
+                var data = new DataResult<SessionDTO> { Data = new[] { dto }, TotalRecordsCount = 1 };
+                _sessionService
+                    .Setup(x => x.GetSessionsInRange(s, e, CancellationToken.None))
+                    .ReturnsAsync(Result.Success(data));
+            }
+            else
+            {
+                _sessionService
+                    .Setup(x => x.GetSessionsInRange(s, e, CancellationToken.None))
+                    .ReturnsAsync(Result.Failure<DataResult<SessionDTO>>(CommonErrors.Invalid));
+            }
+
+            var result = await _sessionService.Object.GetSessionsInRange(s, e, CancellationToken.None);
+
+            Assert.Equal(isValid, result.IsSuccess);
+        }
+
+        #endregion
+        #region GetSessionsByWeek
+
+        [Theory]
+        [InlineData(2025, 0, false)]
+        [InlineData(2025, 54, false)]
+        [InlineData(2025, 30, true)]
+        public async Task GetSessionsByWeek_ValidationTheory(int year, int week, bool isValid)
+        {
+            if (isValid)
+            {
+                var dto = new SessionDTO { Id = 3, Title = "C" };
+                var data = new DataResult<SessionDTO> { Data = new[] { dto }, TotalRecordsCount = 1 };
+                _sessionService
+                    .Setup(x => x.GetSessionsByWeek(year, week, CancellationToken.None))
+                    .ReturnsAsync(Result.Success(data));
+            }
+            else
+            {
+                _sessionService
+                    .Setup(x => x.GetSessionsByWeek(year, week, CancellationToken.None))
+                    .ReturnsAsync(Result.Failure<DataResult<SessionDTO>>(CommonErrors.Invalid));
+            }
+
+            var result = await _sessionService.Object.GetSessionsByWeek(year, week, CancellationToken.None);
+            Assert.Equal(isValid, result.IsSuccess);
+        }
+
+        #endregion
+
+        #region GetSessionsByMonth
+
+        [Theory]
+        [InlineData(2025, 0, false)]
+        [InlineData(2025, 13, false)]
+        [InlineData(2025, 7, true)]
+        public async Task GetSessionsByMonth_ValidationTheory(int year, int month, bool isValid)
+        {
+            if (isValid)
+            {
+                var dto = new SessionDTO { Id = 4, Title = "D" };
+                var data = new DataResult<SessionDTO> { Data = new[] { dto }, TotalRecordsCount = 1 };
+                _sessionService
+                    .Setup(x => x.GetSessionsByMonth(year, month, CancellationToken.None))
+                    .ReturnsAsync(Result.Success(data));
+            }
+            else
+            {
+                _sessionService
+                    .Setup(x => x.GetSessionsByMonth(year, month, CancellationToken.None))
+                    .ReturnsAsync(Result.Failure<DataResult<SessionDTO>>(CommonErrors.Invalid));
+            }
+
+            var result = await _sessionService.Object.GetSessionsByMonth(year, month, CancellationToken.None);
+            Assert.Equal(isValid, result.IsSuccess);
+        }
+
+        #endregion
+
+        #region GetSessionsByStatus
+
+        [Theory]
+        [InlineData((SessionStatus)99, false)]
+        [InlineData(SessionStatus.Completed, true)]
+        public async Task GetSessionsByStatus_ValidationTheory(SessionStatus status, bool isValid)
+        {
+            if (isValid)
+            {
+                var dto = new SessionDTO { Id = 5, Title = "E" };
+                var data = new DataResult<SessionDTO> { Data = new[] { dto }, TotalRecordsCount = 1 };
+                _sessionService
+                    .Setup(x => x.GetSessionsByStatus(status, CancellationToken.None))
+                    .ReturnsAsync(Result.Success(data));
+            }
+            else
+            {
+                _sessionService
+                    .Setup(x => x.GetSessionsByStatus(status, CancellationToken.None))
+                    .ReturnsAsync(Result.Failure<DataResult<SessionDTO>>(CommonErrors.Invalid));
+            }
+
+            var result = await _sessionService.Object.GetSessionsByStatus(status, CancellationToken.None);
+            Assert.Equal(isValid, result.IsSuccess);
+        }
+
+        #endregion
+
+
 
     }
 }
