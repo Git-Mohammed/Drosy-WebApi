@@ -146,9 +146,34 @@ namespace Drosy.Application.UseCases.Sessions.Services
             return monday.AddDays((weekNumber - 1) * 7);
         }
 
-        public Task<Result<DataResult<SessionDTO>>> GetSessionsByMonth(int planId, int year, int month, CancellationToken ct)
+        public async Task<Result<DataResult<SessionDTO>>> GetSessionsByMonth(int planId, int year, int month, CancellationToken ct)
         {
-            throw new NotImplementedException();
+            _logger.LogInformation("Fetching sessions for PlanId={PlanId}, Year={Year}, Month={Month}", planId, year, month);
+            try
+            {
+                ct.ThrowIfCancellationRequested();
+                if (month < 1 || month > 12)
+                {
+                    _logger.LogWarning("Invalid month {Month} for year {Year}", month, year);
+                    return Result.Failure<DataResult<SessionDTO>>(CommonErrors.Invalid);
+                }
+                var start = new DateTime(year, month, 1);
+                var end = start.AddMonths(1).AddTicks(-1);
+                var list = (await _sessionRepository.GetSessionsInRangeAsync(planId, start, end, ct)).ToList();
+                var dtos = _mapper.Map<List<Session>, List<SessionDTO>>(list);
+                var result = new DataResult<SessionDTO> { Data = dtos, TotalRecordsCount = dtos.Count };
+                return Result.Success(result);
+            }
+            catch (OperationCanceledException)
+            {
+                _logger.LogWarning("GetSessionsByMonth canceled for PlanId={PlanId}", planId);
+                return Result.Failure<DataResult<SessionDTO>>(CommonErrors.OperationCancelled);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex.Message, "Error in GetSessionsByMonth for PlanId={PlanId}", planId);
+                return Result.Failure<DataResult<SessionDTO>>(CommonErrors.Unexpected);
+            }
         }
 
         public async Task<Result<DataResult<SessionDTO>>> GetSessionsByStatus(int planId, SessionStatus status, CancellationToken ct)
