@@ -123,6 +123,34 @@ namespace Drosy.Api.Controllers
             }
         }
 
+        [HttpGet("week/{planId:int}", Name = "GetSessionsByWeekAsync")]
+        [ProducesResponseType(typeof(ApiResponse<DataResult<SessionDTO>>), 200)]
+        [ProducesResponseType(typeof(ApiResponse<object>), 400)]
+        [ProducesResponseType(typeof(ApiResponse<object>), 422)]
+        [ProducesResponseType(typeof(ApiResponse<object>), 500)]
+        public async Task<IActionResult> GetSessionsByWeekAsync(
+           int planId,
+           [FromQuery] int year,
+           [FromQuery] int weekNumber,
+           CancellationToken ct)
+        {
+            if (planId < 1)
+                return ApiResponseFactory.BadRequestResponse("planId", "Invalid plan ID.");
+
+            try
+            {
+                var result = await _sessionService.GetSessionsByWeek(planId, year, weekNumber, ct);
+                if (result.IsFailure)
+                    return ApiResponseFactory.FromFailure(result, nameof(GetSessionsByWeekAsync));
+
+                return ApiResponseFactory.SuccessResponse(result.Value, "Sessions by week retrieved successfully.");
+            }
+            catch (Exception ex)
+            {
+                return ApiResponseFactory.FromException(ex);
+            }
+        }
+       
 
         #endregion
 
