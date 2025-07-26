@@ -25,6 +25,36 @@ namespace Drosy.Infrastructure.Persistence.Repositories
                 .OrderBy(s => s.StartTime)
                 .ToListAsync(cancellationToken);
 
+        public async Task<IEnumerable<Session>> GetSessionsByDateAsync( DateTime date, CancellationToken cancellationToken)
+         => await DbSet
+         .AsNoTracking().Include(x => x.Plan)
+                .Where(s => s.ExcepectedDate.Date == date.Date)
+                .OrderBy(s => s.StartTime)
+                .ToListAsync(cancellationToken);
+     
+
+        public async Task<IEnumerable<Session>> GetSessionsInRangeAsync(
+         DateTime start,
+         DateTime end,
+         CancellationToken cancellationToken)
+         => await DbSet
+             .AsNoTracking().Include(x => x.Plan)
+             .Where(s =>  s.ExcepectedDate.Date >= start.Date
+                         && s.ExcepectedDate.Date <= end.Date)
+             .OrderBy(s => s.ExcepectedDate)
+             .ThenBy(s => s.StartTime)
+             .ToListAsync(cancellationToken);
+
+
+        public async Task<IEnumerable<Session>> GetSessionsByStatusAsync(
+            SessionStatus status,
+            CancellationToken cancellationToken)
+            => await DbSet.Include(x => x.Plan)
+                .AsNoTracking()
+                .Where(s =>  s.Status == status)
+                .OrderBy(s => s.ExcepectedDate)
+                .ThenBy(s => s.StartTime)
+                .ToListAsync(cancellationToken);
 
         public async Task<bool> ExistsAsync(DateTime date, int planId, DateTime startTime, DateTime endTime, CancellationToken cancellationToken)
         {
@@ -54,33 +84,6 @@ namespace Drosy.Infrastructure.Persistence.Repositories
                             endTime > s.StartTime)
                 .AnyAsync(cancellationToken);
         }
-
-        public async Task<IEnumerable<Session>> GetSessionsInRangeAsync(
-         int planId,
-         DateTime start,
-         DateTime end,
-         CancellationToken cancellationToken)
-         => await DbSet
-             .AsNoTracking().Include(x => x.Plan)
-             .Where(s => s.PlanId == planId
-                         && s.ExcepectedDate.Date >= start.Date
-                         && s.ExcepectedDate.Date <= end.Date)
-             .OrderBy(s => s.ExcepectedDate)
-             .ThenBy(s => s.StartTime)
-             .ToListAsync(cancellationToken);
-
-
-        public async Task<IEnumerable<Session>> GetSessionsByStatusAsync(
-            int planId,
-            SessionStatus status,
-            CancellationToken cancellationToken)
-            => await DbSet.Include(x => x.Plan)
-                .AsNoTracking()
-                .Where(s => s.PlanId == planId
-                            && s.Status == status)
-                .OrderBy(s => s.ExcepectedDate)
-                .ThenBy(s => s.StartTime)
-                .ToListAsync(cancellationToken);
         #endregion
 
         #region Write

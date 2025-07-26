@@ -67,23 +67,29 @@ namespace Drosy.Api.Controllers
             }
         }
 
-
+        /// <summary>
+        /// Retrieves all sessions scheduled on a specific date.
+        /// </summary>
+        /// <param name="date">The date to search sessions for.</param>
+        /// <param name="ct">A cancellation token.</param>
+        /// <returns>
+        /// 200 OK with the list of sessions.  
+        /// 400 Bad Request for invalid input.  
+        /// 422 Unprocessable Entity for domain errors.  
+        /// 500 Internal Server Error for unexpected issues.
+        /// </returns>
         [HttpGet("by-date", Name = "GetSessionsByDateAsync")]
         [ProducesResponseType(typeof(ApiResponse<DataResult<SessionDTO>>), 200)]
         [ProducesResponseType(typeof(ApiResponse<object>), 400)]
         [ProducesResponseType(typeof(ApiResponse<object>), 422)]
         [ProducesResponseType(typeof(ApiResponse<object>), 500)]
         public async Task<IActionResult> GetSessionsByDateAsync(
-            [FromQuery] int planId,
             [FromQuery] DateTime date,
             CancellationToken ct)
         {
-            if (planId < 1)
-                return ApiResponseFactory.BadRequestResponse("planId", "Invalid plan ID.");
-
             try
             {
-                var result = await _sessionService.GetSessionsByDate(planId, date, ct);
+                var result = await _sessionService.GetSessionsByDate( date, ct);
                 if (result.IsFailure)
                     return ApiResponseFactory.FromFailure(result, nameof(GetSessionsByDateAsync));
 
@@ -95,23 +101,33 @@ namespace Drosy.Api.Controllers
             }
         }
 
+
+        /// <summary>
+        /// Retrieves sessions that fall within the specified date range.
+        /// </summary>
+        /// <param name="start">Start of the date range.</param>
+        /// <param name="end">End of the date range.</param>
+        /// <param name="ct">A cancellation token.</param>
+        /// <returns>
+        /// 200 OK with the list of sessions.  
+        /// 400 Bad Request for invalid date range.  
+        /// 422 Unprocessable Entity for domain issues.  
+        /// 500 Internal Server Error for unexpected problems.
+        /// </returns>
         [HttpGet("by-date-range", Name = "GetSessionsInRangeAsync")]
         [ProducesResponseType(typeof(ApiResponse<DataResult<SessionDTO>>), 200)]
         [ProducesResponseType(typeof(ApiResponse<object>), 400)]
         [ProducesResponseType(typeof(ApiResponse<object>), 422)]
         [ProducesResponseType(typeof(ApiResponse<object>), 500)]
         public async Task<IActionResult> GetSessionsInRangeAsync(
-        [FromQuery] int planId,
         [FromQuery] DateTime start,
         [FromQuery] DateTime end,
         CancellationToken ct)
         {
-            if (planId < 1)
-                return ApiResponseFactory.BadRequestResponse("planId", "Invalid plan ID.");
-
+        
             try
             {
-                var result = await _sessionService.GetSessionsInRange(planId, start, end, ct);
+                var result = await _sessionService.GetSessionsInRange( start, end, ct);
                 if (result.IsFailure)
                     return ApiResponseFactory.FromFailure(result, nameof(GetSessionsInRangeAsync));
 
@@ -123,6 +139,19 @@ namespace Drosy.Api.Controllers
             }
         }
 
+        /// <summary>
+        /// Retrieves sessions for a given plan in a specific calendar week.
+        /// </summary>
+        /// <param name="planId">The plan ID.</param>
+        /// <param name="year">The calendar year.</param>
+        /// <param name="weekNumber">The ISO 8601 week number.</param>
+        /// <param name="ct">A cancellation token.</param>
+        /// <returns>
+        /// 200 OK with the sessions for the specified week.  
+        /// 400 Bad Request for invalid input.  
+        /// 422 Unprocessable Entity for business rule violations.  
+        /// 500 Internal Server Error for unexpected failures.
+        /// </returns>
         [HttpGet("week/{planId:int}", Name = "GetSessionsByWeekAsync")]
         [ProducesResponseType(typeof(ApiResponse<DataResult<SessionDTO>>), 200)]
         [ProducesResponseType(typeof(ApiResponse<object>), 400)]
@@ -134,12 +163,10 @@ namespace Drosy.Api.Controllers
            [FromQuery] int weekNumber,
            CancellationToken ct)
         {
-            if (planId < 1)
-                return ApiResponseFactory.BadRequestResponse("planId", "Invalid plan ID.");
-
+         
             try
             {
-                var result = await _sessionService.GetSessionsByWeek(planId, year, weekNumber, ct);
+                var result = await _sessionService.GetSessionsByWeek( year, weekNumber, ct);
                 if (result.IsFailure)
                     return ApiResponseFactory.FromFailure(result, nameof(GetSessionsByWeekAsync));
 
@@ -150,6 +177,20 @@ namespace Drosy.Api.Controllers
                 return ApiResponseFactory.FromException(ex);
             }
         }
+
+        /// <summary>
+        /// Retrieves sessions for a specific plan in a given month and year.
+        /// </summary>
+        /// <param name="planId">The plan ID.</param>
+        /// <param name="year">The year to filter by.</param>
+        /// <param name="month">The month (1-12).</param>
+        /// <param name="ct">A cancellation token.</param>
+        /// <returns>
+        /// 200 OK with the sessions.  
+        /// 400 Bad Request for invalid parameters.  
+        /// 422 Unprocessable Entity for domain errors.  
+        /// 500 Internal Server Error for unexpected conditions.
+        /// </returns>
         [HttpGet("month/{planId:int}", Name = "GetSessionsByMonthAsync")]
         [ProducesResponseType(typeof(ApiResponse<DataResult<SessionDTO>>), 200)]
         [ProducesResponseType(typeof(ApiResponse<object>), 400)]
@@ -161,12 +202,10 @@ namespace Drosy.Api.Controllers
          [FromQuery] int month,
          CancellationToken ct)
         {
-            if (planId < 1)
-                return ApiResponseFactory.BadRequestResponse("planId", "Invalid plan ID.");
-
+       
             try
             {
-                var result = await _sessionService.GetSessionsByMonth(planId, year, month, ct);
+                var result = await _sessionService.GetSessionsByMonth(year, month, ct);
                 if (result.IsFailure)
                     return ApiResponseFactory.FromFailure(result, nameof(GetSessionsByMonthAsync));
 
@@ -178,22 +217,30 @@ namespace Drosy.Api.Controllers
             }
         }
 
+        /// <summary>
+        /// Retrieves sessions by their status under a specific plan.
+        /// </summary>
+        /// <param name="planId">The plan ID.</param>
+        /// <param name="status">The session status to filter by.</param>
+        /// <param name="ct">A cancellation token.</param>
+        /// <returns>
+        /// 200 OK with matching sessions.  
+        /// 400 Bad Request for invalid status.  
+        /// 422 Unprocessable Entity for business logic issues.  
+        /// 500 Internal Server Error for system errors.
+        /// </returns>
         [HttpGet("status/{planId:int}", Name = "GetSessionsByStatusAsync")]
         [ProducesResponseType(typeof(ApiResponse<DataResult<SessionDTO>>), 200)]
         [ProducesResponseType(typeof(ApiResponse<object>), 400)]
         [ProducesResponseType(typeof(ApiResponse<object>), 422)]
         [ProducesResponseType(typeof(ApiResponse<object>), 500)]
         public async Task<IActionResult> GetSessionsByStatusAsync(
-            int planId,
             [FromQuery] SessionStatus status,
             CancellationToken ct)
         {
-            if (planId < 1)
-                return ApiResponseFactory.BadRequestResponse("planId", "Invalid plan ID.");
-
             try
             {
-                var result = await _sessionService.GetSessionsByStatus(planId, status, ct);
+                var result = await _sessionService.GetSessionsByStatus(status, ct);
                 if (result.IsFailure)
                     return ApiResponseFactory.FromFailure(result, nameof(GetSessionsByStatusAsync));
 
