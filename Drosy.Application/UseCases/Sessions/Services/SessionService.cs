@@ -116,9 +116,32 @@ namespace Drosy.Application.UseCases.Sessions.Services
             throw new NotImplementedException();
         }
 
-        public Task<Result<DataResult<SessionDTO>>> GetSessionsByStatus(int planId, SessionStatus status, CancellationToken c)
+        public async Task<Result<DataResult<SessionDTO>>> GetSessionsByStatus(int planId, SessionStatus status, CancellationToken ct)
         {
-            throw new NotImplementedException();
+            _logger.LogInformation("Fetching sessions for PlanId={PlanId} with Status={Status}", planId, status);
+            try
+            {
+                ct.ThrowIfCancellationRequested();
+                if (!Enum.IsDefined(typeof(SessionStatus), status))
+                {
+                    _logger.LogWarning("Invalid status {Status} provided", status);
+                    return Result.Failure<DataResult<SessionDTO>>(CommonErrors.Invalid);
+                }
+                var list = (await _sessionRepository.GetSessionsByStatusAsync(planId, status, ct)).ToList();
+                var dtos = _mapper.Map<List<Session>, List<SessionDTO>>(list);
+                var result = new DataResult<SessionDTO> { Data = dtos, TotalRecordsCount = dtos.Count };
+                return Result.Success(result);
+            }
+            catch (OperationCanceledException)
+            {
+                _logger.LogWarning("GetSessionsByStatus canceled for PlanId={PlanId}", planId);
+                return Result.Failure<DataResult<SessionDTO>>(CommonErrors.OperationCancelled);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex.Message, "Error in GetSessionsByStatus for PlanId={PlanId}", planId);
+                return Result.Failure<DataResult<SessionDTO>>(CommonErrors.Unexpected);
+            }
         }
         #endregion
 

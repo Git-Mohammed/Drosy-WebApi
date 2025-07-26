@@ -12,7 +12,7 @@ namespace Drosy.Domain.Interfaces.Repository
     /// Defines data access operations for session entities.
     /// </summary>
     public interface ISessionRepository : IRepository<Session>
-    {
+    { 
         #region Read Operations
 
         /// <summary>

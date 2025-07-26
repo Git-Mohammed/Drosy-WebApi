@@ -30,7 +30,7 @@ namespace Drosy.Application.UseCases.Sessions.Interfaces
         /// <summary>
         /// Get all sessions for a given plan that match a particular status.
         /// </summary>
-        Task<Result<DataResult<SessionDTO>>> GetSessionsByStatus(int planId, SessionStatus status, CancellationToken c);
+        Task<Result<DataResult<SessionDTO>>> GetSessionsByStatus(int planId, SessionStatus status, CancellationToken ct);
         /// <summary>
         /// Retrieves a session by its unique identifier.
         /// </summary>

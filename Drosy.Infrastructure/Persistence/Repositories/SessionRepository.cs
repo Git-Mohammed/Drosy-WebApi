@@ -2,6 +2,7 @@
 using Drosy.Domain.Enums;
 using Drosy.Domain.Interfaces.Repository;
 using Drosy.Infrastructure.Persistence.DbContexts;
+using Microsoft.AspNetCore.Http;
 using Microsoft.EntityFrameworkCore;
 
 namespace Drosy.Infrastructure.Persistence.Repositories
@@ -69,10 +70,17 @@ namespace Drosy.Infrastructure.Persistence.Repositories
              .ToListAsync(cancellationToken);
 
 
-        public Task<IEnumerable<Session>> GetSessionsByStatusAsync(int planId, SessionStatus status, CancellationToken cancellationToken)
-        {
-            throw new NotImplementedException();
-        }
+        public async Task<IEnumerable<Session>> GetSessionsByStatusAsync(
+            int planId,
+            SessionStatus status,
+            CancellationToken cancellationToken)
+            => await DbSet.Include(x => x.Plan)
+                .AsNoTracking()
+                .Where(s => s.PlanId == planId
+                            && s.Status == status)
+                .OrderBy(s => s.ExcepectedDate)
+                .ThenBy(s => s.StartTime)
+                .ToListAsync(cancellationToken);
         #endregion
 
         #region Write
