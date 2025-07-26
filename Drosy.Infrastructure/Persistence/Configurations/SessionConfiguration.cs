@@ -18,7 +18,11 @@ namespace Drosy.Infrastructure.Persistence.Configurations
            builder.Property(x => x.Title)
                 .IsRequired();
 
-            builder.Property(x => x.ExcepectedDate)
+            builder.Property(x => x.Status)
+                .HasConversion<string>()
+               .IsRequired();
+
+            builder.Property(x => x.CreatedAt)
                 .IsRequired();
 
             builder.Property(x => x.StartTime)
@@ -26,6 +30,7 @@ namespace Drosy.Infrastructure.Persistence.Configurations
 
             builder.Property(x => x.EndTime)
                 .IsRequired();
+
 
             builder.Property(x => x.Notes)
                 .IsRequired(false);
