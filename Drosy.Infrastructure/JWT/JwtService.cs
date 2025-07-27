@@ -18,19 +18,15 @@ namespace Drosy.Infrastructure.JWT
 {
     public class JwtService : IJwtService
     {
-        private readonly IAppUserRepository _userRepository;
-        private readonly IIdentityService _identityService;
         private readonly IRefreshTokenRepository _refreshTokenRepository;
         private readonly IUnitOfWork _unitOfWork;
         private readonly AuthOptions _jwtOptions;
         private readonly ILogger<JwtService> _logger;
-        public JwtService(IOptions<AuthOptions> jWToptions, IUnitOfWork unitOfWork, IRefreshTokenRepository refreshTokenRepository, IIdentityService identityService, IAppUserRepository userRepository, ILogger<JwtService> logger)
+        public JwtService(IOptions<AuthOptions> jWToptions, IUnitOfWork unitOfWork, IRefreshTokenRepository refreshTokenRepository, ILogger<JwtService> logger)
         {
             _jwtOptions = jWToptions.Value;
             _unitOfWork = unitOfWork;
             _refreshTokenRepository = refreshTokenRepository;
-            _identityService = identityService;
-            _userRepository = userRepository;
             _logger = logger;
         }
         private List<Claim> GenerateUserClaims(string userName, int userId, List<string> userRoles)
