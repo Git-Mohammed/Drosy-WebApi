@@ -12,6 +12,7 @@ using System.Security.Cryptography;
 using System.Text;
 using Drosy.Domain.Shared.ErrorComponents.Common;
 using Drosy.Domain.Shared.ErrorComponents.EFCore;
+using Microsoft.Extensions.Options;
 
 namespace Drosy.Infrastructure.JWT
 {
@@ -23,9 +24,9 @@ namespace Drosy.Infrastructure.JWT
         private readonly IUnitOfWork _unitOfWork;
         private readonly AuthOptions _jwtOptions;
         private readonly ILogger<JwtService> _logger;
-        public JwtService(AuthOptions jWToptions, IUnitOfWork unitOfWork, IRefreshTokenRepository refreshTokenRepository, IIdentityService identityService, IAppUserRepository userRepository, ILogger<JwtService> logger)
+        public JwtService(IOptions<AuthOptions> jWToptions, IUnitOfWork unitOfWork, IRefreshTokenRepository refreshTokenRepository, IIdentityService identityService, IAppUserRepository userRepository, ILogger<JwtService> logger)
         {
-            _jwtOptions = jWToptions;
+            _jwtOptions = jWToptions.Value;
             _unitOfWork = unitOfWork;
             _refreshTokenRepository = refreshTokenRepository;
             _identityService = identityService;
