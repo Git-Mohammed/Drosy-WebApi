@@ -51,6 +51,7 @@ public class PaymentService(
             }
             
             // TODO: check if student assign to plan (used planStudentService)
+            
             var isStudentAssignToPlan = await _planStudentsService.IsStudentInPlanAsync(paymentDto.PlanId, paymentDto.StudentId, cancellation);
             if (!isStudentAssignToPlan.IsSuccess)
             {

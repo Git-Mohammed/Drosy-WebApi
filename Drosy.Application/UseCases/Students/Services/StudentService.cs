@@ -163,9 +163,9 @@ namespace Drosy.Application.UseCases.Students.Services
         private int _CalculateTotalSessions(Plan plan)
         {
             // 1. عدد الأيام في الأسبوع اللي فيها حصص
-            int sessionsPerWeek = Enum.GetValues(typeof(DayOfWeek))
+            int sessionsPerWeek =  0/*Enum.GetValues(typeof(DayOfWeek))
                 .Cast<DayOfWeek>()
-                .Count(day => plan.DaysOfWeek.HasFlag((Days)(1 << (int)day)));
+                .Count(day => plan.DaysOfWeek.HasFlag((Days)(1 << (int)day)))*/;
 
             // 2. عدد الأسابيع بين البداية والنهاية
             int totalDays = (plan.EndDate - plan.StartDate).Days + 1;
