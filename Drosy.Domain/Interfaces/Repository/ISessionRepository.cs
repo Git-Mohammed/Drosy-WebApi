@@ -1,4 +1,5 @@
 ﻿using Drosy.Domain.Entities;
+using Drosy.Domain.Enums;
 using Drosy.Domain.Interfaces.Common.Repository;
 using System;
 using System.Collections.Generic;
@@ -11,7 +12,7 @@ namespace Drosy.Domain.Interfaces.Repository
     /// Defines data access operations for session entities.
     /// </summary>
     public interface ISessionRepository : IRepository<Session>
-    {
+    { 
         #region Read Operations
 
         /// <summary>
@@ -20,7 +21,9 @@ namespace Drosy.Domain.Interfaces.Repository
         /// <param name="id">The session's unique identifier.</param>
         /// <param name="cancellationToken">Token to cancel the async operation.</param>
         /// <returns>The matching session if found; otherwise, null.</returns>
-        Task<Session?> GetByIdAsync(int id, CancellationToken cancellationToken);
+        Task<Session?> GetByIdAsync(
+            int id,
+            CancellationToken cancellationToken);
 
         /// <summary>
         /// Retrieves all sessions scheduled for a given date and plan.
@@ -29,7 +32,36 @@ namespace Drosy.Domain.Interfaces.Repository
         /// <param name="planId">Associated plan ID.</param>
         /// <param name="cancellationToken">Token to cancel the async operation.</param>
         /// <returns>A list of sessions scheduled for the specified date and plan.</returns>
-        Task<IEnumerable<Session>> GetByDateAndPlanAsync(DateTime date, int planId, CancellationToken cancellationToken);
+        Task<IEnumerable<Session>> GetSessionsByDateAsync(
+            int planId,
+            DateTime date,
+            CancellationToken cancellationToken);
+
+        Task<IEnumerable<Session>> GetSessionsByDateAsync(
+           DateTime date,
+           CancellationToken cancellationToken);
+
+        /// <summary>
+        /// Retrieves all sessions for a given plan between two dates (inclusive).
+        /// <param name="start">Target start date.</param>
+        /// <param name="end">Target end date.</param>
+        /// <param name="planId">Associated plan ID.</param>
+        /// <param name="cancellationToken">Token to cancel the async operation.</param>
+        /// </summary>
+        Task<IEnumerable<Session>> GetSessionsInRangeAsync(
+            DateTime start,
+            DateTime end,
+            CancellationToken cancellationToken);
+
+        /// <summary>
+        /// Retrieves all sessions for a given plan that have the specified status.
+        /// <param name="status">Target status.</param>
+        /// <param name="planId">Associated plan ID.</param>
+        /// <param name="cancellationToken">Token to cancel the async operation.</param>
+        /// </summary>
+        Task<IEnumerable<Session>> GetSessionsByStatusAsync(
+            SessionStatus status,
+            CancellationToken cancellationToken);
 
         /// <summary>
         /// Checks whether any session overlaps with a specified time range on a given date and plan.
