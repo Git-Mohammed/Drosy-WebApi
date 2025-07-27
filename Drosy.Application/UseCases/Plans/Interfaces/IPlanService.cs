@@ -17,7 +17,7 @@ public interface IPlanService
     /// A <see cref="Result{T}"/> containing the created <see cref="PlanDto"/> if successful,
     /// or error details if creation fails.
     /// </returns>
-    Task<Result<PlanDto>> CreatePlanAsync(CreatePlanDTo newPlan, CancellationToken cancellationToken);
+    Task<Result<PlanDto>> CreatePlanAsync(CreatePlanDto newPlan, CancellationToken cancellationToken);
 
     /// <summary>
     /// Retrieves a plan by its unique identifier.

@@ -22,14 +22,12 @@ public interface IPlanRepository : IRepository<Plan>
     /// <summary>
     /// Checks if there is any active plan that conflicts with the specified session time range.
     /// </summary>
-    /// <param name="startSession">The start time of the session.</param>
-    /// <param name="endSession">The end time of the session.</param>
+    /// <param name="day"></param>
     /// <param name="cancellationToken">Token to cancel the operation.</param>
     /// <returns>
     /// A task that returns <c>true</c> if a conflicting session exists; otherwise, <c>false</c>.
     /// </returns>
-    Task<bool> ExistsAsync(TimeSpan startSession, TimeSpan endSession, CancellationToken cancellationToken);
-
+    Task<bool> ExistsAsync(List<PlanDay> day, CancellationToken cancellationToken);
     /// <summary>
     /// Retrieves a plan by its unique identifier.
     /// </summary>

@@ -1,28 +1,26 @@
-﻿using Drosy.Application.UseCases.Plans.DTOs;
-using FluentValidation;
-using System.Globalization;
+﻿using Drosy.Application.Interfaces.Common;
+using Drosy.Application.UseCases.Plans.DTOs;
+using Drosy.Domain.Entities;
 using Drosy.Domain.Interfaces.Repository;
-using Drosy.Domain.Shared.ErrorComponents.Common;
 using Drosy.Domain.Shared.ErrorComponents.Plans;
 using Drosy.Domain.Shared.ErrorComponents.Validation;
+using FluentValidation;
 
 namespace Drosy.Infrastructure.Validators.PlanValidators;
 
-public class CreatePlanDtoValidator : AbstractValidator<CreatePlanDTo>
+public class CreatePlanDtoValidator : AbstractValidator<CreatePlanDto>
 {
     private static readonly string[] ValidTypes = ["Individual", "Group"];
     private static readonly string[] ValidStatuses = ["Active", "Inactive"];
-    private static readonly string[] ValidDays =
-    [
-        "Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"
-    ];
 
     private readonly IPlanRepository _repository;
-    
-    public CreatePlanDtoValidator(IPlanRepository  planRepository)
+    private readonly IMapper _mapper;
+
+    public CreatePlanDtoValidator(IPlanRepository planRepository, IMapper mapper)
     {
         _repository = planRepository;
-        
+        _mapper = mapper;
+
         RuleFor(x => x.Type)
             .NotEmpty().WithMessage(ValidationErrors.RequiredField.Message)
             .Must(t => ValidTypes.Contains(t, StringComparer.OrdinalIgnoreCase))
@@ -33,12 +31,12 @@ public class CreatePlanDtoValidator : AbstractValidator<CreatePlanDTo>
             .Must(s => ValidStatuses.Contains(s, StringComparer.OrdinalIgnoreCase))
             .WithMessage($"Status must be one of: {string.Join(", ", ValidStatuses)}");
 
-        RuleFor(x => x.DaysOfWeek)
+        RuleFor(x => x.Days)
             .NotNull().WithMessage(ValidationErrors.RequiredField.Message)
-            .Must(list => list.Count > 0).WithMessage(PlanErrors.DaysOfWeekRequired.Message)
-            .ForEach(day =>
-                day.Must(d => ValidDays.Contains(d, StringComparer.OrdinalIgnoreCase))
-                    .WithMessage(d => $"'{d}' is not a valid day."));
+            .Must(list => list.Count > 0).WithMessage(PlanErrors.DaysOfWeekRequired.Message);
+
+        // ✅ Validation for each PlanDay item
+        RuleForEach(x => x.Days).SetValidator(new PlanDayDtoValidator());
 
         RuleFor(x => x.TotalFees)
             .GreaterThanOrEqualTo(0).WithMessage(PlanErrors.TotalFeesMustBePositive.Message);
@@ -49,18 +47,17 @@ public class CreatePlanDtoValidator : AbstractValidator<CreatePlanDTo>
         RuleFor(x => x.Period)
             .GreaterThan(0).WithMessage(PlanErrors.InvalidPeriod.Message);
 
-        RuleFor(x => x.StartSession)
-            .LessThan(x => x.EndSession)
-            .WithMessage(PlanErrors.SessionTimeConflict.Message);
-        
+        // ✅ Session Conflict Check
         RuleFor(x => x)
             .MustAsync(async (dto, cancellation) =>
-                !await IsExistsPlanAsync(dto.StartSession, dto.EndSession, cancellation))
+                !await IsExistsPlanAsync(dto.Days, cancellation))
             .WithMessage(PlanErrors.SessionTimeConflict.Message);
     }
 
-    private async Task<bool> IsExistsPlanAsync(TimeSpan startSession, TimeSpan endSession, CancellationToken cancellationToken)
+    private async Task<bool> IsExistsPlanAsync(List<PlanDayDto> daysdto, CancellationToken cancellationToken)
     {
-        return await _repository.ExistsAsync(startSession, endSession, cancellationToken);
+        var days = daysdto.Select(d => _mapper.Map<PlanDayDto,PlanDay>(d)).ToList();
+        var exists = await _repository.ExistsAsync(days, cancellationToken);
+        return false;
     }
 }

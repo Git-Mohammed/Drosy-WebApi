@@ -4,6 +4,7 @@ using Drosy.Infrastructure.Persistence.DbContexts;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace Drosy.Infrastructure.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20250726133722_Add_Split_PlanDayToTable")]
+    partial class Add_Split_PlanDayToTable
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -358,24 +361,17 @@ namespace Drosy.Infrastructure.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
-                    b.Property<DateTime>("CreatedAt")
-                        .HasColumnType("datetime2");
-
                     b.Property<DateTime>("EndTime")
                         .HasColumnType("datetime2");
 
-                    b.Property<string>("Notes")
-                        .HasColumnType("nvarchar(max)");
+                    b.Property<DateTime>("ExcepectedDate")
+                        .HasColumnType("datetime2");
 
                     b.Property<int>("PlanId")
                         .HasColumnType("int");
 
                     b.Property<DateTime>("StartTime")
                         .HasColumnType("datetime2");
-
-                    b.Property<string>("Status")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("Title")
                         .IsRequired()
@@ -402,12 +398,6 @@ namespace Drosy.Infrastructure.Migrations
                         .HasColumnType("nvarchar(200)");
 
                     b.Property<int>("CityId")
-                        .HasColumnType("int");
-
-                    b.Property<DateTime?>("DeletedAt")
-                        .HasColumnType("datetime2");
-
-                    b.Property<int?>("DeletedBy")
                         .HasColumnType("int");
 
                     b.Property<string>("EmergencyNumber")
@@ -711,7 +701,7 @@ namespace Drosy.Infrastructure.Migrations
                         .IsRequired();
 
                     b.HasOne("Drosy.Domain.Entities.Student", "Student")
-                        .WithMany("Attendences")
+                        .WithMany()
                         .HasForeignKey("StudentId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
@@ -921,8 +911,6 @@ namespace Drosy.Infrastructure.Migrations
 
             modelBuilder.Entity("Drosy.Domain.Entities.Student", b =>
                 {
-                    b.Navigation("Attendences");
-
                     b.Navigation("Payments");
 
                     b.Navigation("Plans");

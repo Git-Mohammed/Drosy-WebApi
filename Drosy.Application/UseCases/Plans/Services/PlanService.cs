@@ -24,9 +24,9 @@ public class PlanService(
     private readonly IMapper _mapper = mapper;
 
 
-    public async Task<Result<PlanDto>> CreatePlanAsync(CreatePlanDTo newPlan, CancellationToken cancellationToken)
+    public async Task<Result<PlanDto>> CreatePlanAsync(CreatePlanDto newPlan, CancellationToken cancellationToken)
     {
-        var plan = _mapper.Map<CreatePlanDTo, Plan>(newPlan);
+        var plan = _mapper.Map<CreatePlanDto, Plan>(newPlan);
         await _planRepository.AddAsync(plan, cancellationToken);
         var result = await _unitOfWork.SaveChangesAsync(cancellationToken);
         if (!result)
