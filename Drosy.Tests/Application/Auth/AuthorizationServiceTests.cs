@@ -21,7 +21,6 @@ namespace Drosy.Tests.Application.Auth
     public class AuthorizationServiceTests
     {
         private readonly Mock<IJwtService> _jwtServiceMock;
-        private readonly Mock<IAppUserRepository> _userRepoMock;
         private readonly Mock<IIdentityService> _identityServiceMock;
         private readonly Mock<ILogger<AuthService>> _logger;
         private readonly IAuthService _authService;
@@ -29,12 +28,10 @@ namespace Drosy.Tests.Application.Auth
         public AuthorizationServiceTests()
         {
             _jwtServiceMock = new Mock<IJwtService>();
-            _userRepoMock = new Mock<IAppUserRepository>();
             _identityServiceMock = new Mock<IIdentityService>();
             _logger = new Mock<ILogger<AuthService>>();
             _authService = new AuthService(
                 _jwtServiceMock.Object,
-                _userRepoMock.Object,
                 _identityServiceMock.Object,
                 _logger.Object
             );
