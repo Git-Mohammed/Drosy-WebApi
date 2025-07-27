@@ -202,15 +202,15 @@ namespace Drosy.Tests.Application.Auth
             // Arrange
             if (isSucced)
             {
-                _identityServiceMock.Setup(x => x.ForgetPasswordAsync(email, link, It.IsAny<CancellationToken>())).ReturnsAsync(Result.Success());
+                _identityServiceMock.Setup(x => x.RequestPasswordResetAsync(email, link, It.IsAny<CancellationToken>())).ReturnsAsync(Result.Success());
             }
 
             else
             {
-                _identityServiceMock.Setup(x => x.ForgetPasswordAsync(email, link, It.IsAny<CancellationToken>())).ReturnsAsync(Result.Failure(CommonErrors.Failure));
+                _identityServiceMock.Setup(x => x.RequestPasswordResetAsync(email, link, It.IsAny<CancellationToken>())).ReturnsAsync(Result.Failure(CommonErrors.Failure));
             }
             // Act
-            var result = await _authService.ForgetPasswordAsync(email, link, It.IsAny<CancellationToken>());
+            var result = await _authService.RequestPasswordResetAsync(email, link, It.IsAny<CancellationToken>());
             // Assert
             Assert.NotNull(result.Error);
         }

@@ -103,12 +103,12 @@ namespace Drosy.Application.UseCases.Authentication.Services
             }
         }
 
-        public async Task<Result> ForgetPasswordAsync(string email, string link, CancellationToken ct)
+        public async Task<Result> RequestPasswordResetAsync(string email, string link, CancellationToken ct)
         {
             try
             {
                 ct.ThrowIfCancellationRequested();
-                var result = await _identityService.ForgetPasswordAsync(email, link, ct);
+                var result = await _identityService.RequestPasswordResetAsync(email, link, ct);
                 if (result.IsFailure)
                     return Result.Failure(result.Error);
 

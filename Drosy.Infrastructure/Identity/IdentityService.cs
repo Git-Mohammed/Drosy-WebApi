@@ -87,7 +87,7 @@ namespace Drosy.Infrastructure.Identity
             return Result.Success();
         }
 
-        public async Task<Result> ForgetPasswordAsync(string email, string link, CancellationToken ct)
+        public async Task<Result> RequestPasswordResetAsync(string email, string link, CancellationToken ct)
         {
             try
             {
