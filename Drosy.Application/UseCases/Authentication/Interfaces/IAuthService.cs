@@ -67,7 +67,7 @@ namespace Drosy.Application.UseCases.Authentication.Interfaces
         /// <returns>
         /// A result indicating success or failure of the email dispatch.
         /// </returns>
-        Task<Result> ForgetPasswordAsync(string email, string link, CancellationToken ct);
+        Task<Result> RequestPasswordResetAsync(string email, string link, CancellationToken ct);
 
         /// <summary>
         /// Completes the password reset using a valid token and new credentials.

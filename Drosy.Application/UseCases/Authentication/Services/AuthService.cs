@@ -1,10 +1,8 @@
 ﻿using System.Security.Claims;
 using Drosy.Application.Interfaces.Common;
 using Drosy.Application.UseCases.Authentication.Interfaces;
-using Drosy.Application.UseCases.Email.Interfaces;
 using Drosy.Application.UsesCases.Authentication.DTOs;
 using Drosy.Application.UsesCases.Users.DTOs;
-using Drosy.Domain.Interfaces.Repository;
 using Drosy.Domain.Shared.ApplicationResults;
 using Drosy.Domain.Shared.ErrorComponents.Common;
 
@@ -13,14 +11,12 @@ namespace Drosy.Application.UseCases.Authentication.Services
     public class AuthService : IAuthService
     {
         private readonly IIdentityService _identityService;
-        private readonly IAppUserRepository _userRepository;
         private readonly IJwtService _jwtService;
         private readonly ILogger<AuthService> _logger;
 
-        public AuthService(IJwtService jwtService, IAppUserRepository userRepository, IIdentityService identity, ILogger<AuthService> logger)
+        public AuthService(IJwtService jwtService, IIdentityService identity, ILogger<AuthService> logger)
         {
             _jwtService = jwtService;
-            _userRepository = userRepository;
             _identityService = identity;
             _logger = logger;
         }
@@ -107,12 +103,12 @@ namespace Drosy.Application.UseCases.Authentication.Services
             }
         }
 
-        public async Task<Result> ForgetPasswordAsync(string email, string link, CancellationToken ct)
+        public async Task<Result> RequestPasswordResetAsync(string email, string link, CancellationToken ct)
         {
             try
             {
                 ct.ThrowIfCancellationRequested();
-                var result = await _identityService.ForgetPasswordAsync(email, link, ct);
+                var result = await _identityService.RequestPasswordResetAsync(email, link, ct);
                 if (result.IsFailure)
                     return Result.Failure(result.Error);
 

@@ -41,7 +41,7 @@ public class PlansController(IPlanService planService, ILogger<PlansController> 
     /// <param name="cancellationToken">Token to cancel the operation.</param>
     /// <returns>The created plan with its identifier.</returns>
     [HttpPost]
-    public async Task<IActionResult> CreateAsync(CreatePlanDTo newPlan, CancellationToken cancellationToken)
+    public async Task<IActionResult> CreateAsync(CreatePlanDto newPlan, CancellationToken cancellationToken)
     {
         var result = await _planService.CreatePlanAsync(newPlan, cancellationToken);
         const string operation = nameof(CreateAsync);

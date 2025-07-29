@@ -104,20 +104,20 @@ namespace Drosy.Api.Controllers
             return ApiResponseFactory.SuccessResponse("Password Cahnge Succefully");
         }
 
-        [HttpPost("forget-password")]
+        [HttpPost("request-password-rest")]
         [AllowAnonymous]
-        public async Task<IActionResult> ForgetPasswordAsync(ForgetPasswordDTO dto, CancellationToken ct)
+        public async Task<IActionResult> RequestPasswordResetAsync(ForgetPasswordDTO dto, CancellationToken ct)
         {
             if (ct.IsCancellationRequested)
             {
                 return ApiResponseFactory.FromFailure(Result.Failure(CommonErrors.OperationCancelled), nameof(LoginAsync));
             }
 
-            var result = await _authService.ForgetPasswordAsync(dto.Email, dto.Link, ct);
+            var result = await _authService.RequestPasswordResetAsync(dto.Email, dto.Link, ct);
 
             if (result.IsFailure)
             {
-                return ApiResponseFactory.BadRequestResponse(nameof(ForgetPasswordAsync), result.Error.Message);
+                return ApiResponseFactory.BadRequestResponse(nameof(RequestPasswordResetAsync), result.Error.Message);
             }
             return ApiResponseFactory.SuccessResponse("Email sent succefuly");
         }
@@ -135,7 +135,7 @@ namespace Drosy.Api.Controllers
 
             if (result.IsFailure)
             {
-                return ApiResponseFactory.BadRequestResponse(nameof(ForgetPasswordAsync), result.Error.Message);
+                return ApiResponseFactory.BadRequestResponse(nameof(ResetPasswordAsync), result.Error.Message);
             }
             return ApiResponseFactory.SuccessResponse("Passsword Rest Succefuly");
         }

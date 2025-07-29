@@ -21,7 +21,6 @@ namespace Drosy.Tests.Application.Auth
     public class AuthorizationServiceTests
     {
         private readonly Mock<IJwtService> _jwtServiceMock;
-        private readonly Mock<IAppUserRepository> _userRepoMock;
         private readonly Mock<IIdentityService> _identityServiceMock;
         private readonly Mock<ILogger<AuthService>> _logger;
         private readonly IAuthService _authService;
@@ -29,12 +28,10 @@ namespace Drosy.Tests.Application.Auth
         public AuthorizationServiceTests()
         {
             _jwtServiceMock = new Mock<IJwtService>();
-            _userRepoMock = new Mock<IAppUserRepository>();
             _identityServiceMock = new Mock<IIdentityService>();
             _logger = new Mock<ILogger<AuthService>>();
             _authService = new AuthService(
                 _jwtServiceMock.Object,
-                _userRepoMock.Object,
                 _identityServiceMock.Object,
                 _logger.Object
             );
@@ -202,15 +199,15 @@ namespace Drosy.Tests.Application.Auth
             // Arrange
             if (isSucced)
             {
-                _identityServiceMock.Setup(x => x.ForgetPasswordAsync(email, link, It.IsAny<CancellationToken>())).ReturnsAsync(Result.Success());
+                _identityServiceMock.Setup(x => x.RequestPasswordResetAsync(email, link, It.IsAny<CancellationToken>())).ReturnsAsync(Result.Success());
             }
 
             else
             {
-                _identityServiceMock.Setup(x => x.ForgetPasswordAsync(email, link, It.IsAny<CancellationToken>())).ReturnsAsync(Result.Failure(CommonErrors.Failure));
+                _identityServiceMock.Setup(x => x.RequestPasswordResetAsync(email, link, It.IsAny<CancellationToken>())).ReturnsAsync(Result.Failure(CommonErrors.Failure));
             }
             // Act
-            var result = await _authService.ForgetPasswordAsync(email, link, It.IsAny<CancellationToken>());
+            var result = await _authService.RequestPasswordResetAsync(email, link, It.IsAny<CancellationToken>());
             // Assert
             Assert.NotNull(result.Error);
         }

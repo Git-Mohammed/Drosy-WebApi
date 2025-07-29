@@ -1,4 +1,5 @@
 ﻿using Drosy.Application.UseCases.Sessions.DTOs;
+using Drosy.Domain.Enums;
 using Drosy.Domain.Shared.ApplicationResults;
 
 namespace Drosy.Application.UseCases.Sessions.Interfaces
@@ -10,7 +11,26 @@ namespace Drosy.Application.UseCases.Sessions.Interfaces
     public interface ISessionService
     {
         #region Read
-
+        /// <summary>
+        /// Get all sessions  on a specific date.
+        /// </summary>
+        Task<Result<DataResult<SessionDTO>>> GetSessionsByDate(DateTime date, CancellationToken ct);
+        /// <summary>
+        /// Get all sessions for a given plan between two dates (inclusive).
+        /// </summary>
+        Task<Result<DataResult<SessionDTO>>> GetSessionsInRange( DateTime start, DateTime end, CancellationToken ct);
+        /// <summary>
+        /// Get all sessions for a given plan within the week that contains the anchor date.
+        /// </summary>
+        Task<Result<DataResult<SessionDTO>>> GetSessionsByWeek( int year, int weekNumber, CancellationToken ct);
+        /// <summary>
+        /// Get all sessions for a given plan within the month that contains the anchor date.
+        /// </summary>
+        Task<Result<DataResult<SessionDTO>>> GetSessionsByMonth( int year, int month, CancellationToken ct);
+        /// <summary>
+        /// Get all sessions for a given plan that match a particular status.
+        /// </summary>
+        Task<Result<DataResult<SessionDTO>>> GetSessionsByStatus( SessionStatus status, CancellationToken ct);
         /// <summary>
         /// Retrieves a session by its unique identifier.
         /// </summary>

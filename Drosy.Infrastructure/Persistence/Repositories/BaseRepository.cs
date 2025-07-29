@@ -1,5 +1,6 @@
 ﻿using Drosy.Domain.Interfaces.Common;
 using Drosy.Domain.Interfaces.Common.Repository;
+using Drosy.Domain.Interfaces.Common.Uow;
 using Drosy.Infrastructure.Persistence.DbContexts;
 using Microsoft.EntityFrameworkCore;
 
@@ -8,11 +9,12 @@ namespace Drosy.Infrastructure.Persistence.Repositories
     public abstract class BaseRepository<TEntity> : IRepository<TEntity> where TEntity : class
     {
         protected readonly DbSet<TEntity> DbSet;
-        protected readonly ApplicationDbContext DBContext;
+        protected readonly ApplicationDbContext DbContext;
+
         protected BaseRepository(ApplicationDbContext dbContext)
         {
             DbSet = dbContext.Set<TEntity>();
-            DBContext = dbContext;
+            DbContext = dbContext;
         }
        
         public virtual async Task AddAsync(TEntity entity,CancellationToken cancellationToken)

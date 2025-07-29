@@ -29,7 +29,7 @@ public class PaymentRepository(ApplicationDbContext dbContext) : BaseRepository<
 
     public async Task<decimal> GetStudentTotalFeeAsync(int studentId, CancellationToken cancellationToken)
     {
-        return await DBContext.PlanStudents
+        return await DbContext.PlanStudents
             .Where(ps => ps.StudentId == studentId)
             .SumAsync(ps => ps.Fee, cancellationToken);
     }

@@ -56,10 +56,10 @@ namespace Drosy.Api.Extensions.DependencyInjection
 
 
             #region JWT Registration
-
-
+            services.Configure<AuthOptions>(
+            configuration.GetSection("JWT"));
+            
             var authOption = configuration.GetSection("JWT").Get<AuthOptions>();
-            services.AddSingleton(authOption);
             services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
                 .AddJwtBearer(options =>
                 {
