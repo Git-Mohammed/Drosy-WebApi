@@ -4,6 +4,7 @@ using Drosy.Infrastructure.Persistence.DbContexts;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace Drosy.Infrastructure.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20250729121306_add-paymentmethodculmn")]
+    partial class addpaymentmethodculmn
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -259,11 +262,20 @@ namespace Drosy.Infrastructure.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
+                    b.Property<int>("DaysOfWeek")
+                        .HasColumnType("int");
+
                     b.Property<DateTime>("EndDate")
                         .HasColumnType("datetime2");
 
+                    b.Property<TimeSpan>("EndSession")
+                        .HasColumnType("time");
+
                     b.Property<DateTime>("StartDate")
                         .HasColumnType("datetime2");
+
+                    b.Property<TimeSpan>("StartSession")
+                        .HasColumnType("time");
 
                     b.Property<byte>("Status")
                         .HasColumnType("tinyint");
@@ -277,33 +289,6 @@ namespace Drosy.Infrastructure.Migrations
                     b.HasKey("Id");
 
                     b.ToTable("Plans", "EduManagement");
-                });
-
-            modelBuilder.Entity("Drosy.Domain.Entities.PlanDay", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
-
-                    b.Property<byte>("Day")
-                        .HasColumnType("tinyint");
-
-                    b.Property<TimeSpan>("EndSession")
-                        .HasColumnType("time");
-
-                    b.Property<int>("PlanId")
-                        .HasColumnType("int");
-
-                    b.Property<TimeSpan>("StartSession")
-                        .HasColumnType("time");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("PlanId");
-
-                    b.ToTable("PlanDays", "EduManagement");
                 });
 
             modelBuilder.Entity("Drosy.Domain.Entities.PlanStudent", b =>
@@ -369,10 +354,10 @@ namespace Drosy.Infrastructure.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
-                    b.Property<DateTime>("CreatedAt")
+                    b.Property<DateTime>("EndTime")
                         .HasColumnType("datetime2");
 
-                    b.Property<DateTime>("EndTime")
+                    b.Property<DateTime>("ExcepectedDate")
                         .HasColumnType("datetime2");
 
                     b.Property<string>("Notes")
@@ -383,10 +368,6 @@ namespace Drosy.Infrastructure.Migrations
 
                     b.Property<DateTime>("StartTime")
                         .HasColumnType("datetime2");
-
-                    b.Property<string>("Status")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("Title")
                         .IsRequired()
@@ -771,17 +752,6 @@ namespace Drosy.Infrastructure.Migrations
                     b.Navigation("Student");
                 });
 
-            modelBuilder.Entity("Drosy.Domain.Entities.PlanDay", b =>
-                {
-                    b.HasOne("Drosy.Domain.Entities.Plan", "Plan")
-                        .WithMany("PlanDays")
-                        .HasForeignKey("PlanId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("Plan");
-                });
-
             modelBuilder.Entity("Drosy.Domain.Entities.PlanStudent", b =>
                 {
                     b.HasOne("Drosy.Domain.Entities.Plan", "Plan")
@@ -917,8 +887,6 @@ namespace Drosy.Infrastructure.Migrations
             modelBuilder.Entity("Drosy.Domain.Entities.Plan", b =>
                 {
                     b.Navigation("Payments");
-
-                    b.Navigation("PlanDays");
 
                     b.Navigation("Sessions");
 
