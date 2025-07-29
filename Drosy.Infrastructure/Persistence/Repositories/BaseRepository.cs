@@ -8,10 +8,11 @@ namespace Drosy.Infrastructure.Persistence.Repositories
     public abstract class BaseRepository<TEntity> : IRepository<TEntity> where TEntity : class
     {
         protected readonly DbSet<TEntity> DbSet;
-
+        protected readonly ApplicationDbContext DBContext;
         protected BaseRepository(ApplicationDbContext dbContext)
         {
             DbSet = dbContext.Set<TEntity>();
+            DBContext = dbContext;
         }
        
         public virtual async Task AddAsync(TEntity entity,CancellationToken cancellationToken)

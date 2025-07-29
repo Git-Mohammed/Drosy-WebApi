@@ -4,11 +4,13 @@ using Drosy.Application.UseCases.Payments.Interfaces;
 using Drosy.Application.UseCases.Plans.Interfaces;
 using Drosy.Application.UseCases.Students.Interfaces;
 using Drosy.Domain.Entities;
+using Drosy.Domain.Enums;
 using Drosy.Domain.Interfaces.Common.Uow;
 using Drosy.Domain.Interfaces.Repository;
 using Drosy.Domain.Shared.ApplicationResults;
 using Drosy.Domain.Shared.ErrorComponents.Common;
 using Drosy.Domain.Shared.ErrorComponents.EFCore;
+using Drosy.Domain.Shared.ErrorComponents.Payments;
 
 namespace Drosy.Application.UseCases.Payments.Services;
 
@@ -75,4 +77,48 @@ public class PaymentService(
         var payment = _mapper.Map<Payment, PaymentDto>(paymentExisting);
         return Result.Success(payment);
     }
+    public async Task<Result<StudentPaymentHistoryDTO>> GetStudentPaymentHistoryAsync(
+        int studentId,
+        PaymentHistoryFilterDTO filter,
+        CancellationToken cancellation)
+    {
+        try
+        {
+            var exists = await _studentService.ExistsAsync(studentId, cancellation);
+            if (!exists.IsSuccess)
+                return Result.Failure<StudentPaymentHistoryDTO>(exists.Error);
+
+            var payments = await _paymentRepository
+                .GetStudentPaymentsAsync(studentId, filter.FromDate, filter.ToDate, cancellation);
+
+            if (payments == null || payments.Count == 0)
+                return Result.Failure<StudentPaymentHistoryDTO>(PaymentErrors.PaymentNotFound);
+
+            var totalFee = await _paymentRepository.GetStudentTotalFeeAsync(studentId, cancellation);
+            if (totalFee < 0)
+                return Result.Failure<StudentPaymentHistoryDTO>(PaymentErrors.AmountMustBePositive);
+
+            var totalPaid = payments.Sum(p => p.Amount);
+            var remaining = totalFee - totalPaid;
+            if (remaining < 0)
+                return Result.Failure<StudentPaymentHistoryDTO>(PaymentErrors.PaymentExceedsOutstandingBalance);
+
+            var dto = new StudentPaymentHistoryDTO
+            {
+                StudentId = studentId,
+                TotalPaid = totalPaid,
+                RemainingBalance = remaining,
+                Payments = _mapper.Map<List<Payment>, List<PaymentDetailDTO>>(payments)
+            };
+
+            return Result.Success(dto);
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex.Message, "Failed to retrieve payment history for student {StudentId}", studentId);
+            return Result.Failure<StudentPaymentHistoryDTO>(PaymentErrors.PaymentSaveFailure); // More specific than CommonErrors.Unexpected
+        }
+    }
+
+
 }

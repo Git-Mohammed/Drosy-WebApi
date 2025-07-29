@@ -59,5 +59,104 @@ namespace Drosy.Domain.Shared.ErrorComponents.Payments.Resources {
                 resourceCulture = value;
             }
         }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to يجب أن يكون مبلغ الدفع أكبر من صفر..
+        /// </summary>
+        internal static string Error_Payment_AmountMustBePositive {
+            get {
+                return ResourceManager.GetString("Error_Payment_AmountMustBePositive", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to  حدث انتهاك لقيد البيانات أثناء عملية الدفع..
+        /// </summary>
+        internal static string Error_Payment_ConstraintViolation {
+            get {
+                return ResourceManager.GetString("Error_Payment_ConstraintViolation", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to يجب تحديد تاريخ الدفع..
+        /// </summary>
+        internal static string Error_Payment_DateRequired {
+            get {
+                return ResourceManager.GetString("Error_Payment_DateRequired", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to لا يُسمح بتكرار نفس الدفع..
+        /// </summary>
+        internal static string Error_Payment_DuplicateNotAllowed {
+            get {
+                return ResourceManager.GetString("Error_Payment_DuplicateNotAllowed", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to مبلغ الدفع يتجاوز الرصيد المستحق..
+        /// </summary>
+        internal static string Error_Payment_ExceedsOutstandingBalance {
+            get {
+                return ResourceManager.GetString("Error_Payment_ExceedsOutstandingBalance", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to نطاق تاريخ غير صالح: يجب أن يكون تاريخ البداية قبل أو يساوي تاريخ النهاية..
+        /// </summary>
+        internal static string Error_Payment_InvalidDateRange {
+            get {
+                return ResourceManager.GetString("Error_Payment_InvalidDateRange", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to لا يُسمح بتعديل الدفع..
+        /// </summary>
+        internal static string Error_Payment_ModificationNotAllowed {
+            get {
+                return ResourceManager.GetString("Error_Payment_ModificationNotAllowed", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to لم يتم العثور على سجل الدفع..
+        /// </summary>
+        internal static string Error_Payment_NotFound {
+            get {
+                return ResourceManager.GetString("Error_Payment_NotFound", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to  يجب تحديد طريقة الدفع..
+        /// </summary>
+        internal static string Error_Payment_PaymentMethodRequired {
+            get {
+                return ResourceManager.GetString("Error_Payment_PaymentMethodRequired", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to فشل في حفظ بيانات الدفع..
+        /// </summary>
+        internal static string Error_Payment_SaveFailure {
+            get {
+                return ResourceManager.GetString("Error_Payment_SaveFailure", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to يجب تحديد الطالب المرتبط بالدفع..
+        /// </summary>
+        internal static string Error_Payment_StudentRequired {
+            get {
+                return ResourceManager.GetString("Error_Payment_StudentRequired", resourceCulture);
+            }
+        }
     }
 }
