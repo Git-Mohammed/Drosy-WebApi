@@ -67,7 +67,7 @@ namespace Drosy.Api.Controllers
             }
         }
 
-     
+                        
         // GET /api/sessions?date=2025-07-26
         // GET /api/sessions?start=2025-07-01&end=2025-07-31
         // GET /api/sessions?status=Planned
@@ -146,7 +146,7 @@ namespace Drosy.Api.Controllers
             {
                 var result = await op();
                 if (result.IsFailure)
-                    return ApiResponseFactory.FromFailure(result, nameof(GetListAsync));
+                    return ApiResponseFactory.FromFailure(result, nameof(GetListAsync),"Session");
 
                 return ApiResponseFactory.SuccessResponse(result.Value, successMsg);
             }
@@ -155,7 +155,6 @@ namespace Drosy.Api.Controllers
                 return ApiResponseFactory.FromException(ex);
             }
         }
-
 
 
         #endregion
