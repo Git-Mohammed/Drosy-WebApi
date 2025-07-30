@@ -3,7 +3,7 @@ using Drosy.Domain.Enums;
 using Drosy.Infrastructure.Validators.AttendencesValidators;
 using FluentValidation.TestHelper;
 
-namespace Drosy.Tests.Application.Attendeces.ValidatorsTests
+namespace Drosy.Tests.Validators.Attendences
 {
     public class AddAttendEncenDtoValidatorTests
     {
