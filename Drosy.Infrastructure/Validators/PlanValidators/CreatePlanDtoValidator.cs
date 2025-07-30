@@ -57,7 +57,7 @@ public class CreatePlanDtoValidator : AbstractValidator<CreatePlanDto>
     private async Task<bool> IsExistsPlanAsync(List<PlanDayDto> daysdto, CancellationToken cancellationToken)
     {
         var days = daysdto.Select(d => _mapper.Map<PlanDayDto,PlanDay>(d)).ToList();
-        var exists = await _repository.ExistsAsync(days, cancellationToken);
-        return false;
+        var isExist = await _repository.ExistsAsync(days, cancellationToken);
+        return isExist;
     }
 }
