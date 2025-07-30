@@ -15,37 +15,40 @@ public class PlanRepository(ApplicationDbContext dbContext) : BaseRepository<Pla
 
     public async Task<bool> ExistsAsync(List<PlanDay> days, CancellationToken cancellationToken)
     {
-        // return await DbContext.Set<PlanDay>()
-        //     .Where(pd => pd.Plan.Status == PlanStatus.Active)
-        //     .AnyAsync(pd =>
-        //             days.Any(input =>
-        //                 pd.Day == input.Day &&
-        //                 pd.StartSession < input.EndSession &&
-        //                 pd.EndSession > input.StartSession),
-        //         cancellationToken);
-        // var query = DbContext.Set<PlanDay>().Where(pd => pd.Plan.Status == PlanStatus.Active);
-        // var daysQuery = await query.AnyAsync(pd=> days.Where(day=> day.StartSession < pd.EndSession && day.EndSession > pd.StartSession).Count() > 0, cancellationToken);
-        // return daysQuery;
+        var dayValuse = days.Select(d => d.Day).Distinct().ToList();
         
-        
-        var dayValues = days.Select(d => d.Day).Distinct().ToList();
-
-        var overlappingExists = await DbContext.Set<PlanDay>()
+        // query to get all plan that same days
+        var planDays = await DbContext.Set<PlanDay>()
             .Where(pd => pd.Plan.Status == PlanStatus.Active)
-            .Where(pd => dayValues.Contains(pd.Day))
-            .Where(pd =>
-                days.Any(input =>
-                    input.Day == pd.Day &&
-                    input.StartSession < pd.EndSession &&
-                    input.EndSession > pd.StartSession))
-            .AnyAsync(cancellationToken);
+            .Where(pd => dayValuse.Contains(pd.Day))
+            .ToListAsync(cancellationToken);
+        
+        // check overlapping 
+        foreach (var pd in planDays)
+        {
+            foreach (var input in days.Where(p => p.Day == pd.Day))
+            {
+                if (input.StartSession < pd.EndSession && input.EndSession > pd.StartSession)
+                    return true;
+            }
+        }
+        return false;
 
-        return overlappingExists;
     }
 
 
     public async Task<Plan?> GetByIdAsync(int id, CancellationToken cancellationToken)
     {
-        return await DbSet.FirstOrDefaultAsync(p => p.Id == id, cancellationToken);
+        return await DbSet
+            .Include(p=> p.PlanDays)
+            .FirstOrDefaultAsync(p => p.Id == id, cancellationToken);
+    }
+
+    public override async Task<IEnumerable<Plan>> GetAllAsync(CancellationToken cancellationToken)
+    {
+        return await DbSet
+            .AsNoTracking()
+            .Include(PlanDay => PlanDay.PlanDays)
+            .ToListAsync();
     }
 }

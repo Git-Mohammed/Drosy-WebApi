@@ -1,7 +1,9 @@
-﻿using Drosy.Application.Interfaces.Common;
+﻿using System.Security.AccessControl;
+using Drosy.Application.Interfaces.Common;
 using Drosy.Application.UseCases.Plans.DTOs;
 using Drosy.Application.UseCases.Plans.Interfaces;
 using Drosy.Domain.Entities;
+using Drosy.Domain.Enums;
 using Drosy.Domain.Interfaces.Common.Uow;
 using Drosy.Domain.Interfaces.Repository;
 using Drosy.Domain.Shared.ApplicationResults;
@@ -47,11 +49,61 @@ public class PlanService(
         return Result.Success(planDto);
     }
 
+    public async Task<Result<DataResult<PlanDto>>> GetAllPlansAsync(CancellationToken cancellationToken)
+    {
+        var existingPlans = await _planRepository.GetAllAsync(cancellationToken);
+        if (!existingPlans.Any())
+            return Result.Failure<DataResult<PlanDto>>(PlanErrors.PlanNotFound);
+        var existingPlansDto = _mapper.Map<List<Plan>, List<PlanDto>>(existingPlans.ToList());
+        return Result.Success(new DataResult<PlanDto>
+        {
+            Data = existingPlansDto,
+            TotalRecordsCount = existingPlansDto.Count,
+        });
+    }
+
     public async Task<Result> ExistsAsync(int id, CancellationToken cancellationToken)
     {
         var existingPlan = await _planRepository.ExistsAsync(id, cancellationToken);
         if (!existingPlan)
             return Result.Failure(PlanErrors.PlanNotFound);
+        return Result.Success();
+    }
+
+    public async Task<Result> DeleteAsync(int id, CancellationToken cancellationToken)
+    {
+        var existingPlan = await _planRepository.GetByIdAsync(id, cancellationToken);
+        if (existingPlan == null)
+            return Result.Failure(PlanErrors.PlanNotFound);
+        
+        if(existingPlan.Status == PlanStatus.Active)
+            return Result.Failure(PlanErrors.PlanCannotBeDeletedWithStudents);
+        await _planRepository.DeleteAsync(existingPlan, cancellationToken);
+        var result = await _unitOfWork.SaveChangesAsync(cancellationToken);
+        if (!result)
+        {
+            _logger.LogError("Error deleting plan", existingPlan);
+            return Result.Failure(PlanErrors.PlanDeleteFailure);
+        }
+        return Result.Success();
+    }
+
+    public async Task<Result> UpdateStatusAsync(int id, UpdatePlanStatusDto status, CancellationToken cancellationToken)
+    {
+        var existingPlan = await _planRepository.GetByIdAsync(id, cancellationToken);
+        if (existingPlan == null)
+            return Result.Failure(PlanErrors.PlanNotFound);
+        var planstatus = _mapper.Map<UpdatePlanStatusDto, PlanStatus>(status);
+        if (existingPlan.Status == planstatus)
+            return Result.Success();
+        existingPlan.Status = planstatus;
+        await _planRepository.UpdateAsync(existingPlan, cancellationToken);
+        var result = await _unitOfWork.SaveChangesAsync(cancellationToken);
+        if (!result)
+        {
+            _logger.LogError("Error updating plan", existingPlan);
+            return Result.Failure(PlanErrors.PlanSaveFailure);
+        }
         return Result.Success();
     }
 }
