@@ -32,4 +32,6 @@ public static class PlanErrors
     public static AppError ConstraintViolation => new(PlanErrorCodes.ConstraintViolation);
 
     #endregion
+
+    public static AppError PlanDeleteFailure { get; set; }
 }

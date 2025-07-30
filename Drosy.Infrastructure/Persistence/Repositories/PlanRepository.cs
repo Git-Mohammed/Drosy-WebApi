@@ -43,4 +43,12 @@ public class PlanRepository(ApplicationDbContext dbContext) : BaseRepository<Pla
             .Include(p=> p.PlanDays)
             .FirstOrDefaultAsync(p => p.Id == id, cancellationToken);
     }
+
+    public override async Task<IEnumerable<Plan>> GetAllAsync(CancellationToken cancellationToken)
+    {
+        return await DbSet
+            .AsNoTracking()
+            .Include(PlanDay => PlanDay.PlanDays)
+            .ToListAsync();
+    }
 }
