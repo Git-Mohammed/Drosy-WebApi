@@ -11,6 +11,6 @@ public class PlanDay
     public TimeSpan EndSession { get; set; }
 
     #region Navigation Properties
-    public Plan Plan { get; set; }
+    public Plan Plan { get; set; } = new();
     #endregion
 }

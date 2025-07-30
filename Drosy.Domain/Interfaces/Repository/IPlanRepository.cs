@@ -1,4 +1,5 @@
 ﻿using Drosy.Domain.Entities;
+using Drosy.Domain.Enums;
 using Drosy.Domain.Interfaces.Common.Repository;
 
 namespace Drosy.Domain.Interfaces.Repository;
@@ -10,6 +11,11 @@ namespace Drosy.Domain.Interfaces.Repository;
 public interface IPlanRepository : IRepository<Plan>
 {
     /// <summary>
+
+
+
+
+    #region Read
     /// Checks if a plan with the specified ID exists.
     /// </summary>
     /// <param name="id">The ID of the plan to check.</param>
@@ -37,4 +43,17 @@ public interface IPlanRepository : IRepository<Plan>
     /// A task that returns the <see cref="Plan"/> if found; otherwise, <c>null</c>.
     /// </returns>
     Task<Plan?> GetByIdAsync(int id, CancellationToken cancellationToken);
+
+    // New filtering repo methods
+    Task<IEnumerable<Plan>> GetByDateAsync(DateTime date, CancellationToken cancellationToken);
+    Task<IEnumerable<Plan>> GetInRangeAsync(DateTime start, DateTime end, CancellationToken cancellationToken);
+    Task<IEnumerable<Plan>> GetByStatusAsync(PlanStatus status, CancellationToken cancellationToken);
+    Task<IEnumerable<Plan>> GetByTypeAsync(PlanTypes type, CancellationToken cancellationToken);
+    Task<IEnumerable<Plan>> GetByWeekAsync(int year, int week, CancellationToken cancellationToken);
+    Task<IEnumerable<Plan>> GetByMonthAsync(int year, int month, CancellationToken cancellationToken);
+    #endregion
+
+
+    #region Write
+    #endregion
 }
