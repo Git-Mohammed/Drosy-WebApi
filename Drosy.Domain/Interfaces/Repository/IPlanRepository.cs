@@ -10,12 +10,9 @@ namespace Drosy.Domain.Interfaces.Repository;
 /// </summary>
 public interface IPlanRepository : IRepository<Plan>
 {
-    /// <summary>
-
-
-
-
     #region Read
+
+    /// <summary>
     /// Checks if a plan with the specified ID exists.
     /// </summary>
     /// <param name="id">The ID of the plan to check.</param>
@@ -28,12 +25,13 @@ public interface IPlanRepository : IRepository<Plan>
     /// <summary>
     /// Checks if there is any active plan that conflicts with the specified session time range.
     /// </summary>
-    /// <param name="day"></param>
+    /// <param name="day">A list of <see cref="PlanDay"/> objects defining the session time range.</param>
     /// <param name="cancellationToken">Token to cancel the operation.</param>
     /// <returns>
     /// A task that returns <c>true</c> if a conflicting session exists; otherwise, <c>false</c>.
     /// </returns>
     Task<bool> ExistsAsync(List<PlanDay> day, CancellationToken cancellationToken);
+
     /// <summary>
     /// Retrieves a plan by its unique identifier.
     /// </summary>
@@ -44,16 +42,60 @@ public interface IPlanRepository : IRepository<Plan>
     /// </returns>
     Task<Plan?> GetByIdAsync(int id, CancellationToken cancellationToken);
 
-    // New filtering repo methods
+    /// <summary>
+    /// Retrieves all plans scheduled on a specific date.
+    /// </summary>
+    /// <param name="date">The date to filter plans.</param>
+    /// <param name="cancellationToken">Token to cancel the operation.</param>
+    /// <returns>A collection of plans scheduled on the specified date.</returns>
     Task<IEnumerable<Plan>> GetByDateAsync(DateTime date, CancellationToken cancellationToken);
+
+    /// <summary>
+    /// Retrieves all plans scheduled within a specific date range.
+    /// </summary>
+    /// <param name="start">Start of the date range.</param>
+    /// <param name="end">End of the date range.</param>
+    /// <param name="cancellationToken">Token to cancel the operation.</param>
+    /// <returns>A collection of plans within the specified range.</returns>
     Task<IEnumerable<Plan>> GetInRangeAsync(DateTime start, DateTime end, CancellationToken cancellationToken);
+
+    /// <summary>
+    /// Retrieves all plans with the specified status.
+    /// </summary>
+    /// <param name="status">The status to filter plans by.</param>
+    /// <param name="cancellationToken">Token to cancel the operation.</param>
+    /// <returns>A collection of plans matching the given status.</returns>
     Task<IEnumerable<Plan>> GetByStatusAsync(PlanStatus status, CancellationToken cancellationToken);
+
+    /// <summary>
+    /// Retrieves all plans of a specific type.
+    /// </summary>
+    /// <param name="type">The type of the plan to filter by.</param>
+    /// <param name="cancellationToken">Token to cancel the operation.</param>
+    /// <returns>A collection of plans matching the specified type.</returns>
     Task<IEnumerable<Plan>> GetByTypeAsync(PlanTypes type, CancellationToken cancellationToken);
+
+    /// <summary>
+    /// Retrieves all plans scheduled within a specific week of a given year.
+    /// </summary>
+    /// <param name="year">The calendar year.</param>
+    /// <param name="week">The ISO 8601 week number.</param>
+    /// <param name="cancellationToken">Token to cancel the operation.</param>
+    /// <returns>A collection of plans scheduled during the specified week.</returns>
     Task<IEnumerable<Plan>> GetByWeekAsync(int year, int week, CancellationToken cancellationToken);
+
+    /// <summary>
+    /// Retrieves all plans scheduled within a specific month of a given year.
+    /// </summary>
+    /// <param name="year">The calendar year.</param>
+    /// <param name="month">The month number (1–12).</param>
+    /// <param name="cancellationToken">Token to cancel the operation.</param>
+    /// <returns>A collection of plans scheduled during the specified month.</returns>
     Task<IEnumerable<Plan>> GetByMonthAsync(int year, int month, CancellationToken cancellationToken);
+
     #endregion
 
-
     #region Write
+    // Add write-related documentation and methods here when applicable.
     #endregion
 }

@@ -66,49 +66,49 @@ public class PlansController(IPlanService planService, ISessionService sessionSe
 
         // Dispatch
         if (date.HasValue)
-            return await Wrappers.WrapGetAllFilter(
+            return await Wrappers.WrapListFilter(
                 () => _planService.GetPlansByDate(date.Value, ct),
                 $"Plans on {date:yyyy-MM-dd}",
                 nameof(GetPlansAsync),
                 "Plans");
 
         if (start.HasValue && end.HasValue)
-            return await Wrappers.WrapGetAllFilter(
+            return await Wrappers.WrapListFilter(
                 () => _planService.GetPlansInRange(start.Value, end.Value, ct),
                 $"Plans from {start:yyyy-MM-dd} to {end:yyyy-MM-dd}",
                 nameof(GetPlansAsync),
                 "Plans");
 
         if (status.HasValue)
-            return await Wrappers.WrapGetAllFilter(
+            return await Wrappers.WrapListFilter(
                 () => _planService.GetPlansByStatus(status.Value, ct),
                 $"Plans with status {status}",
                 nameof(GetPlansAsync),
                 "Plans");
 
         if (type.HasValue)
-            return await Wrappers.WrapGetAllFilter(
+            return await Wrappers.WrapListFilter(
                 () => _planService.GetPlansByType(type.Value, ct),
                 $"Plans of type {type}",
                 nameof(GetPlansAsync),
                 "Plans");
 
         if (year.HasValue && week.HasValue)
-            return await Wrappers.WrapGetAllFilter(
+            return await Wrappers.WrapListFilter(
                 () => _planService.GetPlansByWeek(year.Value, week.Value, ct),
                 $"Plans in ISO week {week}/{year}",
                 nameof(GetPlansAsync),
                 "Plans");
 
         if (year.HasValue && month.HasValue)
-            return await Wrappers.WrapGetAllFilter(
+            return await Wrappers.WrapListFilter(
                 () => _planService.GetPlansByMonth(year.Value, month.Value, ct),
                 $"Plans in {year}-{month:D2}",
                 nameof(GetPlansAsync),
                 "Plans");
 
         // No filters: return all
-        return await Wrappers.WrapGetAllFilter(
+        return await Wrappers.WrapListFilter(
             () => _planService.GetAllAsync(ct),
             "All plans",
             nameof(GetPlansAsync),
@@ -140,42 +140,42 @@ public class PlansController(IPlanService planService, ISessionService sessionSe
 
         // Dispatch
         if (date.HasValue)
-            return await Wrappers.WrapGetAllFilter(
+            return await Wrappers.WrapListFilter(
                 () => _sessionService.GetSessionsByDate(planId, date.Value, ct),
                 $"Sessions on {date:yyyy-MM-dd}",
                 nameof(GetSessionsByPlanAsync),
                 "Sessions");
 
         if (start.HasValue && end.HasValue)
-            return await Wrappers.WrapGetAllFilter(
+            return await Wrappers.WrapListFilter(
                 () => _sessionService.GetSessionsInRange(planId, start.Value, end.Value, ct),
                 $"Sessions from {start:yyyy-MM-dd} to {end:yyyy-MM-dd}",
                 nameof(GetSessionsByPlanAsync),
                 "Sessions");
 
         if (status.HasValue)
-            return await Wrappers.WrapGetAllFilter(
+            return await Wrappers.WrapListFilter(
                 () => _sessionService.GetSessionsByStatus(planId, status.Value, ct),
                 $"Sessions with status {status}",
                 nameof(GetSessionsByPlanAsync),
                 "Sessions");
 
         if (year.HasValue && week.HasValue)
-            return await Wrappers.WrapGetAllFilter(
+            return await Wrappers.WrapListFilter(
                 () => _sessionService.GetSessionsByWeek(planId, year.Value, week.Value, ct),
                 $"Sessions in ISO week {week}/{year}",
                 nameof(GetSessionsByPlanAsync),
                 "Sessions");
 
         if (year.HasValue && month.HasValue)
-            return await Wrappers.WrapGetAllFilter(
+            return await Wrappers.WrapListFilter(
                 () => _sessionService.GetSessionsByMonth(planId, year.Value, month.Value, ct),
                 $"Sessions in {year}-{month:D2}",
                 nameof(GetSessionsByPlanAsync),
                 "Sessions");
 
         // No filters: return all
-        return await Wrappers.WrapGetAllFilter(
+        return await Wrappers.WrapListFilter(
             () => _sessionService.GetSessionsByPlan(planId, ct),
             "All sessions",
             nameof(GetSessionsByPlanAsync),
