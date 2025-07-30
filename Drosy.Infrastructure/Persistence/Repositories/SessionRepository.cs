@@ -20,14 +20,20 @@ namespace Drosy.Infrastructure.Persistence.Repositories
             return await DbSet.Include(x => x.Plan).FirstOrDefaultAsync(x => x.Id == id, cancellationToken);
         }
 
+        public async Task<IEnumerable<Session>> GetAllSessionsAsync(DateTime date, CancellationToken ct)
+            => await DbSet
+                .Include(s => s.Plan).Include(s => s.Attendences)
+                .ToListAsync(ct);
 
         public async Task<IEnumerable<Session>> GetSessionsByDateAsync(DateTime date, CancellationToken ct)
        => await DbSet
+            .Include(s => s.Plan).Include(s => s.Attendences)
            .Where(s => s.StartTime.Date == date.Date)
            .ToListAsync(ct);
 
         public async Task<IEnumerable<Session>> GetSessionsInRangeAsync(DateTime start, DateTime end, CancellationToken ct)
             => await DbSet
+            .Include(s => s.Plan).Include(s => s.Attendences)
                 .Where(s => s.StartTime >= start && s.EndTime <= end)
                 .ToListAsync(ct);
 
@@ -40,16 +46,19 @@ namespace Drosy.Infrastructure.Persistence.Repositories
 
         public async Task<IEnumerable<Session>> GetSessionsByMonthAsync(int year, int month, CancellationToken ct)
             => await DbSet
+            .Include(s => s.Plan).Include(s => s.Attendences)
                 .Where(s => s.StartTime.Year == year && s.StartTime.Month == month)
                 .ToListAsync(ct);
 
         public async Task<IEnumerable<Session>> GetSessionsByStatusAsync(SessionStatus status, CancellationToken ct)
             => await DbSet
+            .Include(s => s.Plan).Include(s => s.Attendences)
                 .Where(s => s.Status == status)
                 .ToListAsync(ct);
 
         public async Task<IEnumerable<Session>> GetByPlanAsync(int planId, CancellationToken ct)
             => await DbSet
+            .Include(s => s.Plan).Include(s => s.Attendences)
                 .Where(s => s.PlanId == planId)
                 .ToListAsync(ct);
 
@@ -76,33 +85,34 @@ namespace Drosy.Infrastructure.Persistence.Repositories
             => (await GetByPlanAsync(planId, ct))
                 .Where(s => s.Status == status);
 
-        public async Task<bool> ExistsAsync(DateTime date, int planId, DateTime startTime, DateTime endTime, CancellationToken cancellationToken)
+        public async Task<bool> ExistsAsync(DateTime date, int planId, DateTime startTime, DateTime endTime, CancellationToken ct)
         => await DbSet.AnyAsync(s =>
                 s.PlanId == planId &&
                 s.CreatedAt.Date == date.Date &&
                 startTime < s.EndTime &&
                 endTime > s.StartTime,
-                cancellationToken);
+                ct);
 
 
-        public async Task<bool> ExistsAsync(DateTime date, DateTime startTime, DateTime endTime, CancellationToken cancellationToken)
+        public async Task<bool> ExistsAsync(DateTime date, DateTime startTime, DateTime endTime, CancellationToken ct)
         {
             return await DbSet.AnyAsync(s =>
                 s.CreatedAt.Date == date.Date &&
                 startTime < s.EndTime &&
                 endTime > s.StartTime,
-                cancellationToken);
+                ct);
         }
 
-        public async Task<bool> ExistsAsync(int excludeSessionId, DateTime date, DateTime startTime, DateTime endTime, CancellationToken cancellationToken)
+        public async Task<bool> ExistsAsync(int excludeSessionId, DateTime date, DateTime startTime, DateTime endTime, CancellationToken ct)
         {
             return await DbSet
                 .Where(s => s.CreatedAt == date &&
                             s.Id != excludeSessionId &&
                             startTime < s.EndTime &&
                             endTime > s.StartTime)
-                .AnyAsync(cancellationToken);
+                .AnyAsync(ct);
         }
+
 
 
         #endregion

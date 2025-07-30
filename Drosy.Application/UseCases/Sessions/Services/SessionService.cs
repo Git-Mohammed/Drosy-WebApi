@@ -11,6 +11,7 @@ using Drosy.Domain.Shared.ErrorComponents.Common;
 using Drosy.Domain.Shared.ErrorComponents.EFCore;
 using Drosy.Domain.Shared.ErrorComponents.Sesstions;
 using System.Globalization;
+using static System.Runtime.InteropServices.JavaScript.JSType;
 
 
 
@@ -248,6 +249,9 @@ namespace Drosy.Application.UseCases.Sessions.Services
         }
 
         #region Non-plan methods
+        public Task<Result<DataResult<SessionDTO>>> GetAllAync(CancellationToken ct)
+            => BuildDataResultAsync(() => _sessionRepository.GetAllAsync(ct), ct);
+
         public Task<Result<DataResult<SessionDTO>>> GetSessionsByDate(DateTime date, CancellationToken ct)
             => BuildDataResultAsync(() => _sessionRepository.GetSessionsByDateAsync(date, ct), ct);
 
@@ -380,5 +384,6 @@ namespace Drosy.Application.UseCases.Sessions.Services
             }
         }
 
+      
     }
 }

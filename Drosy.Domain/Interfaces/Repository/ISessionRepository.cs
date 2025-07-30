@@ -28,27 +28,32 @@ namespace Drosy.Domain.Interfaces.Repository
         /// <summary>
         /// Checks whether any session overlaps with a specified time range on a given date and plan.
         /// </summary>
-        Task<bool> ExistsAsync(DateTime date, int planId, DateTime startTime, DateTime endTime, CancellationToken cancellationToken);
+        Task<bool> ExistsAsync(DateTime date, int planId, DateTime startTime, DateTime endTime, CancellationToken ct);
 
         /// <summary>
         /// Checks whether any session overlaps with a specified time range on a given date and plan,
         /// excluding the session with the provided identifier.
         /// </summary>
-        Task<bool> ExistsAsync(int excludeSessionId, DateTime date, DateTime startTime, DateTime endTime, CancellationToken cancellationToken);
+        Task<bool> ExistsAsync(int excludeSessionId, DateTime date, DateTime startTime, DateTime endTime, CancellationToken ct);
 
         /// <summary>
         /// Checks whether any session overlaps with a specified time range on a given date, regardless of plan.
         /// </summary>
-        Task<bool> ExistsAsync(DateTime date, DateTime startTime, DateTime endTime, CancellationToken cancellationToken);
+        Task<bool> ExistsAsync(DateTime date, DateTime startTime, DateTime endTime, CancellationToken ct);
 
         // Non-plan scoped queries
+        /// <summary>
+        /// Retrieves all sessions .
+        /// </summary>
+        /// <param name="cancellationToken">Token to cancel the async operation.</param>
+        Task<IEnumerable<Session>> GetAllSessionsAsync(DateTime date, CancellationToken ct);
 
         /// <summary>
         /// Retrieves all sessions occurring on a specific date.
         /// </summary>
         /// <param name="date">The date to search for sessions.</param>
         /// <param name="cancellationToken">Token to cancel the async operation.</param>
-        Task<IEnumerable<Session>> GetSessionsByDateAsync(DateTime date, CancellationToken cancellationToken);
+        Task<IEnumerable<Session>> GetSessionsByDateAsync(DateTime date, CancellationToken ct);
 
         /// <summary>
         /// Retrieves all sessions occurring within a specified date range.
@@ -56,7 +61,7 @@ namespace Drosy.Domain.Interfaces.Repository
         /// <param name="start">Start of the date range.</param>
         /// <param name="end">End of the date range.</param>
         /// <param name="cancellationToken">Token to cancel the async operation.</param>
-        Task<IEnumerable<Session>> GetSessionsInRangeAsync(DateTime start, DateTime end, CancellationToken cancellationToken);
+        Task<IEnumerable<Session>> GetSessionsInRangeAsync(DateTime start, DateTime end, CancellationToken ct);
 
         /// <summary>
         /// Retrieves all sessions occurring within a specific week of a given year.
@@ -64,7 +69,7 @@ namespace Drosy.Domain.Interfaces.Repository
         /// <param name="year">The calendar year.</param>
         /// <param name="weekNumber">The ISO 8601 week number.</param>
         /// <param name="cancellationToken">Token to cancel the async operation.</param>
-        Task<IEnumerable<Session>> GetSessionsByWeekAsync(int year, int weekNumber, CancellationToken cancellationToken);
+        Task<IEnumerable<Session>> GetSessionsByWeekAsync(int year, int weekNumber, CancellationToken ct);
 
         /// <summary>
         /// Retrieves all sessions scheduled within a specific month of a given year.
@@ -72,14 +77,14 @@ namespace Drosy.Domain.Interfaces.Repository
         /// <param name="year">The calendar year.</param>
         /// <param name="month">The month (1–12).</param>
         /// <param name="cancellationToken">Token to cancel the async operation.</param>
-        Task<IEnumerable<Session>> GetSessionsByMonthAsync(int year, int month, CancellationToken cancellationToken);
+        Task<IEnumerable<Session>> GetSessionsByMonthAsync(int year, int month, CancellationToken ct);
 
         /// <summary>
         /// Retrieves all sessions with the specified status.
         /// </summary>
         /// <param name="status">The status of the sessions to retrieve.</param>
         /// <param name="cancellationToken">Token to cancel the async operation.</param>
-        Task<IEnumerable<Session>> GetSessionsByStatusAsync(SessionStatus status, CancellationToken cancellationToken);
+        Task<IEnumerable<Session>> GetSessionsByStatusAsync(SessionStatus status, CancellationToken ct);
 
         // Plan-scoped queries
 
@@ -96,7 +101,7 @@ namespace Drosy.Domain.Interfaces.Repository
         /// <param name="planId">The unique identifier of the plan.</param>
         /// <param name="date">The date to filter sessions.</param>
         /// <param name="cancellationToken">Token to cancel the async operation.</param>
-        Task<IEnumerable<Session>> GetByPlanAndDateAsync(int planId, DateTime date, CancellationToken cancellationToken);
+        Task<IEnumerable<Session>> GetByPlanAndDateAsync(int planId, DateTime date, CancellationToken ct);
 
         /// <summary>
         /// Retrieves all sessions for a given plan within a specified date range.
@@ -105,7 +110,7 @@ namespace Drosy.Domain.Interfaces.Repository
         /// <param name="start">Start of the date range.</param>
         /// <param name="end">End of the date range.</param>
         /// <param name="cancellationToken">Token to cancel the async operation.</param>
-        Task<IEnumerable<Session>> GetByPlanAndRangeAsync(int planId, DateTime start, DateTime end, CancellationToken cancellationToken);
+        Task<IEnumerable<Session>> GetByPlanAndRangeAsync(int planId, DateTime start, DateTime end, CancellationToken ct);
 
         /// <summary>
         /// Retrieves all sessions for a specific plan during a specific week of the year.
@@ -114,7 +119,7 @@ namespace Drosy.Domain.Interfaces.Repository
         /// <param name="year">The calendar year.</param>
         /// <param name="weekNumber">The ISO 8601 week number.</param>
         /// <param name="cancellationToken">Token to cancel the async operation.</param>
-        Task<IEnumerable<Session>> GetByPlanAndWeekAsync(int planId, int year, int weekNumber, CancellationToken cancellationToken);
+        Task<IEnumerable<Session>> GetByPlanAndWeekAsync(int planId, int year, int weekNumber, CancellationToken ct);
 
         /// <summary>
         /// Retrieves all sessions for a specific plan during a specific month of the year.
@@ -123,7 +128,7 @@ namespace Drosy.Domain.Interfaces.Repository
         /// <param name="year">The calendar year.</param>
         /// <param name="month">The month (1–12).</param>
         /// <param name="cancellationToken">Token to cancel the async operation.</param>
-        Task<IEnumerable<Session>> GetByPlanAndMonthAsync(int planId, int year, int month, CancellationToken cancellationToken);
+        Task<IEnumerable<Session>> GetByPlanAndMonthAsync(int planId, int year, int month, CancellationToken ct);
 
         /// <summary>
         /// Retrieves all sessions for a given plan with a specific status.
@@ -131,7 +136,7 @@ namespace Drosy.Domain.Interfaces.Repository
         /// <param name="planId">The unique identifier of the plan.</param>
         /// <param name="status">The status to filter sessions.</param>
         /// <param name="cancellationToken">Token to cancel the async operation.</param>
-        Task<IEnumerable<Session>> GetByPlanAndStatusAsync(int planId, SessionStatus status, CancellationToken cancellationToken);
+        Task<IEnumerable<Session>> GetByPlanAndStatusAsync(int planId, SessionStatus status, CancellationToken ct);
 
         #endregion
 

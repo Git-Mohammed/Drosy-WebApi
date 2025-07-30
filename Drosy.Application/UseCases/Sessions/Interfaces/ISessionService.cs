@@ -13,6 +13,13 @@ namespace Drosy.Application.UseCases.Sessions.Interfaces
         #region Read
 
         /// <summary>
+        /// Gets all sessions.
+        /// </summary>
+        /// <param name="ct">Cancellation token to cancel the request.</param>
+        /// <returns>A result containing a list of session DTOs.</returns>
+        Task<Result<DataResult<SessionDTO>>> GetAllAync( CancellationToken ct);
+
+        /// <summary>
         /// Gets all sessions on a specific date.
         /// </summary>
         /// <param name="date">The date to filter sessions by.</param>
