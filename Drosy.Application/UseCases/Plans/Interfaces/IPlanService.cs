@@ -1,5 +1,6 @@
 ﻿using Drosy.Application.UseCases.Plans.DTOs;
-using Drosy.Application.UseCases.Sessions.DTOs;
+using Drosy.Application.UseCases.Schedule.DTOs;
+using Drosy.Domain.Entities;
 using Drosy.Domain.Enums;
 using Drosy.Domain.Shared.ApplicationResults;
 
@@ -105,7 +106,11 @@ public interface IPlanService
     /// </returns>
     Task<Result<DataResult<PlanDto>>> GetPlansByMonth(int year, int month, CancellationToken cancellationToken);
 
-    Task<Result<DataResult<CalenderEntryDto>>> GetPlanSessionsCalenderAsync(int planId, CancellationToken ct);
+    Task<Result<DataResult<CalenderSessionDto>>> GetPlanSessionsCalenderAsync(int planId, CancellationToken ct);
+
+    Task<Result<List<Plan>>> GetAllPlansWithDetailsAsync(CancellationToken ct);
+    Task<Result<List<Plan>>> GetPlansWithDetailsByStatusAsync(PlanStatus status, CancellationToken ct);
+    Task<List<CalenderSessionDto>> GenerateSessionsForPlanAsync(Plan plan, DateTime? startFilter, DateTime? endFilter, CancellationToken ct);
     #endregion
 
     #region Write

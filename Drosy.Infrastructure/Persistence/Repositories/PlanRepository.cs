@@ -6,6 +6,8 @@ using Drosy.Domain.Interfaces.Repository;
 using Drosy.Domain.Shared.System.CalandeHelper;
 using Drosy.Infrastructure.Persistence.DbContexts;
 using Microsoft.EntityFrameworkCore;
+using System.Linq;
+using System.Numerics;
 
 namespace Drosy.Infrastructure.Persistence.Repositories;
 
@@ -13,14 +15,6 @@ public class PlanRepository(ApplicationDbContext dbContext) : BaseRepository<Pla
 {
 
     #region Read
-    public async Task<Plan?> GetPlanWithDetailsAsync(int planId, CancellationToken ct)
-    {
-        return await DbSet
-            .Include(p => p.PlanDays)
-            .Include(p => p.Sessions)
-            .Include(p => p.Students).ThenInclude(ps => ps.Student)
-            .FirstOrDefaultAsync(p => p.Id == planId, ct);
-    }
 
     public async Task<bool> ExistsAsync(int id, CancellationToken cancellationToken)
     {
@@ -57,42 +51,81 @@ public class PlanRepository(ApplicationDbContext dbContext) : BaseRepository<Pla
         return overlappingExists;
     }
 
-    public async Task<Plan?> GetByIdAsync(int id, CancellationToken cancellationToken)
-    {
-        return await DbSet.FirstOrDefaultAsync(p => p.Id == id, cancellationToken);
-    }
+    public async Task<Plan?> GetByIdAsync(int planId, CancellationToken ct)
+    => await DbSet
+            .Include(p => p.PlanDays)
+            .Include(p => p.Sessions)
+            .Include(p => p.Students).ThenInclude(ps => ps.Student)
+            .FirstOrDefaultAsync(p => p.Id == planId, ct);
 
-    public async Task<IEnumerable<Plan>> GetByDateAsync(DateTime date, CancellationToken cancellationToken)
+    public async Task<IEnumerable<Plan>> GetAllWithDetailsAsync(CancellationToken ct)
+     => await DbSet
+         .Include(p => p.PlanDays)
+         .Include(p => p.Sessions)
+         .Include(p => p.Students)
+             .ThenInclude(ps => ps.Student)
+         .ToListAsync(ct);
+
+    public async Task<IEnumerable<Plan>> GetAllWithDetailsByStatusAsync(PlanStatus status,CancellationToken ct)
+     => await DbSet
+         .Include(p => p.PlanDays)
+         .Include(p => p.Sessions)
+         .Include(p => p.Students)
+             .ThenInclude(ps => ps.Student)
+            .Where(p => p.Status == status)
+         .ToListAsync(ct);
+
+    public async Task<IEnumerable<Plan>> GetAllByDateAsync(DateTime date, CancellationToken cancellationToken)
         => await DbSet.AsNoTracking()
-            .Where(p => p.StartDate.Date <= date.Date && p.EndDate.Date >= date.Date)
+             .Include(p => p.PlanDays)
+         .Include(p => p.Sessions)
+         .Include(p => p.Students)
+        .Where(p => p.StartDate.Date <= date.Date && p.EndDate.Date >= date.Date)
             .ToListAsync(cancellationToken);
 
-    public async Task<IEnumerable<Plan>> GetInRangeAsync(DateTime start, DateTime end, CancellationToken cancellationToken)
+    public async Task<IEnumerable<Plan>> GetAllInRangeAsync(DateTime start, DateTime end, CancellationToken cancellationToken)
         => await DbSet.AsNoTracking()
+         .Include(p => p.PlanDays)
+         .Include(p => p.Sessions)
+         .Include(p => p.Students)
             .Where(p => p.StartDate.Date >= start.Date && p.EndDate.Date <= end.Date)
             .ToListAsync(cancellationToken);
 
-    public async Task<IEnumerable<Plan>> GetByStatusAsync(PlanStatus status, CancellationToken cancellationToken)
-        => await DbSet.AsNoTracking()
+    public async Task<IEnumerable<Plan>> GetAllByStatusAsync(PlanStatus status, CancellationToken cancellationToken)
+        => await DbSet
+         .Include(p => p.PlanDays)
+         .Include(p => p.Sessions)
+         .Include(p => p.Students)
+             .ThenInclude(ps => ps.Student)
             .Where(p => p.Status == status)
             .ToListAsync(cancellationToken);
 
-    public async Task<IEnumerable<Plan>> GetByTypeAsync(PlanTypes type, CancellationToken cancellationToken)
-        => await DbSet.AsNoTracking()
-            .Where(p => p.Type == type)
+    public async Task<IEnumerable<Plan>> GetAllByTypeAsync(PlanTypes type, CancellationToken cancellationToken)
+         => await DbSet
+         .Include(p => p.PlanDays)
+         .Include(p => p.Sessions)
+         .Include(p => p.Students)
+             .ThenInclude(ps => ps.Student)
+             .Where(p => p.Type == type)
             .ToListAsync(cancellationToken);
 
-    public async Task<IEnumerable<Plan>> GetByWeekAsync(int year, int week, CancellationToken cancellationToken)
+    public async Task<IEnumerable<Plan>> GetAllByWeekAsync(int year, int week, CancellationToken cancellationToken)
     {
         var (monday, sunday) = IsoWeekHelper.GetWeekRange(year, week);
         return await DbSet.AsNoTracking()
-            .Where(p => p.StartDate.Date >= monday && p.EndDate.Date <= sunday)
+             .Include(p => p.PlanDays)
+         .Include(p => p.Sessions)
+         .Include(p => p.Students)
+         .Where(p => p.StartDate.Date >= monday && p.EndDate.Date <= sunday)
             .ToListAsync(cancellationToken);
     }
 
-    public async Task<IEnumerable<Plan>> GetByMonthAsync(int year, int month, CancellationToken cancellationToken)
+    public async Task<IEnumerable<Plan>> GetAllByMonthAsync(int year, int month, CancellationToken cancellationToken)
         => await DbSet.AsNoTracking()
-            .Where(p => p.StartDate.Year == year && p.StartDate.Month == month)
+             .Include(p => p.PlanDays)
+         .Include(p => p.Sessions)
+         .Include(p => p.Students)
+        .Where(p => p.StartDate.Year == year && p.StartDate.Month == month)
             .ToListAsync(cancellationToken);
 
     #endregion
@@ -101,3 +134,5 @@ public class PlanRepository(ApplicationDbContext dbContext) : BaseRepository<Pla
 
  
 }
+
+// modify this

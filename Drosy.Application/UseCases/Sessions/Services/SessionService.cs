@@ -2,6 +2,8 @@
 using Drosy.Application.UseCases.Plans.DTOs;
 using Drosy.Application.UseCases.Plans.Interfaces;
 using Drosy.Application.UseCases.Plans.Services;
+using Drosy.Application.UseCases.PlanStudents.DTOs;
+using Drosy.Application.UseCases.Schedule.DTOs;
 using Drosy.Application.UseCases.Sessions.DTOs;
 using Drosy.Application.UseCases.Sessions.Interfaces;
 using Drosy.Domain.Entities;
@@ -59,173 +61,226 @@ namespace Drosy.Application.UseCases.Sessions.Services
             }
         }
        
-        //public async Task<Result<DataResult<SessionDTO>>> GetSessionsByDate(DateTime date, CancellationToken ct)
-        //{
-        //    _logger.LogInformation("Fetching sessions for date {Date}", date);
-        //    try
-        //    {
-        //        ct.ThrowIfCancellationRequested();
+        #region Non-plan methods
+        public Task<Result<DataResult<SessionDTO>>> GetAllAsync(CancellationToken ct)
+            => BuildDataResultAsync(() => _sessionRepository.GetAllAsync(ct), ct);
 
-        //        var list = (await _sessionRepository.GetSessionsByDateAsync( date, ct)).ToList();
+        public Task<Result<DataResult<SessionDTO>>> GetSessionsByDate(DateTime date, CancellationToken ct)
+            => BuildDataResultAsync(() => _sessionRepository.GetAllByDateAsync(date, ct), ct);
 
-        //        var dtos = _mapper.Map<List<Session>, List<SessionDTO>>(list);
+        public Task<Result<DataResult<SessionDTO>>> GetSessionsInRange(DateTime start, DateTime end, CancellationToken ct)
+            => BuildDataResultAsync(() => _sessionRepository.GetAllInRangeAsync(start, end, ct), ct);
 
-        //        var result = new DataResult<SessionDTO> { Data = dtos, TotalRecordsCount = dtos.Count };
+        public Task<Result<DataResult<SessionDTO>>> GetSessionsByWeek(int year, int weekNumber, CancellationToken ct)
+            => BuildDataResultAsync(() => _sessionRepository.GetAllByWeekAsync(year, weekNumber, ct), ct);
 
-        //        _logger.LogInformation("Fetched {Count} sessions for date {Date}", dtos.Count, date);
-        //        return Result.Success(result);
-        //    }
-        //    catch (OperationCanceledException)
-        //    {
-        //        _logger.LogWarning("GetSessionsByDate canceled for date {Date}", date);
-        //        return Result.Failure<DataResult<SessionDTO>>(CommonErrors.OperationCancelled);
-        //    }
-        //    catch (Exception ex)
-        //    {
-        //        _logger.LogError(ex.Message, "Error fetching sessions for date {Date}", date); 
-        //        return Result.Failure<DataResult<SessionDTO>>(CommonErrors.Unexpected);
-        //    }
-        //}
+        public Task<Result<DataResult<SessionDTO>>> GetSessionsByMonth(int year, int month, CancellationToken ct)
+            => BuildDataResultAsync(() => _sessionRepository.GetAllByMonthAsync(year, month, ct), ct);
 
-        //public async Task<Result<DataResult<SessionDTO>>> GetSessionsInRange(DateTime start, DateTime end, CancellationToken ct)
-        //{
-        //        _logger.LogInformation("Fetching sessions in range {Start} to {End}", start, end);
+        public Task<Result<DataResult<SessionDTO>>> GetSessionsByStatus(SessionStatus status, CancellationToken ct)
+            => BuildDataResultAsync(() => _sessionRepository.GetAllByStatusAsync(status, ct), ct);
 
-        //    try
-        //    {
-        //        ct.ThrowIfCancellationRequested();
-        //        if (end < start)
-        //        {
-        //            _logger.LogWarning("Invalid range Start {Start} after End {End}", start, end);
-        //            return Result.Failure<DataResult<SessionDTO>>(CommonErrors.Invalid);
-        //        }
-        //        var list = (await _sessionRepository.GetSessionsInRangeAsync(start, end, ct)).ToList();
-        //        var dtos = _mapper.Map<List<Session>, List<SessionDTO>>(list);
-        //        var result = new DataResult<SessionDTO> { Data = dtos, TotalRecordsCount = dtos.Count };
 
-        //        _logger.LogInformation("Fetched {Count} sessions in range {Start} to {End}", dtos.Count, start, end);
-        //        return Result.Success(result);
-        //    }
-        //    catch (OperationCanceledException)
-        //    {
-        //        _logger.LogWarning("GetSessionsInRange canceled for range {Start} to {End}", start, end);
-        //        return Result.Failure<DataResult<SessionDTO>>(CommonErrors.OperationCancelled);
-        //    }
-        //    catch (Exception ex)
-        //    {
-        //        _logger.LogError(ex.Message, "Error fetching sessions in range {Start} to {End}", start, end);
-        //        return Result.Failure<DataResult<SessionDTO>>(CommonErrors.Unexpected);
-        //    }
-        //}
+        #region Calender
+        public async Task<Result<DataResult<CalenderSessionDto>>> GetSessionsCalenderAsync(CancellationToken ct)
+        {
+            try
+            {
+                // Fetch all plans via PlanService
+                var plansResult = await _planService.GetAllPlansWithDetailsAsync(ct);
+                if (!plansResult.IsSuccess)
+                    return Result.Failure<DataResult<CalenderSessionDto>>(plansResult.Error);
 
-        //public async Task<Result<DataResult<SessionDTO>>> GetSessionsByWeek(int year, int weekNumber, CancellationToken ct)
-        //{
-        //    _logger.LogInformation("Fetching sessions for ISO week {Week} of year {Year}", weekNumber, year);
+                var scheduleEntries = new List<CalenderSessionDto>();
 
-        //    try
-        //    {
-        //        ct.ThrowIfCancellationRequested();
-        //        if (weekNumber < 1 || weekNumber > 53)
-        //        {
-        //            _logger.LogWarning("Invalid week number {Week} for year {Year}", weekNumber, year);
-        //            return Result.Failure<DataResult<SessionDTO>>(CommonErrors.Invalid);
-        //        }
-        //        var first = GetFirstDateOfIsoWeek(year, weekNumber);
-        //        var last = first.AddDays(6);
-        //        var list = (await _sessionRepository.GetSessionsInRangeAsync( first, last, ct)).ToList();
-        //        var dtos = _mapper.Map<List<Session>, List<SessionDTO>>(list);
-        //        var result = new DataResult<SessionDTO> { Data = dtos, TotalRecordsCount = dtos.Count };
+                foreach (var plan in plansResult.Value)
+                {
+                    scheduleEntries.AddRange(await _planService.GenerateSessionsForPlanAsync(plan, null, null, ct));
+                }
 
-        //        _logger.LogInformation("Fetched {Count} sessions for week {Week} ({Start} to {End})", dtos.Count, weekNumber, first, last);
-        //        return Result.Success(result);
-        //    }
-        //    catch (OperationCanceledException)
-        //    {
-        //        _logger.LogWarning("GetSessionsByWeek canceled for year {Year}, week {Week}", year, weekNumber);
-        //        return Result.Failure<DataResult<SessionDTO>>(CommonErrors.OperationCancelled);
-        //    }
-        //    catch (Exception ex)
-        //    {
-        //        _logger.LogError(ex.Message, "Error fetching sessions for week {Week} of year {Year}", weekNumber, year);
-        //        return Result.Failure<DataResult<SessionDTO>>(CommonErrors.Unexpected);
-        //    }
-        //}
-        
-        //// Helper to compute Monday of ISO week
-        //private static DateTime GetFirstDateOfIsoWeek(int year, int weekNumber)
-        //{
-        //    // ISO 8601: week 1 is the week with the year's first Thursday
-        //    var jan4 = new DateTime(year, 1, 4);
-        //    int dayOfWeek = ((int)jan4.DayOfWeek + 6) % 7; // Monday=0
-        //    var monday = jan4.AddDays(-dayOfWeek);
-        //    return monday.AddDays((weekNumber - 1) * 7);
-        //}
+                var dataResult = new DataResult<CalenderSessionDto> { Data = scheduleEntries, TotalRecordsCount = scheduleEntries.Count };
+                return Result.Success(dataResult);
+            }
+            catch (OperationCanceledException)
+            {
+                return Result.Failure<DataResult<CalenderSessionDto>>(CommonErrors.OperationCancelled);
+            }
+            catch (Exception ex)
+            {
+                return Result.Failure<DataResult<CalenderSessionDto>>(CommonErrors.Unexpected);
+            }
+        }
 
-        //public async Task<Result<DataResult<SessionDTO>>> GetSessionsByMonth( int year, int month, CancellationToken ct)
-        //{
-        //    _logger.LogInformation("Fetching sessions for month {Month} of year {Year}", month, year);
-        //    try
-        //    {
-        //        ct.ThrowIfCancellationRequested();
-        //        if (month < 1 || month > 12)
-        //        {
-        //            _logger.LogWarning("Invalid month {Month} for year {Year}", month, year);
-        //            return Result.Failure<DataResult<SessionDTO>>(CommonErrors.Invalid);
-        //        }
-        //        var start = new DateTime(year, month, 1);
-        //        var end = start.AddMonths(1).AddTicks(-1);
-        //        var list = (await _sessionRepository.GetSessionsInRangeAsync(start, end, ct)).ToList();
-        //        var dtos = _mapper.Map<List<Session>, List<SessionDTO>>(list);
-        //        var result = new DataResult<SessionDTO> { Data = dtos, TotalRecordsCount = dtos.Count };
-              
-                
-        //        _logger.LogInformation("Fetched {Count} sessions for month {Month} ({Start} to {End})", dtos.Count, month, start, end);
-        //        return Result.Success(result);
-        //    }
-        //    catch (OperationCanceledException)
-        //    {
-        //        _logger.LogWarning("GetSessionsByMonth canceled for year {Year}, month {Month}", year, month);
-        //        return Result.Failure<DataResult<SessionDTO>>(CommonErrors.OperationCancelled);
-        //    }
-        //    catch (Exception ex)
-        //    {
-        //        _logger.LogError(ex.Message, "Error fetching sessions for month {Month} of year {Year}", month, year);
-        //        return Result.Failure<DataResult<SessionDTO>>(CommonErrors.Unexpected);
-        //    }
-        //}
+        public async Task<Result<DataResult<CalenderSessionDto>>> GetSessionsCalenderByDate(DateTime date, CancellationToken ct)
+        {
+            try
+            {
+                var plansResult = await _planService.GetAllPlansWithDetailsAsync(ct);
+                if (!plansResult.IsSuccess)
+                    return Result.Failure<DataResult<CalenderSessionDto>>(plansResult.Error);
 
-        //public async Task<Result<DataResult<SessionDTO>>> GetSessionsByStatus(SessionStatus status, CancellationToken ct)
-        //{
-        //    _logger.LogInformation("Fetching sessions with status {Status}", status);
+                var scheduleEntries = new List<CalenderSessionDto>();
+                date = date.Date;
 
-        //    try
-        //    {
-        //        ct.ThrowIfCancellationRequested();
-        //        if (!Enum.IsDefined(typeof(SessionStatus), status))
-        //        {
-        //            _logger.LogWarning("Invalid status {Status} provided", status);
-        //            return Result.Failure<DataResult<SessionDTO>>(CommonErrors.Invalid);
-        //        }
-        //        var list = (await _sessionRepository.GetSessionsByStatusAsync( status, ct)).ToList();
-        //        var dtos = _mapper.Map<List<Session>, List<SessionDTO>>(list);
-        //        var result = new DataResult<SessionDTO> { Data = dtos, TotalRecordsCount = dtos.Count };
+                foreach (var plan in plansResult.Value)
+                {
+                    if (date < plan.StartDate.Date || date > plan.EndDate.Date)
+                        continue;
 
-        //        _logger.LogInformation("Fetched {Count} sessions with status {Status}", dtos.Count, status);
-        //        return Result.Success(result);
-        //    }
-        //    catch (OperationCanceledException)
-        //    {
-        //        _logger.LogWarning("GetSessionsByStatus canceled for status {Status}", status);
-        //        return Result.Failure<DataResult<SessionDTO>>(CommonErrors.OperationCancelled);
-        //    }
-        //    catch (Exception ex)
-        //    {
-        //        _logger.LogError(ex.Message, "Error fetching sessions with status {Status}", status);
-        //        return Result.Failure<DataResult<SessionDTO>>(CommonErrors.Unexpected);
-        //    }
-        //}
+                    var validDaysOfWeek = plan.PlanDays
+                        .Select(pd => (DayOfWeek)Math.Log2((int)pd.Day))
+                        .ToHashSet();
 
-        // Shared builder for DataResult
+                    if (!validDaysOfWeek.Contains(date.DayOfWeek))
+                        continue;
+
+                    scheduleEntries.AddRange(await _planService.GenerateSessionsForPlanAsync(plan, date, date, ct));
+                }
+
+                var dataResult = new DataResult<CalenderSessionDto> { Data = scheduleEntries, TotalRecordsCount = scheduleEntries.Count };
+                return Result.Success(dataResult);
+            }
+            catch (OperationCanceledException)
+            {
+                return Result.Failure<DataResult<CalenderSessionDto>>(CommonErrors.OperationCancelled);
+            }
+            catch (Exception ex)
+            {
+                return Result.Failure<DataResult<CalenderSessionDto>>(CommonErrors.Unexpected);
+            }
+        }
+
+        public async Task<Result<DataResult<CalenderSessionDto>>> GetSessionsCalenderInRange(DateTime start, DateTime end, CancellationToken ct)
+        {
+            try
+            {
+                var plansResult = await _planService.GetAllPlansWithDetailsAsync(ct);
+                if (!plansResult.IsSuccess)
+                    return Result.Failure<DataResult<CalenderSessionDto>>(plansResult.Error);
+
+                start = start.Date;
+                end = end.Date;
+
+                if (start > end)
+                    return Result.Failure<DataResult<CalenderSessionDto>>(SessionErrors.ExpectedDateInThePast);
+
+                var scheduleEntries = new List<CalenderSessionDto>();
+
+                foreach (var plan in plansResult.Value)
+                {
+                    var planStart = plan.StartDate.Date;
+                    var planEnd = plan.EndDate.Date;
+
+                    var rangeStart = start > planStart ? start : planStart;
+                    var rangeEnd = end < planEnd ? end : planEnd;
+
+                    if (rangeStart > rangeEnd)
+                        continue;
+
+                    scheduleEntries.AddRange(await _planService.GenerateSessionsForPlanAsync(plan, rangeStart, rangeEnd, ct));
+                }
+
+                var dataResult = new DataResult<CalenderSessionDto> { Data = scheduleEntries, TotalRecordsCount = scheduleEntries.Count };
+                return Result.Success(dataResult);
+            }
+            catch (OperationCanceledException)
+            {
+                return Result.Failure<DataResult<CalenderSessionDto>>(CommonErrors.OperationCancelled);
+            }
+            catch (Exception ex)
+            {
+                return Result.Failure<DataResult<CalenderSessionDto>>(CommonErrors.Unexpected);
+            }
+        }
+
+        public async Task<Result<DataResult<CalenderSessionDto>>> GetSessionsCalenderByWeek(int year, int weekNumber, CancellationToken ct)
+        {
+            try
+            {
+                var jan1 = new DateTime(year, 1, 1);
+                var daysOffset = DayOfWeek.Monday - jan1.DayOfWeek;
+                if (daysOffset < 0) daysOffset += 7;
+                var firstMonday = jan1.AddDays(daysOffset);
+                var start = firstMonday.AddDays((weekNumber - 1) * 7);
+                var end = start.AddDays(6);
+
+                return await GetSessionsCalenderInRange(start, end, ct);
+            }
+            catch (Exception ex)
+            {
+                return Result.Failure<DataResult<CalenderSessionDto>>(CommonErrors.Unexpected);
+            }
+        }
+
+        public async Task<Result<DataResult<CalenderSessionDto>>> GetSessionsCalenderByMonth(int year, int month, CancellationToken ct)
+        {
+            try
+            {
+                var start = new DateTime(year, month, 1);
+                var end = start.AddMonths(1).AddDays(-1);
+                return await GetSessionsCalenderInRange(start, end, ct);
+            }
+            catch (Exception ex)
+            {
+                return Result.Failure<DataResult<CalenderSessionDto>>(CommonErrors.Unexpected);
+            }
+        }
+
+        public async Task<Result<DataResult<CalenderSessionDto>>> GetSessionsCalenderByStatus(PlanStatus status, CancellationToken ct)
+        {
+            try
+            {
+                var plansResult = await _planService.GetPlansWithDetailsByStatusAsync(status, ct);
+                if (!plansResult.IsSuccess)
+                    return Result.Failure<DataResult<CalenderSessionDto>>(plansResult.Error);
+
+                var scheduleEntries = new List<CalenderSessionDto>();
+
+                foreach (var plan in plansResult.Value)
+                {
+                    scheduleEntries.AddRange(await _planService.GenerateSessionsForPlanAsync(plan, null, null, ct));
+                }
+
+                var dataResult = new DataResult<CalenderSessionDto> { Data = scheduleEntries, TotalRecordsCount = scheduleEntries.Count };
+                return Result.Success(dataResult);
+            }
+            catch (OperationCanceledException)
+            {
+                return Result.Failure<DataResult<CalenderSessionDto>>(CommonErrors.OperationCancelled);
+            }
+            catch (Exception ex)
+            {
+                return Result.Failure<DataResult<CalenderSessionDto>>(CommonErrors.Unexpected);
+            }
+        }
+
+
+        #endregion
+
+
+        #endregion
+
+        #region Plan-scoped methods
+        public Task<Result<DataResult<SessionDTO>>> GetSessionsByPlan(int planId, CancellationToken ct)
+            => BuildDataResultAsync(() => _sessionRepository.GetAllByPlanAsync(planId, ct), ct);
+
+        public Task<Result<DataResult<SessionDTO>>> GetSessionsByDate(int planId, DateTime date, CancellationToken ct)
+            => BuildDataResultAsync(() => _sessionRepository.GetAllByPlanAndDateAsync(planId, date, ct), ct);
+
+        public Task<Result<DataResult<SessionDTO>>> GetSessionsInRange(int planId, DateTime start, DateTime end, CancellationToken ct)
+            => BuildDataResultAsync(() => _sessionRepository.GetAllByPlanAndRangeAsync(planId, start, end, ct), ct);
+
+        public Task<Result<DataResult<SessionDTO>>> GetSessionsByWeek(int planId, int year, int weekNumber, CancellationToken ct)
+            => BuildDataResultAsync(() => _sessionRepository.GetAllByPlanAndWeekAsync(planId, year, weekNumber, ct), ct);
+
+        public Task<Result<DataResult<SessionDTO>>> GetSessionsByMonth(int planId, int year, int month, CancellationToken ct)
+            => BuildDataResultAsync(() => _sessionRepository.GetAllByPlanAndMonthAsync(planId, year, month, ct), ct);
+
+        public Task<Result<DataResult<SessionDTO>>> GetSessionsByStatus(int planId, SessionStatus status, CancellationToken ct)
+            => BuildDataResultAsync(() => _sessionRepository.GetAllByPlanAndStatusAsync(planId, status, ct), ct);
+
+
+
         private async Task<Result<DataResult<SessionDTO>>> BuildDataResultAsync(
             Func<Task<IEnumerable<Session>>> fetchFunc,
             CancellationToken ct)
@@ -252,47 +307,6 @@ namespace Drosy.Application.UseCases.Sessions.Services
             }
         }
 
-        #region Non-plan methods
-        public Task<Result<DataResult<SessionDTO>>> GetAllAsync(CancellationToken ct)
-            => BuildDataResultAsync(() => _sessionRepository.GetAllAsync(ct), ct);
-
-        public Task<Result<DataResult<SessionDTO>>> GetSessionsByDate(DateTime date, CancellationToken ct)
-            => BuildDataResultAsync(() => _sessionRepository.GetSessionsByDateAsync(date, ct), ct);
-
-        public Task<Result<DataResult<SessionDTO>>> GetSessionsInRange(DateTime start, DateTime end, CancellationToken ct)
-            => BuildDataResultAsync(() => _sessionRepository.GetSessionsInRangeAsync(start, end, ct), ct);
-
-        public Task<Result<DataResult<SessionDTO>>> GetSessionsByWeek(int year, int weekNumber, CancellationToken ct)
-            => BuildDataResultAsync(() => _sessionRepository.GetSessionsByWeekAsync(year, weekNumber, ct), ct);
-
-        public Task<Result<DataResult<SessionDTO>>> GetSessionsByMonth(int year, int month, CancellationToken ct)
-            => BuildDataResultAsync(() => _sessionRepository.GetSessionsByMonthAsync(year, month, ct), ct);
-
-        public Task<Result<DataResult<SessionDTO>>> GetSessionsByStatus(SessionStatus status, CancellationToken ct)
-            => BuildDataResultAsync(() => _sessionRepository.GetSessionsByStatusAsync(status, ct), ct);
-
-        
-
-        #endregion
-
-        #region Plan-scoped methods
-        public Task<Result<DataResult<SessionDTO>>> GetSessionsByPlan(int planId, CancellationToken ct)
-            => BuildDataResultAsync(() => _sessionRepository.GetByPlanAsync(planId, ct), ct);
-
-        public Task<Result<DataResult<SessionDTO>>> GetSessionsByDate(int planId, DateTime date, CancellationToken ct)
-            => BuildDataResultAsync(() => _sessionRepository.GetByPlanAndDateAsync(planId, date, ct), ct);
-
-        public Task<Result<DataResult<SessionDTO>>> GetSessionsInRange(int planId, DateTime start, DateTime end, CancellationToken ct)
-            => BuildDataResultAsync(() => _sessionRepository.GetByPlanAndRangeAsync(planId, start, end, ct), ct);
-
-        public Task<Result<DataResult<SessionDTO>>> GetSessionsByWeek(int planId, int year, int weekNumber, CancellationToken ct)
-            => BuildDataResultAsync(() => _sessionRepository.GetByPlanAndWeekAsync(planId, year, weekNumber, ct), ct);
-
-        public Task<Result<DataResult<SessionDTO>>> GetSessionsByMonth(int planId, int year, int month, CancellationToken ct)
-            => BuildDataResultAsync(() => _sessionRepository.GetByPlanAndMonthAsync(planId, year, month, ct), ct);
-
-        public Task<Result<DataResult<SessionDTO>>> GetSessionsByStatus(int planId, SessionStatus status, CancellationToken ct)
-            => BuildDataResultAsync(() => _sessionRepository.GetByPlanAndStatusAsync(planId, status, ct), ct);
         #endregion
 
 
@@ -390,7 +404,5 @@ namespace Drosy.Application.UseCases.Sessions.Services
                 return Result.Failure<SessionDTO>(CommonErrors.Unexpected);
             }
         }
-
-      
     }
 }

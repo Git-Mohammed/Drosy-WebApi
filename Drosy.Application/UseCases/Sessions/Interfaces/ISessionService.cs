@@ -1,4 +1,5 @@
-﻿using Drosy.Application.UseCases.Sessions.DTOs;
+﻿using Drosy.Application.UseCases.Schedule.DTOs;
+using Drosy.Application.UseCases.Sessions.DTOs;
 using Drosy.Domain.Enums;
 using Drosy.Domain.Shared.ApplicationResults;
 
@@ -11,6 +12,16 @@ namespace Drosy.Application.UseCases.Sessions.Interfaces
     public interface ISessionService
     {
         #region Read
+
+
+        /// <summary>
+        /// Retrieves a session by its unique identifier.
+        /// </summary>
+        /// <param name="id">The ID of the session.</param>
+        /// <param name="cancellationToken">Token for cancelling the asynchronous operation.</param>
+        /// <returns>A result containing the session DTO if found, otherwise an error result.</returns>
+        Task<Result<SessionDTO>> GetByIdAsync(int id, CancellationToken cancellationToken);
+
 
         /// <summary>
         /// Gets all sessions.
@@ -62,6 +73,17 @@ namespace Drosy.Application.UseCases.Sessions.Interfaces
         /// <param name="ct">Cancellation token to cancel the request.</param>
         /// <returns>A result containing a list of session DTOs.</returns>
         Task<Result<DataResult<SessionDTO>>> GetSessionsByStatus(SessionStatus status, CancellationToken ct);
+
+        Task<Result<DataResult<CalenderSessionDto>>> GetSessionsCalenderByDate(DateTime date, CancellationToken ct);
+
+        Task<Result<DataResult<CalenderSessionDto>>> GetSessionsCalenderInRange(DateTime start, DateTime end, CancellationToken ct);
+
+        Task<Result<DataResult<CalenderSessionDto>>> GetSessionsCalenderByWeek(int year, int weekNumber, CancellationToken ct);
+
+        Task<Result<DataResult<CalenderSessionDto>>> GetSessionsCalenderByMonth(int year, int month, CancellationToken ct);
+
+        Task<Result<DataResult<CalenderSessionDto>>> GetSessionsCalenderByStatus(PlanStatus status, CancellationToken ct);
+        
 
         /// <summary>
         /// Gets all sessions for a specific plan on a specific date.
@@ -118,14 +140,6 @@ namespace Drosy.Application.UseCases.Sessions.Interfaces
         /// <param name="ct">Cancellation token to cancel the request.</param>
         /// <returns>A result containing a list of session DTOs.</returns>
         Task<Result<DataResult<SessionDTO>>> GetSessionsByPlan(int planId, CancellationToken ct);
-
-        /// <summary>
-        /// Retrieves a session by its unique identifier.
-        /// </summary>
-        /// <param name="id">The ID of the session.</param>
-        /// <param name="cancellationToken">Token for cancelling the asynchronous operation.</param>
-        /// <returns>A result containing the session DTO if found, otherwise an error result.</returns>
-        Task<Result<SessionDTO>> GetByIdAsync(int id, CancellationToken cancellationToken);
 
 
         #endregion

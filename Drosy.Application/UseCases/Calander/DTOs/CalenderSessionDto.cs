@@ -1,10 +1,9 @@
 ﻿using Drosy.Application.UseCases.Plans.DTOs;
-using Drosy.Application.UseCases.PlanStudents.DTOs;
 
 
-namespace Drosy.Application.UseCases.Sessions.DTOs;
+namespace Drosy.Application.UseCases.Schedule.DTOs;
 
-public class CalenderEntryDto
+public class CalenderSessionDto
 {
     public int PlanId { get; set; }
     public string PlanType { get; set; } = null!;
