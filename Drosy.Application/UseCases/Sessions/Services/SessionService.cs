@@ -40,11 +40,11 @@ namespace Drosy.Application.UseCases.Sessions.Services
 
 
         #region Read
-        public async Task<Result<SessionDTO>> GetByIdAsync(int id, CancellationToken cancellationToken)
+        public async Task<Result<SessionDTO>> GetByIdAsync(int id, CancellationToken ct)
         {
             try
             {
-                var session = await _sessionRepository.GetByIdAsync(id, cancellationToken);
+                var session = await _sessionRepository.GetByIdAsync(id, ct);
 
                 if (session == null)
                 {
@@ -254,7 +254,6 @@ namespace Drosy.Application.UseCases.Sessions.Services
             }
         }
 
-
         #endregion
 
 
@@ -315,7 +314,7 @@ namespace Drosy.Application.UseCases.Sessions.Services
         #region Write
         #endregion
 
-        public async Task<Result<SessionDTO>> CreateAsync(CreateSessionDTO sessionDTO, CancellationToken cancellationToken)
+        public async Task<Result<SessionDTO>> CreateAsync(CreateSessionDTO sessionDTO, CancellationToken ct)
         {
             try
             {
@@ -332,17 +331,17 @@ namespace Drosy.Application.UseCases.Sessions.Services
 
                 // 🕒 Check for overlapping sessions using optimized existence query
                 bool hasOverlap = await _sessionRepository
-                    .ExistsAsync(sessionDTO.ExcepectedDate, sessionDTO.StartTime, sessionDTO.EndTime, cancellationToken);
+                    .ExistsAsync(sessionDTO.ExcepectedDate, sessionDTO.StartTime, sessionDTO.EndTime, ct);
 
                 if (hasOverlap)
                     return Result.Failure<SessionDTO>(SessionErrors.TimeOverlap);
                 // 🧱 Mapping using IMapper
                 var newSession = _mapper.Map<CreateSessionDTO, Session>(sessionDTO);
 
-                await _sessionRepository.AddAsync(newSession, cancellationToken);
+                await _sessionRepository.AddAsync(newSession, ct);
 
                 // 💾 Commit using IUnitOfWork
-                var saved = await _unitOfWork.SaveChangesAsync(cancellationToken);
+                var saved = await _unitOfWork.SaveChangesAsync(ct);
                 if (!saved)
                     return Result.Failure<SessionDTO>(SessionErrors.InvalidTimeRange); // fallback error
 
@@ -357,12 +356,12 @@ namespace Drosy.Application.UseCases.Sessions.Services
             }
         }
 
-        public async Task<Result<SessionDTO>> RescheduleAsync(int sessionId, RescheduleSessionDTO dto, CancellationToken cancellationToken)
+        public async Task<Result<SessionDTO>> RescheduleAsync(int sessionId, RescheduleSessionDTO dto, CancellationToken ct)
         {
             try
             {
                 // 🔍 Retrieve session
-                var session = await _sessionRepository.GetByIdAsync(sessionId, cancellationToken);
+                var session = await _sessionRepository.GetByIdAsync(sessionId, ct);
                 if (session == null)
                     return Result.Failure<SessionDTO>(SessionErrors.SessionNotFound);
 
@@ -375,7 +374,7 @@ namespace Drosy.Application.UseCases.Sessions.Services
 
                 // ⛔ Check for overlap
                 bool overlapExists = await _sessionRepository.ExistsAsync(sessionId,
-                    dto.NewDate, dto.NewStartTime, dto.NewEndTime, cancellationToken);
+                    dto.NewDate, dto.NewStartTime, dto.NewEndTime, ct);
 
                 if (overlapExists)
                     return Result.Failure<SessionDTO>(SessionErrors.TimeOverlap);
@@ -385,8 +384,8 @@ namespace Drosy.Application.UseCases.Sessions.Services
                 session.StartTime = dto.NewStartTime;
                 session.EndTime = dto.NewEndTime;
 
-                await _sessionRepository.UpdateAsync(session, cancellationToken);
-                var saved = await _unitOfWork.SaveChangesAsync(cancellationToken);
+                await _sessionRepository.UpdateAsync(session, ct);
+                var saved = await _unitOfWork.SaveChangesAsync(ct);
 
                 if (!saved)
                     return Result.Failure<SessionDTO>(EfCoreErrors.CanNotSaveChanges);

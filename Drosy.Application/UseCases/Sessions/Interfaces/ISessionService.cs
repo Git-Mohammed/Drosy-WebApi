@@ -13,23 +13,22 @@ namespace Drosy.Application.UseCases.Sessions.Interfaces
     {
         #region Read
 
-
         /// <summary>
         /// Retrieves a session by its unique identifier.
         /// </summary>
         /// <param name="id">The ID of the session.</param>
         /// <param name="cancellationToken">Token for cancelling the asynchronous operation.</param>
         /// <returns>A result containing the session DTO if found, otherwise an error result.</returns>
-        Task<Result<SessionDTO>> GetByIdAsync(int id, CancellationToken cancellationToken);
+        Task<Result<SessionDTO>> GetByIdAsync(int id, CancellationToken ct);
 
+        #region Non-plan methods
 
         /// <summary>
         /// Gets all sessions.
         /// </summary>
         /// <param name="ct">Cancellation token to cancel the request.</param>
         /// <returns>A result containing a list of session DTOs.</returns>
-        Task<Result<DataResult<SessionDTO>>> GetAllAsync( CancellationToken ct);
-      
+        Task<Result<DataResult<SessionDTO>>> GetAllAsync(CancellationToken ct);
 
         /// <summary>
         /// Gets all sessions on a specific date.
@@ -73,6 +72,12 @@ namespace Drosy.Application.UseCases.Sessions.Interfaces
         /// <param name="ct">Cancellation token to cancel the request.</param>
         /// <returns>A result containing a list of session DTOs.</returns>
         Task<Result<DataResult<SessionDTO>>> GetSessionsByStatus(SessionStatus status, CancellationToken ct);
+        #endregion
+
+
+
+        #region Calender
+        Task<Result<DataResult<CalenderSessionDto>>> GetSessionsCalenderAsync(CancellationToken ct);
 
         Task<Result<DataResult<CalenderSessionDto>>> GetSessionsCalenderByDate(DateTime date, CancellationToken ct);
 
@@ -83,8 +88,10 @@ namespace Drosy.Application.UseCases.Sessions.Interfaces
         Task<Result<DataResult<CalenderSessionDto>>> GetSessionsCalenderByMonth(int year, int month, CancellationToken ct);
 
         Task<Result<DataResult<CalenderSessionDto>>> GetSessionsCalenderByStatus(PlanStatus status, CancellationToken ct);
-        
+        #endregion
 
+
+        #region Plan-scoped methods
         /// <summary>
         /// Gets all sessions for a specific plan on a specific date.
         /// </summary>
@@ -140,6 +147,8 @@ namespace Drosy.Application.UseCases.Sessions.Interfaces
         /// <param name="ct">Cancellation token to cancel the request.</param>
         /// <returns>A result containing a list of session DTOs.</returns>
         Task<Result<DataResult<SessionDTO>>> GetSessionsByPlan(int planId, CancellationToken ct);
+        #endregion
+
 
 
         #endregion
@@ -152,7 +161,7 @@ namespace Drosy.Application.UseCases.Sessions.Interfaces
         /// <param name="sessionDTO">The DTO containing session creation details.</param>
         /// <param name="cancellationToken">Token for cancelling the asynchronous operation.</param>
         /// <returns>A result containing the newly created session DTO or an error result.</returns>
-        Task<Result<SessionDTO>> CreateAsync(CreateSessionDTO sessionDTO, CancellationToken cancellationToken);
+        Task<Result<SessionDTO>> CreateAsync(CreateSessionDTO sessionDTO, CancellationToken ct);
 
         /// <summary>
         /// Reschedules an existing session in case of emergencies. Ensures no timing conflicts or plan disruptions.
@@ -161,7 +170,7 @@ namespace Drosy.Application.UseCases.Sessions.Interfaces
         /// <param name="dto">DTO containing the new date, time, and reason for rescheduling.</param>
         /// <param name="cancellationToken">Token for cancelling the asynchronous operation.</param>
         /// <returns>A result containing the updated session DTO or an appropriate failure message.</returns>
-        Task<Result<SessionDTO>> RescheduleAsync(int sessionId, RescheduleSessionDTO dto, CancellationToken cancellationToken);
+        Task<Result<SessionDTO>> RescheduleAsync(int sessionId, RescheduleSessionDTO dto, CancellationToken ct);
 
         #endregion
     }

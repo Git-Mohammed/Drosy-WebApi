@@ -1,4 +1,5 @@
 ﻿using Drosy.Api.Commons.Responses;
+using Drosy.Application.UseCases.Schedule.DTOs;
 using Drosy.Application.UseCases.Sessions.DTOs;
 using Drosy.Application.UseCases.Sessions.Interfaces;
 using Drosy.Domain.Enums;
@@ -69,7 +70,12 @@ namespace Drosy.Api.Controllers
         }
 
 
-        // GET /api/sessions
+        //GET /api/sessions? date = 2023 - 10 - 15
+        //GET /api/sessions? start = 2023 - 10 - 01 & end = 2023 - 10 - 07
+        //GET /api/sessions? planStatus = Active
+        //GET /api/sessions? year = 2023 & week = 42
+        //GET /api/sessions? year = 2023 & month = 10
+        //GET /api/sessions
         [HttpGet(Name = "GetSessions")]
         [ProducesResponseType(typeof(ApiResponse<DataResult<SessionDTO>>), 200)]
         [ProducesResponseType(typeof(ApiResponse<object>), 400)]
@@ -137,6 +143,79 @@ namespace Drosy.Api.Controllers
                 "Sessions");
         }
 
+
+        //GET /api/sessions/calendar? date = 2023 - 10 - 15
+        //GET /api/sessions/calendar? start = 2023 - 10 - 01 & end = 2023 - 10 - 07
+        //GET /api/sessions/calendar? planStatus = Active
+        //GET /api/sessions/calendar? year = 2023 & week = 42
+        //GET /api/sessions/calendar? year = 2023 & month = 10
+        //GET /api/sessions/calendar
+        [HttpGet("calendar", Name = "GetSessionsCalendar")]
+        [ProducesResponseType(typeof(ApiResponse<DataResult<CalenderSessionDto>>), 200)]
+        [ProducesResponseType(typeof(ApiResponse<object>), 400)]
+        [ProducesResponseType(typeof(ApiResponse<object>), 422)]
+        [ProducesResponseType(typeof(ApiResponse<object>), 500)]
+        public async Task<IActionResult> GetSessionsCalendarAsync(
+            [FromQuery] DateTime? date,
+            [FromQuery] DateTime? start,
+            [FromQuery] DateTime? end,
+            [FromQuery] PlanStatus? planStatus,
+            [FromQuery] int? year,
+            [FromQuery] int? week,
+            [FromQuery] int? month,
+            CancellationToken ct)
+        {
+            // Validation guards
+            if (week.HasValue && !year.HasValue)
+                return ApiResponseFactory.BadRequestResponse("week", "`week` requires `year`.");
+            if (month.HasValue && !year.HasValue)
+                return ApiResponseFactory.BadRequestResponse("month", "`month` requires `year`.");
+            if (week.HasValue && month.HasValue)
+                return ApiResponseFactory.BadRequestResponse("filters", "Cannot filter by both `week` and `month`.");
+
+            // Dispatch to the appropriate service method based on parameters
+            if (date.HasValue)
+                return await Wrappers.WrapListFilter(
+                    () => _sessionService.GetSessionsCalenderByDate(date.Value, ct),
+                    $"Calendar sessions on {date:yyyy-MM-dd}",
+                    nameof(GetSessionsCalendarAsync),
+                    "CalendarSessions");
+
+            if (start.HasValue && end.HasValue)
+                return await Wrappers.WrapListFilter(
+                    () => _sessionService.GetSessionsCalenderInRange(start.Value, end.Value, ct),
+                    $"Calendar sessions from {start:yyyy-MM-dd} to {end:yyyy-MM-dd}",
+                    nameof(GetSessionsCalendarAsync),
+                    "CalendarSessions");
+
+            if (planStatus.HasValue)
+                return await Wrappers.WrapListFilter(
+                    () => _sessionService.GetSessionsCalenderByStatus(planStatus.Value, ct),
+                    $"Calendar sessions with plan status {planStatus}",
+                    nameof(GetSessionsCalendarAsync),
+                    "CalendarSessions");
+
+            if (year.HasValue && week.HasValue)
+                return await Wrappers.WrapListFilter(
+                    () => _sessionService.GetSessionsCalenderByWeek(year.Value, week.Value, ct),
+                    $"Calendar sessions in ISO week {week}/{year}",
+                    nameof(GetSessionsCalendarAsync),
+                    "CalendarSessions");
+
+            if (year.HasValue && month.HasValue)
+                return await Wrappers.WrapListFilter(
+                    () => _sessionService.GetSessionsCalenderByMonth(year.Value, month.Value, ct),
+                    $"Calendar sessions in {year}-{month:D2}",
+                    nameof(GetSessionsCalendarAsync),
+                    "CalendarSessions");
+
+            // Default case: no filters provided, return all calendar sessions
+            return await Wrappers.WrapListFilter(
+                () => _sessionService.GetSessionsCalenderAsync(ct),
+                "All calendar sessions",
+                nameof(GetSessionsCalendarAsync),
+                "CalendarSessions");
+        }
         #endregion
 
         #region 🆕 Create

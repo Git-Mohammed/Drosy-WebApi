@@ -62,7 +62,7 @@ namespace Drosy.Api.Commons.Responses
         /// <returns>An <see cref="IActionResult"/> representing a bad request with error details.</returns>
         public static IActionResult BadRequestResponse(List<ApiError> errors, string message)
         {
-            return new ObjectResult(ApiResponse<object>.Failure(errors, message))
+            return new BadRequestObjectResult(ApiResponse<object>.Failure(errors, message))
             {
                 StatusCode = StatusCodes.Status400BadRequest
             };

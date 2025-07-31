@@ -106,11 +106,22 @@ public interface IPlanService
     /// </returns>
     Task<Result<DataResult<PlanDto>>> GetPlansByMonth(int year, int month, CancellationToken cancellationToken);
 
-    Task<Result<DataResult<CalenderSessionDto>>> GetPlanSessionsCalenderAsync(int planId, CancellationToken ct);
 
     Task<Result<List<Plan>>> GetAllPlansWithDetailsAsync(CancellationToken ct);
     Task<Result<List<Plan>>> GetPlansWithDetailsByStatusAsync(PlanStatus status, CancellationToken ct);
+
+    #region Calender
+    Task<Result<DataResult<CalenderSessionDto>>> GetPlanSessionsCalenderAsync(int planId, CancellationToken ct);
+    Task<Result<DataResult<CalenderSessionDto>>> GetPlanSessionsCalenderByDateAsync(int planId, DateTime date, CancellationToken ct);
+    Task<Result<DataResult<CalenderSessionDto>>> GetPlanSessionsCalenderByRangeAsync(int planId, DateTime start, DateTime end, CancellationToken ct);
+    Task<Result<DataResult<CalenderSessionDto>>> GetPlanSessionsCalenderByStatusAsync(int planId, PlanStatus status, CancellationToken ct);
+    Task<Result<DataResult<CalenderSessionDto>>> GetPlanSessionsCalenderByWeekAsync(int planId, int year, int week, CancellationToken ct);
+    Task<Result<DataResult<CalenderSessionDto>>> GetPlanSessionsCalenderByMonthAsync(int planId, int year, int month, CancellationToken ct);
     Task<List<CalenderSessionDto>> GenerateSessionsForPlanAsync(Plan plan, DateTime? startFilter, DateTime? endFilter, CancellationToken ct);
+
+    #endregion
+
+
     #endregion
 
     #region Write

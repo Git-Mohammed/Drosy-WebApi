@@ -64,25 +64,153 @@ public class PlanService(
         }
     }
 
-    public async Task<Result<List<Plan>>> GetPlansWithDetailsByStatus(PlanStatus status, CancellationToken ct)
+    #endregion
+
+
+    public async Task<Result<PlanDto>> GetPlanByIdAsync(int id, CancellationToken cancellationToken)
+    {
+        var existingPlan = await _planRepository.GetByIdAsync(id, cancellationToken);
+        if (existingPlan == null)
+            return Result.Failure<PlanDto>(PlanErrors.PlanNotFound);
+        var planDto = _mapper.Map<Plan, PlanDto>(existingPlan);
+        return Result.Success(planDto);
+    }
+
+    #region Calender
+    public async Task<Result<DataResult<CalenderSessionDto>>> GetPlanSessionsCalenderAsync(int planId, CancellationToken ct)
     {
         try
         {
-            var plans = await _planRepository.GetAllWithDetailsByStatusAsync(status, ct);
-            return Result.Success(plans.ToList());
+            // Load the plan with details
+            var plan = await _planRepository.GetByIdAsync(planId, ct);
+            if (plan == null)
+                return Result.Failure<DataResult<CalenderSessionDto>>(PlanErrors.PlanNotFound);
+
+            // Generate sessions using the new method
+            var scheduleEntries = await GenerateSessionsForPlanAsync(plan, null, null, ct);
+
+            var dataResult = new DataResult<CalenderSessionDto> { Data = scheduleEntries, TotalRecordsCount = scheduleEntries.Count };
+            return Result.Success(dataResult);
         }
         catch (OperationCanceledException)
         {
-            return Result.Failure<List<Plan>>(CommonErrors.OperationCancelled);
+            return Result.Failure<DataResult<CalenderSessionDto>>(CommonErrors.OperationCancelled);
         }
         catch (Exception ex)
         {
-            return Result.Failure<List<Plan>>(CommonErrors.Unexpected);
+            return Result.Failure<DataResult<CalenderSessionDto>>(CommonErrors.Unexpected);
+        }
+    }
+
+    public async Task<Result<DataResult<CalenderSessionDto>>> GetPlanSessionsCalenderByDateAsync(int planId, DateTime date, CancellationToken ct)
+    {
+       try
+        {
+            var plan = await _planRepository.GetByIdAsync(planId, ct);
+            if (plan == null)
+                return Result.Failure<DataResult<CalenderSessionDto>>(PlanErrors.PlanNotFound);
+
+            var sessions = await GenerateSessionsForPlanAsync(plan, date, date, ct);
+            return Result.Success(new DataResult<CalenderSessionDto> { Data = sessions, TotalRecordsCount = sessions.Count });
+        }
+      catch (OperationCanceledException)
+        {
+            return Result.Failure<DataResult<CalenderSessionDto>>(CommonErrors.OperationCancelled);
+        }
+        catch (Exception ex)
+        {
+            return Result.Failure<DataResult<CalenderSessionDto>>(CommonErrors.Unexpected);
+        }
+    }
+
+    public async Task<Result<DataResult<CalenderSessionDto>>> GetPlanSessionsCalenderByRangeAsync(int planId, DateTime start, DateTime end, CancellationToken ct)
+    {
+      try
+        {
+            if (start > end)
+                return Result.Failure<DataResult<CalenderSessionDto>>(PlanErrors.ConstraintViolation);
+
+            var plan = await _planRepository.GetByIdAsync(planId, ct);
+            if (plan == null)
+                return Result.Failure<DataResult<CalenderSessionDto>>(PlanErrors.PlanNotFound);
+
+            var sessions = await GenerateSessionsForPlanAsync(plan, start, end, ct);
+            return Result.Success(new DataResult<CalenderSessionDto> { Data = sessions, TotalRecordsCount = sessions.Count });
+        }
+        catch (OperationCanceledException)
+        {
+            return Result.Failure<DataResult<CalenderSessionDto>>(CommonErrors.OperationCancelled);
+        }
+        catch (Exception ex)
+        {
+            return Result.Failure<DataResult<CalenderSessionDto>>(CommonErrors.Unexpected);
+        }
+    }
+
+    public async Task<Result<DataResult<CalenderSessionDto>>> GetPlanSessionsCalenderByStatusAsync(int planId, PlanStatus status, CancellationToken ct)
+    {
+      try
+        {
+              var plan = await _planRepository.GetByIdAsync(planId, ct);
+        if (plan == null)
+            return Result.Failure<DataResult<CalenderSessionDto>>(PlanErrors.PlanNotFound);
+
+        if (plan.Status != status)
+            return Result.Success(new DataResult<CalenderSessionDto> { Data = new List<CalenderSessionDto>(), TotalRecordsCount = 0 });
+
+        var sessions = await GenerateSessionsForPlanAsync(plan, null, null, ct);
+        return Result.Success(new DataResult<CalenderSessionDto> { Data = sessions, TotalRecordsCount = sessions.Count });
+        }
+        catch (OperationCanceledException)
+        {
+            return Result.Failure<DataResult<CalenderSessionDto>>(CommonErrors.OperationCancelled);
+        }
+        catch (Exception ex)
+        {
+            return Result.Failure<DataResult<CalenderSessionDto>>(CommonErrors.Unexpected);
+        }
+    }
+
+    public async Task<Result<DataResult<CalenderSessionDto>>> GetPlanSessionsCalenderByWeekAsync(int planId, int year, int week, CancellationToken ct)
+    {
+     try
+        {
+            var startOfWeek = GetStartOfWeek(year, week);
+            var endOfWeek = startOfWeek.AddDays(6);
+            return await GetPlanSessionsCalenderByRangeAsync(planId, startOfWeek, endOfWeek, ct);
+        }
+        catch (OperationCanceledException)
+        {
+            return Result.Failure<DataResult<CalenderSessionDto>>(CommonErrors.OperationCancelled);
+        }
+        catch (Exception ex)
+        {
+            return Result.Failure<DataResult<CalenderSessionDto>>(CommonErrors.Unexpected);
+        }
+    }
+
+    public async Task<Result<DataResult<CalenderSessionDto>>> GetPlanSessionsCalenderByMonthAsync(int planId, int year, int month, CancellationToken ct)
+    {
+       try
+        {
+            var start = new DateTime(year, month, 1);
+            var end = start.AddMonths(1).AddDays(-1);
+            return await GetPlanSessionsCalenderByRangeAsync(planId, start, end, ct);
+        }
+        catch (OperationCanceledException)
+        {
+            return Result.Failure<DataResult<CalenderSessionDto>>(CommonErrors.OperationCancelled);
+        }
+        catch (Exception ex)
+        {
+            return Result.Failure<DataResult<CalenderSessionDto>>(CommonErrors.Unexpected);
         }
     }
 
     public async Task<List<CalenderSessionDto>> GenerateSessionsForPlanAsync(Plan plan, DateTime? startFilter, DateTime? endFilter, CancellationToken ct)
     {
+        // plan
+
         var scheduleEntries = new List<CalenderSessionDto>();
 
         var validDaysOfWeek = plan.PlanDays
@@ -100,7 +228,7 @@ public class PlanService(
 
         for (var date = startDate; date <= endDate; date = date.AddDays(1))
         {
-            ct.ThrowIfCancellationRequested(); // Support cancellation
+            ct.ThrowIfCancellationRequested(); 
 
             if (!validDaysOfWeek.Contains(date.DayOfWeek))
                 continue;
@@ -151,44 +279,13 @@ public class PlanService(
 
         return await Task.FromResult(scheduleEntries); // Wrap synchronous result in Task
     }
-    #endregion
 
-
-    public async Task<Result<PlanDto>> GetPlanByIdAsync(int id, CancellationToken cancellationToken)
+    private DateTime GetStartOfWeek(int year, int week)
     {
-        var existingPlan = await _planRepository.GetByIdAsync(id, cancellationToken);
-        if (existingPlan == null)
-            return Result.Failure<PlanDto>(PlanErrors.PlanNotFound);
-        var planDto = _mapper.Map<Plan, PlanDto>(existingPlan);
-        return Result.Success(planDto);
+        var jan4 = new DateTime(year, 1, 4);
+        var startOfYear = jan4.AddDays(-((int)jan4.DayOfWeek + 6) % 7);
+        return startOfYear.AddDays((week - 1) * 7);
     }
-
-    #region Calender
-    public async Task<Result<DataResult<CalenderSessionDto>>> GetPlanSessionsCalenderAsync(int planId, CancellationToken ct)
-    {
-        try
-        {
-            // Load the plan with details
-            var plan = await _planRepository.GetByIdAsync(planId, ct);
-            if (plan == null)
-                return Result.Failure<DataResult<CalenderSessionDto>>(PlanErrors.PlanNotFound);
-
-            // Generate sessions using the new method
-            var scheduleEntries = await GenerateSessionsForPlanAsync(plan, null, null, ct);
-
-            var dataResult = new DataResult<CalenderSessionDto> { Data = scheduleEntries, TotalRecordsCount = scheduleEntries.Count };
-            return Result.Success(dataResult);
-        }
-        catch (OperationCanceledException)
-        {
-            return Result.Failure<DataResult<CalenderSessionDto>>(CommonErrors.OperationCancelled);
-        }
-        catch (Exception ex)
-        {
-            return Result.Failure<DataResult<CalenderSessionDto>>(CommonErrors.Unexpected);
-        }
-    }
-
     #endregion
 
     public async Task<Result> ExistsAsync(int id, CancellationToken cancellationToken)
