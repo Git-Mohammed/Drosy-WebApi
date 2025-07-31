@@ -19,7 +19,7 @@ namespace Drosy.Api.Commons.Responses
         /// <returns>An <see cref="IActionResult"/> containing a successful response.</returns>
         public static IActionResult SuccessResponse<T>(T data, string message = "Request successful")
         {
-            return new ObjectResult(ApiResponse<T>.Success(data, message))
+            return new OkObjectResult(ApiResponse<T>.Success(data, message))
             {
                 StatusCode = StatusCodes.Status200OK
             };
@@ -32,7 +32,7 @@ namespace Drosy.Api.Commons.Responses
         /// <returns>An <see cref="IActionResult"/> indicating a successful operation.</returns>
         public static IActionResult SuccessResponse(string message = "Operation completed successfully")
         {
-            return new ObjectResult(ApiResponse<object>.Success(null, message))
+            return new OkObjectResult(ApiResponse<object>.Success(null, message))
             {
                 StatusCode = StatusCodes.Status200OK
             };
@@ -48,7 +48,7 @@ namespace Drosy.Api.Commons.Responses
         public static IActionResult BadRequestResponse(string property, string message, params string[] details)
         {
             var errors = BuildErrors(property, message, details);
-            return new ObjectResult(ApiResponse<object>.Failure(errors, message))
+            return new BadRequestObjectResult(ApiResponse<object>.Failure(errors, message))
             {
                 StatusCode = StatusCodes.Status400BadRequest
             };
@@ -149,6 +149,12 @@ namespace Drosy.Api.Commons.Responses
 
             return new ObjectResult(response) { StatusCode = statusCode };
         }
+
+        public static IActionResult UnprocessableEntityResponse(string message)
+        {
+            return new UnprocessableEntityObjectResult(ApiResponse<object>.Failure(null, message)); // This ensures the proper UnprocessableEntityObjectResult
+        }
+
 
         /// <summary>
         /// Converts a failed <see cref="Result"/> into a standardized <see cref="IActionResult"/>.

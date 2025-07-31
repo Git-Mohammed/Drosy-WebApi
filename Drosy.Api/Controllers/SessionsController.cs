@@ -46,9 +46,10 @@ namespace Drosy.Api.Controllers
         {
             if (id < 1)
             {
-                var error = new ApiError("id", ErrorMessageResourceRepository.GetMessage(CommonErrors.Invalid.Message, AppError.CurrentLanguage));
+                var error = new ApiError("id", "Invalid session ID.");
                 return ApiResponseFactory.BadRequestResponse("id", "Invalid session ID.", error.Message);
             }
+
 
             try
             {
@@ -158,10 +159,10 @@ namespace Drosy.Api.Controllers
         [ProducesResponseType(typeof(ApiResponse<object>), 500)]
         public async Task<IActionResult> CreateAsync([FromBody] CreateSessionDTO dto, CancellationToken ct)
         {
-            if (dto == null)
+            if (dto == null || string.IsNullOrEmpty(dto.Title))
             {
-                var error = new ApiError("dto", ErrorMessageResourceRepository.GetMessage(CommonErrors.NullValue.Message, AppError.CurrentLanguage));
-                return ApiResponseFactory.BadRequestResponse("dto", "Invalid session data.", error.Message);
+                var error = new ApiError("dto", "Invalid session data.");
+                return ApiResponseFactory.UnprocessableEntityResponse("Session creation failed.");
             }
 
             try
@@ -229,10 +230,8 @@ namespace Drosy.Api.Controllers
                     return ApiResponseFactory.FromFailure(result, nameof(RescheduleAsync), "Session");
                 }
 
-                return ApiResponseFactory.SuccessResponse(
-                    result.Value,
-                    "Session rescheduled successfully."
-                );
+                return ApiResponseFactory.SuccessResponse(result.Value, "Session rescheduled successfully.");
+
             }
             catch (Exception ex)
             {
