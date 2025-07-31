@@ -10,4 +10,8 @@
       <ProjectReference Include="..\Drosy.Domain\Drosy.Domain.csproj" />
     </ItemGroup>
 
+    <ItemGroup>
+      <Folder Include="UseCases\Schedule\interfaces\" />
+    </ItemGroup>
+
 </Project>

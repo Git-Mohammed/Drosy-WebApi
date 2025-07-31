@@ -129,7 +129,7 @@ namespace Drosy.Tests.Controllers.Sessions
 
             if (!parsedDate.HasValue && !parsedStart.HasValue && !parsedEnd.HasValue && !parsedStatus.HasValue && !year.HasValue && !week.HasValue && !month.HasValue)
             {
-                _sessionServiceMock.Setup(s => s.GetAllAync(It.IsAny<CancellationToken>()))
+                _sessionServiceMock.Setup(s => s.GetAllAsync(It.IsAny<CancellationToken>()))
                                    .ReturnsAsync(Result.Success(data));
             }
 

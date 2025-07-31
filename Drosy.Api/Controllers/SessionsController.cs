@@ -131,7 +131,7 @@ namespace Drosy.Api.Controllers
 
             // No filters: return all
             return await Wrappers.WrapListFilter(
-                () => _sessionService.GetAllAync(ct),
+                () => _sessionService.GetAllAsync(ct),
                 "All sessions",
                 nameof(GetListAsync),
                 "Sessions");

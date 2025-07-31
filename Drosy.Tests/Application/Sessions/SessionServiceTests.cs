@@ -339,10 +339,10 @@ namespace Drosy.Tests.Application.Sessions
             var dto = new SessionDTO { Id = 100, Title = "All" };
             var data = new DataResult<SessionDTO> { Data = new[] { dto }, TotalRecordsCount = 1 };
             _sessionService
-                .Setup(s => s.GetAllAync(CancellationToken.None))
+                .Setup(s => s.GetAllAsync(CancellationToken.None))
                 .ReturnsAsync(Result.Success(data));
 
-            var result = await _sessionService.Object.GetAllAync(CancellationToken.None);
+            var result = await _sessionService.Object.GetAllAsync(CancellationToken.None);
 
             Assert.True(result.IsSuccess);
             Assert.Equal(1, result.Value.TotalRecordsCount);
@@ -352,10 +352,10 @@ namespace Drosy.Tests.Application.Sessions
         public async Task GetAllAsync_ShouldReturnFailure_WhenServiceFails()
         {
             _sessionService
-                .Setup(s => s.GetAllAync(CancellationToken.None))
+                .Setup(s => s.GetAllAsync(CancellationToken.None))
                 .ReturnsAsync(Result.Failure<DataResult<SessionDTO>>(CommonErrors.Invalid));
 
-            var result = await _sessionService.Object.GetAllAync(CancellationToken.None);
+            var result = await _sessionService.Object.GetAllAsync(CancellationToken.None);
 
             Assert.False(result.IsSuccess);
         }

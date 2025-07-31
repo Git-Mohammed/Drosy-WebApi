@@ -93,6 +93,7 @@ public interface IPlanRepository : IRepository<Plan>
     /// <returns>A collection of plans scheduled during the specified month.</returns>
     Task<IEnumerable<Plan>> GetByMonthAsync(int year, int month, CancellationToken cancellationToken);
 
+    Task<Plan?> GetPlanWithDetailsAsync(int planId, CancellationToken ct);
     #endregion
 
     #region Write

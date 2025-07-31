@@ -17,7 +17,8 @@ namespace Drosy.Application.UseCases.Sessions.Interfaces
         /// </summary>
         /// <param name="ct">Cancellation token to cancel the request.</param>
         /// <returns>A result containing a list of session DTOs.</returns>
-        Task<Result<DataResult<SessionDTO>>> GetAllAync( CancellationToken ct);
+        Task<Result<DataResult<SessionDTO>>> GetAllAsync( CancellationToken ct);
+      
 
         /// <summary>
         /// Gets all sessions on a specific date.
@@ -125,6 +126,7 @@ namespace Drosy.Application.UseCases.Sessions.Interfaces
         /// <param name="cancellationToken">Token for cancelling the asynchronous operation.</param>
         /// <returns>A result containing the session DTO if found, otherwise an error result.</returns>
         Task<Result<SessionDTO>> GetByIdAsync(int id, CancellationToken cancellationToken);
+
 
         #endregion
 

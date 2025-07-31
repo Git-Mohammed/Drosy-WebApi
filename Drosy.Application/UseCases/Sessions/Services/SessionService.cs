@@ -1,5 +1,7 @@
 ﻿using Drosy.Application.Interfaces.Common;
 using Drosy.Application.UseCases.Plans.DTOs;
+using Drosy.Application.UseCases.Plans.Interfaces;
+using Drosy.Application.UseCases.Plans.Services;
 using Drosy.Application.UseCases.Sessions.DTOs;
 using Drosy.Application.UseCases.Sessions.Interfaces;
 using Drosy.Domain.Entities;
@@ -10,6 +12,7 @@ using Drosy.Domain.Shared.ApplicationResults;
 using Drosy.Domain.Shared.ErrorComponents.Common;
 using Drosy.Domain.Shared.ErrorComponents.EFCore;
 using Drosy.Domain.Shared.ErrorComponents.Sesstions;
+using Drosy.Domain.Shared.System.CalandeHelper;
 using System.Globalization;
 using static System.Runtime.InteropServices.JavaScript.JSType;
 
@@ -21,14 +24,15 @@ namespace Drosy.Application.UseCases.Sessions.Services
     {
         private readonly IUnitOfWork _unitOfWork;
         private readonly ISessionRepository _sessionRepository;
+        private readonly IPlanService _planService;
         private readonly IMapper _mapper;
         private readonly ILogger<SessionService> _logger;
-        public SessionService(ISessionRepository sessionRepository, IUnitOfWork unitOfWork, IMapper mapper, ILogger<SessionService> logger)
+        public SessionService(ISessionRepository sessionRepository,IPlanService planService, IUnitOfWork unitOfWork, IMapper mapper, ILogger<SessionService> logger)
         {
             _sessionRepository = sessionRepository;
             _unitOfWork = unitOfWork;
             _mapper = mapper;
-
+            _planService = planService;
             _logger = logger;
         }
 
@@ -249,7 +253,7 @@ namespace Drosy.Application.UseCases.Sessions.Services
         }
 
         #region Non-plan methods
-        public Task<Result<DataResult<SessionDTO>>> GetAllAync(CancellationToken ct)
+        public Task<Result<DataResult<SessionDTO>>> GetAllAsync(CancellationToken ct)
             => BuildDataResultAsync(() => _sessionRepository.GetAllAsync(ct), ct);
 
         public Task<Result<DataResult<SessionDTO>>> GetSessionsByDate(DateTime date, CancellationToken ct)
@@ -266,6 +270,9 @@ namespace Drosy.Application.UseCases.Sessions.Services
 
         public Task<Result<DataResult<SessionDTO>>> GetSessionsByStatus(SessionStatus status, CancellationToken ct)
             => BuildDataResultAsync(() => _sessionRepository.GetSessionsByStatusAsync(status, ct), ct);
+
+        
+
         #endregion
 
         #region Plan-scoped methods

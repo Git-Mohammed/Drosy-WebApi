@@ -1,4 +1,6 @@
-﻿using Drosy.Domain.Entities;
+﻿using Drosy.Application.UseCases.Plans.DTOs;
+using Drosy.Application.UseCases.Sessions.DTOs;
+using Drosy.Domain.Entities;
 using Drosy.Domain.Enums;
 using Drosy.Domain.Interfaces.Repository;
 using Drosy.Domain.Shared.System.CalandeHelper;
@@ -11,6 +13,15 @@ public class PlanRepository(ApplicationDbContext dbContext) : BaseRepository<Pla
 {
 
     #region Read
+    public async Task<Plan?> GetPlanWithDetailsAsync(int planId, CancellationToken ct)
+    {
+        return await DbSet
+            .Include(p => p.PlanDays)
+            .Include(p => p.Sessions)
+            .Include(p => p.Students).ThenInclude(ps => ps.Student)
+            .FirstOrDefaultAsync(p => p.Id == planId, ct);
+    }
+
     public async Task<bool> ExistsAsync(int id, CancellationToken cancellationToken)
     {
         return await DbSet.AnyAsync(p => p.Id == id && p.Status == PlanStatus.Active, cancellationToken);
@@ -46,12 +57,10 @@ public class PlanRepository(ApplicationDbContext dbContext) : BaseRepository<Pla
         return overlappingExists;
     }
 
-
     public async Task<Plan?> GetByIdAsync(int id, CancellationToken cancellationToken)
     {
         return await DbSet.FirstOrDefaultAsync(p => p.Id == id, cancellationToken);
     }
-
 
     public async Task<IEnumerable<Plan>> GetByDateAsync(DateTime date, CancellationToken cancellationToken)
         => await DbSet.AsNoTracking()
