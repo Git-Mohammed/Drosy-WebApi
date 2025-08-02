@@ -14,7 +14,7 @@ public class DashboardController(IDashboardService dashboardService, ILogger<Das
     private readonly ILogger<DashboardController> _logger = logger;
 
 
-    [HttpGet(Name = "GetStudentPaymentHistoryAsync")]
+    [HttpGet(Name = "GetDashBoardAsync")]
     public async Task<IActionResult> GetDashBoardAsync(CancellationToken cancellation)
     {
         if (cancellation.IsCancellationRequested)
