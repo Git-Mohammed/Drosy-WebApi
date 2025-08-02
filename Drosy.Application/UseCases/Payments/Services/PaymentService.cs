@@ -33,7 +33,7 @@ public class PaymentService(
     private readonly IUnitOfWork _unitOfWork = unitOfWork;
     private readonly IPlanStudentsService _planStudentsService = planStudentsService;
 
-    public async Task<Result<PaymentDto>> CreatePaymentAsync(CreatePaymentDto paymentDto, CancellationToken cancellation)
+    public async Task<Result<PaymentDto>> CreateAsync(CreatePaymentDto paymentDto, CancellationToken cancellation)
     {
         try
         {
@@ -78,6 +78,7 @@ public class PaymentService(
             return Result.Failure<PaymentDto>(CommonErrors.OperationCancelled);
         }
     }
+
 
     public async Task<Result<PaymentDto>> GetByIdAsync(int id, CancellationToken cancellation)
     {
@@ -131,6 +132,31 @@ public class PaymentService(
             _logger.LogError(ex.Message, "Failed to retrieve payment history for student {StudentId}", studentId);
             return Result.Failure<StudentPaymentHistoryDTO>(PaymentErrors.PaymentSaveFailure); // More specific than CommonErrors.Unexpected
         }
+    }
+    
+    public async Task<Result> UpdateAsync(int id,UpdatePaymentDto paymentDto, CancellationToken cancellation)
+    {
+        var existingPayment = await _paymentRepository.GetByIdAsync(id, cancellation);
+        if (existingPayment is null)
+        {
+            _logger.LogError($"Payment with id {id} not found");
+            return Result.Failure(PaymentErrors.PaymentNotFound);
+        }
+        
+        existingPayment.Method = paymentDto.Method;
+        existingPayment.PlanId = paymentDto.PlanId;
+        existingPayment.StudentId = paymentDto.StudentId;
+        existingPayment.Amount = paymentDto.Amount;
+        existingPayment.Notes = string.IsNullOrWhiteSpace(paymentDto.Notes) ? existingPayment.Notes : paymentDto.Notes;
+        
+        await _paymentRepository.UpdateAsync(existingPayment, cancellation);
+        var result = await _unitOfWork.SaveChangesAsync(cancellation);
+        if (!result)
+        {
+            _logger.LogError("Failed to update payment", paymentDto);
+            return Result.Failure(EfCoreErrors.CanNotSaveChanges);
+        }
+        return Result.Success();
     }
 
 

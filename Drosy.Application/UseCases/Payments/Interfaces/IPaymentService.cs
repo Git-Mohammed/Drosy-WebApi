@@ -50,7 +50,8 @@ namespace Drosy.Application.UseCases.Payments.Interfaces
         /// A <see cref="Result{PaymentDto}"/> containing the created payment data if successful.  
         /// Failure if the DTO is invalid or a domain error occurs.
         /// </returns>
-        Task<Result<PaymentDto>> CreatePaymentAsync(CreatePaymentDto paymentDto, CancellationToken cancellation);
+        Task<Result<PaymentDto>> CreateAsync(CreatePaymentDto paymentDto, CancellationToken cancellation);
+        Task<Result> UpdateAsync(int id,UpdatePaymentDto paymentDto, CancellationToken cancellation);
         #endregion
     }
 }
