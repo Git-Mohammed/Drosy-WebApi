@@ -1,4 +1,4 @@
-﻿namespace Drosy.Application.UseCases.Schedule.DTOs;
+﻿namespace Drosy.Application.UseCases.PlanStudents.DTOs;
 
 public class CalenderPlanStudentDto
 {

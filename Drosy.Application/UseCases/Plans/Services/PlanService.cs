@@ -1,9 +1,8 @@
-using System.Security.AccessControl;
 using Drosy.Application.Interfaces.Common;
 using Drosy.Application.UseCases.Plans.DTOs;
 using Drosy.Application.UseCases.Plans.Interfaces;
 using Drosy.Application.UseCases.PlanStudents.DTOs;
-using Drosy.Application.UseCases.Schedule.DTOs;
+using Drosy.Application.UseCases.Sessions.DTOs;
 using Drosy.Domain.Entities;
 using Drosy.Domain.Enums;
 using Drosy.Domain.Interfaces.Common.Uow;
