@@ -159,5 +159,21 @@ public class PaymentService(
         return Result.Success();
     }
 
-
+    public async Task<Result> DeleteAsync(int id, CancellationToken ct)
+    {
+        var existingPayment = await _paymentRepository.GetByIdAsync(id, ct);
+        if (existingPayment is null)
+        {
+            _logger.LogError($"Payment with id {id} not found");
+            return Result.Failure(PaymentErrors.PaymentNotFound);
+        }
+        await _paymentRepository.DeleteAsync(existingPayment, ct);
+        var result = await _unitOfWork.SaveChangesAsync(ct);
+        if (!result)
+        {
+            _logger.LogError("Failed to delete payment", existingPayment);
+            return Result.Failure(EfCoreErrors.CanNotSaveChanges);
+        }
+        return Result.Success();
+    }
 }

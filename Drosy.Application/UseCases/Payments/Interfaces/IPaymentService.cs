@@ -52,6 +52,9 @@ namespace Drosy.Application.UseCases.Payments.Interfaces
         /// </returns>
         Task<Result<PaymentDto>> CreateAsync(CreatePaymentDto paymentDto, CancellationToken cancellation);
         Task<Result> UpdateAsync(int id,UpdatePaymentDto paymentDto, CancellationToken cancellation);
+        Task<Result> DeleteAsync(int id, CancellationToken ct);
+        
         #endregion
+
     }
 }

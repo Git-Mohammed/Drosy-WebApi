@@ -272,5 +272,76 @@ public class PaymentServiceTests
         Assert.False(result.IsSuccess);
         Assert.Equal(PaymentErrors.PaymentNotFound, result.Error);
     }
+    
+    [Fact]
+    public async Task DeletePaymentAsync_Should_ReturnSuccess_WhenPaymentExists()
+    {
+        // Arrange
+        var paymentId = 1;
+        var payment = new Payment();
+        _paymentRepositoryMock.Setup(x => x.GetByIdAsync(paymentId, It.IsAny<CancellationToken>()))
+            .ReturnsAsync(payment);
+
+        _paymentRepositoryMock.Setup(x => x.DeleteAsync(payment, It.IsAny<CancellationToken>()))
+            .Returns(Task.CompletedTask);
+
+        _unitOfWorkMock.Setup(x => x.SaveChangesAsync(It.IsAny<CancellationToken>()))
+            .ReturnsAsync(true);
+
+        // Act
+        var result = await _paymentService.DeleteAsync(paymentId, CancellationToken.None);
+
+        // Assert
+        Assert.True(result.IsSuccess);
+    }
+    
+    [Fact]
+    public async Task DeletePaymentAsync_Should_ReturnFailure_WhenPaymentNotFound()
+    {
+        // Arrange
+        var paymentId = 999;
+
+        _paymentRepositoryMock.Setup(x => x.GetByIdAsync(paymentId, It.IsAny<CancellationToken>()))
+            .ReturnsAsync((Payment?)null);
+
+        // Act
+        var result = await _paymentService.DeleteAsync(paymentId, CancellationToken.None);
+
+        // Assert
+        Assert.False(result.IsSuccess);
+        Assert.Equal(PaymentErrors.PaymentNotFound, result.Error);
+
+        _loggerMock.Verify(x => x.LogError($"Payment with id {paymentId} not found"), Times.Once);
+        _paymentRepositoryMock.Verify(x => x.DeleteAsync(It.IsAny<Payment>(), It.IsAny<CancellationToken>()), Times.Never);
+        _unitOfWorkMock.Verify(x => x.SaveChangesAsync(It.IsAny<CancellationToken>()), Times.Never);
+    }
+
+    [Fact]
+    public async Task DeletePaymentAsync_Should_ReturnFailure_WhenSaveChangesFails()
+    {
+        // Arrange
+        var paymentId = 5;
+        var payment = new Payment { Id = paymentId };
+
+        _paymentRepositoryMock.Setup(x => x.GetByIdAsync(paymentId, It.IsAny<CancellationToken>()))
+            .ReturnsAsync(payment);
+
+        _paymentRepositoryMock.Setup(x => x.DeleteAsync(payment, It.IsAny<CancellationToken>()))
+            .Returns(Task.CompletedTask);
+
+        _unitOfWorkMock.Setup(x => x.SaveChangesAsync(It.IsAny<CancellationToken>()))
+            .ReturnsAsync(false);
+
+        // Act
+        var result = await _paymentService.DeleteAsync(paymentId, CancellationToken.None);
+
+        // Assert
+        Assert.False(result.IsSuccess);
+        Assert.Equal(EfCoreErrors.CanNotSaveChanges, result.Error);
+
+        _loggerMock.Verify(x => x.LogError("Failed to delete payment", payment), Times.Once);
+    }
+
+
 
 }

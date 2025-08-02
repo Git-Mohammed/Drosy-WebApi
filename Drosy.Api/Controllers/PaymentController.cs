@@ -140,5 +140,21 @@ public class PaymentController(IPaymentService paymentService, ILogger<PaymentCo
         return ApiResponseFactory.FromFailure(result, "UpdatePaymentAsync", "UpdatePayment");
     }
 
+    [HttpDelete]
+    [Route("{id}", Name = "DeletePaymentAsync")]
+    [ProducesResponseType(typeof(ApiResponse<object>), StatusCodes.Status200OK)]
+    [ProducesResponseType(typeof(ApiResponse<object>), StatusCodes.Status404NotFound)]
+    [ProducesResponseType(typeof(ApiResponse<object>), StatusCodes.Status500InternalServerError)]
+    public async Task<IActionResult> DeletePaymentAsync(int id, CancellationToken ct)
+    {
+        var result = await _paymentService.DeleteAsync(id, ct);
+        if (result.IsSuccess)
+        {
+            return ApiResponseFactory.SuccessResponse();
+        }
+        _logger.LogError(result.Error.Message);
+        return ApiResponseFactory.FromFailure(result, "DeletePaymentAsync", "DeletePayment");
+    }
+
     #endregion
 }
