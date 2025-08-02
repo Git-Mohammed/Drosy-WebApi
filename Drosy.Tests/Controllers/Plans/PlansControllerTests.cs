@@ -2,7 +2,6 @@
 using Drosy.Api.Controllers;
 using Drosy.Application.UseCases.Plans.DTOs;
 using Drosy.Application.UseCases.Plans.Interfaces;
-using Drosy.Application.UseCases.Schedule.DTOs;
 using Drosy.Application.UseCases.Sessions.DTOs;
 using Drosy.Application.UseCases.Sessions.Interfaces;
 using Drosy.Domain.Enums;
@@ -12,6 +11,7 @@ using Drosy.Domain.Shared.ErrorComponents.Plans;
 using Microsoft.AspNetCore.Mvc;
 using Moq;
 using Microsoft.Extensions.Logging.Abstractions;
+using Drosy.Application.UseCases.PlanStudents.DTOs;
 
 namespace Drosy.Tests.Controllers.Plans
 {

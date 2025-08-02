@@ -1,7 +1,7 @@
 ﻿using Drosy.Application.UseCases.Plans.DTOs;
+using Drosy.Application.UseCases.PlanStudents.DTOs;
 
-
-namespace Drosy.Application.UseCases.Schedule.DTOs;
+namespace Drosy.Application.UseCases.Sessions.DTOs;
 
 public class CalenderSessionDto
 {

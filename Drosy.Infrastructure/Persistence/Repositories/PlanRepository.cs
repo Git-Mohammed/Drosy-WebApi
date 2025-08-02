@@ -1,13 +1,9 @@
-﻿using Drosy.Application.UseCases.Plans.DTOs;
-using Drosy.Application.UseCases.Sessions.DTOs;
-using Drosy.Domain.Entities;
+﻿using Drosy.Domain.Entities;
 using Drosy.Domain.Enums;
 using Drosy.Domain.Interfaces.Repository;
 using Drosy.Domain.Shared.System.CalandeHelper;
 using Drosy.Infrastructure.Persistence.DbContexts;
 using Microsoft.EntityFrameworkCore;
-using System.Linq;
-using System.Numerics;
 
 namespace Drosy.Infrastructure.Persistence.Repositories;
 
@@ -39,7 +35,7 @@ public class PlanRepository(ApplicationDbContext dbContext) : BaseRepository<Pla
 
         var dayValues = days.Select(d => d.Day).Distinct().ToList();
 
-        var overlappingExists = await DbContext.Set<PlanDay>()
+        var overlappingExists = await DbContext.Set<PlanDay>();
 
         var dayValuse = days.Select(d => d.Day).Distinct().ToList();
         
@@ -131,10 +127,6 @@ public class PlanRepository(ApplicationDbContext dbContext) : BaseRepository<Pla
          .Include(p => p.Students)
          .Where(p => p.StartDate.Date >= monday && p.EndDate.Date <= sunday)
             .ToListAsync(cancellationToken);
-
-        return await DbSet
-            .Include(p=> p.PlanDays)
-            .FirstOrDefaultAsync(p => p.Id == id, cancellationToken);
     }
 
     public override async Task<IEnumerable<Plan>> GetAllAsync(CancellationToken cancellationToken)

@@ -1,7 +1,7 @@
 ﻿using Drosy.Api.Commons.Responses;
 using Drosy.Api.Controllers;
 using Drosy.Application.UseCases.Plans.DTOs;
-using Drosy.Application.UseCases.Schedule.DTOs;
+using Drosy.Application.UseCases.PlanStudents.DTOs;
 using Drosy.Application.UseCases.Sessions.DTOs;
 using Drosy.Application.UseCases.Sessions.Interfaces;
 using Drosy.Application.UseCases.Sessions.Services;

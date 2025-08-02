@@ -1,5 +1,4 @@
 ﻿using Drosy.Api.Commons.Responses;
-using Drosy.Application.UseCases.Schedule.DTOs;
 using Drosy.Application.UseCases.Sessions.DTOs;
 using Drosy.Application.UseCases.Sessions.Interfaces;
 using Drosy.Domain.Enums;
