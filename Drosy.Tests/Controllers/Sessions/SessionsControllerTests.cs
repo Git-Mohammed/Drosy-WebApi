@@ -1,5 +1,7 @@
 ﻿using Drosy.Api.Commons.Responses;
 using Drosy.Api.Controllers;
+using Drosy.Application.UseCases.Plans.DTOs;
+using Drosy.Application.UseCases.Schedule.DTOs;
 using Drosy.Application.UseCases.Sessions.DTOs;
 using Drosy.Application.UseCases.Sessions.Interfaces;
 using Drosy.Application.UseCases.Sessions.Services;
@@ -16,11 +18,45 @@ namespace Drosy.Tests.Controllers.Sessions
     {
         private readonly Mock<ISessionService> _sessionServiceMock;
         private readonly SessionsController _controller;
-
+        private readonly DataResult<CalenderSessionDto> _sampleData;
         public SessionsControllerTests()
         {
             _sessionServiceMock = new Mock<ISessionService>();
             _controller = new SessionsController(_sessionServiceMock.Object);
+
+            var sample = new CalenderSessionDto
+            {
+                PlanId = 123,
+                PlanType = "Yoga",
+                PlanStatus = "Active",
+                ExcepectedDate = new DateTime(2023, 10, 15),
+                SessionPeriod = 60,
+                Period = 12,
+                Days = new List<PlanDayDto>
+            {
+                new PlanDayDto { Day = "Monday", StartSession = TimeSpan.FromHours(9), EndSession = TimeSpan.FromHours(10) },
+                new PlanDayDto { Day = "Wednesday", StartSession = TimeSpan.FromHours(9), EndSession = TimeSpan.FromHours(10) },
+            },
+                Students = new List<CalenderPlanStudentDto>
+            {
+                new CalenderPlanStudentDto
+                {
+                    StudentId = 42,
+                    Notes = "On time",
+                    Fee = 200m,
+                    CreatedAt = DateTime.UtcNow,
+                    FullName = "Jane Doe",
+                    Address = "123 Main St",
+                    PhoneNumber = "555-0101"
+                }
+            }
+            };
+
+            _sampleData = new DataResult<CalenderSessionDto>
+            {
+                Data = new[] { sample },
+                TotalRecordsCount = 1
+            };
         }
 
         #region GetByIdAsync
@@ -72,6 +108,120 @@ namespace Drosy.Tests.Controllers.Sessions
         }
 
         #endregion
+
+        #region GetSessionsCalendarAsync 
+        #region Validation Guards
+        [Fact]
+        public async Task WeekWithoutYear_ReturnsBadRequest()
+        {
+            var res = await _controller.GetSessionsCalendarAsync(null, null, null, null, null, 10, null, CancellationToken.None);
+            var bad = Assert.IsType<BadRequestObjectResult>(res);
+            var resp = Assert.IsType<ApiResponse<object>>(bad.Value);
+            Assert.False(resp.IsSuccess);
+            Assert.Contains("week", resp.Errors![0].Property);
+        }
+
+        [Fact]
+        public async Task MonthWithoutYear_ReturnsBadRequest()
+        {
+            var res = await _controller.GetSessionsCalendarAsync(null, null, null, null, null, null, 12, CancellationToken.None);
+            var bad = Assert.IsType<BadRequestObjectResult>(res);
+            var resp = Assert.IsType<ApiResponse<object>>(bad.Value);
+            Assert.False(resp.IsSuccess);
+            Assert.Contains("month", resp.Errors![0].Property);
+        }
+
+        [Fact]
+        public async Task BothWeekAndMonth_ReturnsBadRequest()
+        {
+            var res = await _controller.GetSessionsCalendarAsync(null, null, null, null, 2023, 10, 12, CancellationToken.None);
+            var bad = Assert.IsType<BadRequestObjectResult>(res);
+            var resp = Assert.IsType<ApiResponse<object>>(bad.Value);
+            Assert.False(resp.IsSuccess);
+            Assert.Contains("filters", resp.Errors![0].Property);
+        }
+        #endregion
+
+        #region Dispatch to service
+        [Fact]
+        public async Task DateFilter_CallsGetByDate_AndReturnsOk()
+        {
+            var date = new DateTime(2023, 10, 15);
+            _sessionServiceMock.Setup(s => s.GetSessionsCalenderByDate(date, It.IsAny<CancellationToken>()))
+                               .ReturnsAsync(Result.Success(_sampleData));
+
+            var res = await _controller.GetSessionsCalendarAsync(date, null, null, null, null, null, null, CancellationToken.None);
+            var ok = Assert.IsType<OkObjectResult>(res);
+            var resp = Assert.IsType<ApiResponse<DataResult<CalenderSessionDto>>>(ok.Value);
+            Assert.True(resp.IsSuccess);
+            Assert.Equal(1, resp.Data!.TotalRecordsCount);
+        }
+
+        [Fact]
+        public async Task RangeFilter_CallsGetInRange_AndReturnsOk()
+        {
+            var start = new DateTime(2023, 10, 1);
+            var end = new DateTime(2023, 10, 7);
+            _sessionServiceMock.Setup(svc => svc.GetSessionsCalenderInRange(start, end, It.IsAny<CancellationToken>()))
+                               .ReturnsAsync(Result.Success(_sampleData));
+
+            var res = await _controller.GetSessionsCalendarAsync(null, start, end, null, null, null, null, CancellationToken.None);
+            var ok = Assert.IsType<OkObjectResult>(res);
+            var resp = Assert.IsType<ApiResponse<DataResult<CalenderSessionDto>>>(ok.Value);
+            Assert.True(resp.IsSuccess);
+        }
+
+        [Fact]
+        public async Task PlanStatusFilter_CallsGetByStatus_AndReturnsOk()
+        {
+            _sessionServiceMock.Setup(svc => svc.GetSessionsCalenderByStatus(PlanStatus.Active, It.IsAny<CancellationToken>()))
+                               .ReturnsAsync(Result.Success(_sampleData));
+
+            var res = await _controller.GetSessionsCalendarAsync(null, null, null, PlanStatus.Active, null, null, null, CancellationToken.None);
+            var ok = Assert.IsType<OkObjectResult>(res);
+            var resp = Assert.IsType<ApiResponse<DataResult<CalenderSessionDto>>>(ok.Value);
+            Assert.True(resp.IsSuccess);
+        }
+
+        [Fact]
+        public async Task WeekFilter_CallsGetByWeek_AndReturnsOk()
+        {
+            _sessionServiceMock.Setup(svc => svc.GetSessionsCalenderByWeek(2023, 40, It.IsAny<CancellationToken>()))
+                               .ReturnsAsync(Result.Success(_sampleData));
+
+            var res = await _controller.GetSessionsCalendarAsync(null, null, null, null, 2023, 40, null, CancellationToken.None);
+            var ok = Assert.IsType<OkObjectResult>(res);
+            var resp = Assert.IsType<ApiResponse<DataResult<CalenderSessionDto>>>(ok.Value);
+            Assert.True(resp.IsSuccess);
+        }
+
+        [Fact]
+        public async Task MonthFilter_CallsGetByMonth_AndReturnsOk()
+        {
+            _sessionServiceMock.Setup(svc => svc.GetSessionsCalenderByMonth(2023, 11, It.IsAny<CancellationToken>()))
+                               .ReturnsAsync(Result.Success(_sampleData));
+
+            var res = await _controller.GetSessionsCalendarAsync(null, null, null, null, 2023, null, 11, CancellationToken.None);
+            var ok = Assert.IsType<OkObjectResult>(res);
+            var resp = Assert.IsType<ApiResponse<DataResult<CalenderSessionDto>>>(ok.Value);
+            Assert.True(resp.IsSuccess);
+        }
+
+        [Fact]
+        public async Task NoFilters_CallsGetAll_AndReturnsOk()
+        {
+            _sessionServiceMock.Setup(svc => svc.GetSessionsCalenderAsync(It.IsAny<CancellationToken>()))
+                               .ReturnsAsync(Result.Success(_sampleData));
+
+            var res = await _controller.GetSessionsCalendarAsync(null, null, null, null, null, null, null, CancellationToken.None);
+            var ok = Assert.IsType<OkObjectResult>(res);
+            var resp = Assert.IsType<ApiResponse<DataResult<CalenderSessionDto>>>(ok.Value);
+            Assert.True(resp.IsSuccess);
+        }
+        #endregion
+
+        #endregion
+
 
         #region GetListAsync
         [Theory]

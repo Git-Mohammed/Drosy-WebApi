@@ -194,7 +194,7 @@ public class PlansController(IPlanService planService, ISessionService sessionSe
     //GET /api/plans/1/sessions/calendar? year = 2023 & week = 42
     //GET /api/plans/1/sessions/calendar? year = 2023 & month = 10
     //GET /api/plans/1/sessions/calendar
-    [HttpGet("{planId:int}/sessions/calendar", Name = "GetPlanSessions")]
+    [HttpGet("{planId:int}/sessions/calendar", Name = "GetPlanCalenderSessions")]
     public async Task<IActionResult> GetPlanCalendarSessionsAsync(
          [FromRoute] int planId,
          [FromQuery] DateTime? date,
