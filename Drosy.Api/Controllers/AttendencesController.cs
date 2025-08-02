@@ -22,6 +22,7 @@ namespace Drosy.Api.Controllers
         }
 
 
+        #region Read
         /// <summary>
         /// Gets a single attendance record by session and student IDs.
         /// </summary>
@@ -35,7 +36,7 @@ namespace Drosy.Api.Controllers
         /// 422 Unprocessable Entity for other domain validation failures.  
         /// 500 Internal Server Error on unhandled exceptions.
         /// </returns>
-        [HttpGet( Name = "GetAttendenceById")]
+        [HttpGet(Name = "GetAttendenceById")]
         [ProducesResponseType(typeof(ApiResponse<AttendenceDto>), 200)]
         [ProducesResponseType(typeof(ApiResponse<object>), 400)]
         [ProducesResponseType(typeof(ApiResponse<object>), 404)]
@@ -94,7 +95,7 @@ namespace Drosy.Api.Controllers
             try
             {
                 Result<DataResult<AttendenceDto>> result;
-              
+
                 result = status != null
                     ? await _attendencesService.GetAllForSessionByStatusAsync(sessionId, status.Value, ct)
                     : await _attendencesService.GetAllForSessionAsync(sessionId, ct);
@@ -110,6 +111,9 @@ namespace Drosy.Api.Controllers
             }
         }
 
+        #endregion
+
+        #region Write
 
         /// <summary>
         /// Creates a new attendance record for a student in a session.
@@ -223,7 +227,7 @@ namespace Drosy.Api.Controllers
         /// 422 Unprocessable Entity for domain validation errors.  
         /// 500 Internal Server Error on exceptions.
         /// </returns>
-        [HttpPut( Name = "UpdateAttendence")]
+        [HttpPut(Name = "UpdateAttendence")]
         [ProducesResponseType(typeof(ApiResponse<object>), 200)]
         [ProducesResponseType(typeof(ApiResponse<object>), 400)]
         [ProducesResponseType(typeof(ApiResponse<object>), 404)]
@@ -245,7 +249,7 @@ namespace Drosy.Api.Controllers
 
             try
             {
-                var result = await _attendencesService.UpdateAsync(sessionId, studentId , dto, ct);
+                var result = await _attendencesService.UpdateAsync(sessionId, studentId, dto, ct);
 
                 if (result.IsFailure)
                 {
@@ -280,18 +284,20 @@ namespace Drosy.Api.Controllers
         [ProducesResponseType(typeof(ApiResponse<object>), 404)]
         [ProducesResponseType(typeof(ApiResponse<object>), 422)]
         [ProducesResponseType(typeof(ApiResponse<object>), 500)]
-        public async Task<IActionResult> DeleteAsync( [FromRoute] int sessionId,   [FromQuery] int studentId,  CancellationToken ct) {
-     
+        public async Task<IActionResult> DeleteAsync([FromRoute] int sessionId, [FromQuery] int studentId, CancellationToken ct)
+        {
+
             if (studentId < 1)
             {
-                var error = new ApiError(  "studentId",   ErrorMessageResourceRepository.GetMessage(CommonErrors.Invalid.Message, AppError.CurrentLanguage)    );
-                return ApiResponseFactory.BadRequestResponse(     "studentId",  "Invalid student ID.",error.Message);
+                var error = new ApiError("studentId", ErrorMessageResourceRepository.GetMessage(CommonErrors.Invalid.Message, AppError.CurrentLanguage));
+                return ApiResponseFactory.BadRequestResponse("studentId", "Invalid student ID.", error.Message);
             }
 
-            try {
+            try
+            {
                 var result = await _attendencesService.DeleteAsync(sessionId, studentId, ct);
                 if (result.IsFailure)
-                    return ApiResponseFactory.FromFailure(  result,    nameof(DeleteAsync), "Attendence" );
+                    return ApiResponseFactory.FromFailure(result, nameof(DeleteAsync), "Attendence");
 
                 return ApiResponseFactory.SuccessResponse("Attendence deleted successfully.");
             }
@@ -300,6 +306,7 @@ namespace Drosy.Api.Controllers
                 return ApiResponseFactory.FromException(ex);
             }
         }
+        #endregion
 
     }
 }
