@@ -1,0 +1,47 @@
+﻿using Drosy.Domain.Entities;
+using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Metadata.Builders;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+
+namespace Drosy.Infrastructure.Persistence.Configurations
+{
+    internal class SessionConfiguration : IEntityTypeConfiguration<Session>
+    {
+        public void Configure(EntityTypeBuilder<Session> builder)
+        {
+           builder.HasKey(x => x.Id);
+            
+           builder.Property(x => x.Title)
+                .IsRequired();
+
+            builder.Property(x => x.Status)
+                .HasConversion<string>()
+               .IsRequired();
+
+            builder.Property(x => x.CreatedAt)
+                .IsRequired();
+
+            builder.Property(x => x.StartTime)
+                .IsRequired();
+
+            builder.Property(x => x.EndTime)
+                .IsRequired();
+
+
+            builder.Property(x => x.Notes)
+                .IsRequired(false);
+
+
+            // Relationships
+            builder.HasOne(x => x.Plan)
+                .WithMany(p => p.Sessions)
+                .HasForeignKey(x => x.PlanId);
+
+        }
+
+    }
+}

@@ -2,7 +2,7 @@
 using Drosy.Infrastructure.Validators.PlanStudentsValidator;
 using FluentValidation.TestHelper;
 
-namespace Drosy.Tests.Application.PlanStudents
+namespace Drosy.Tests.Validators.PlanStudents
 {
     public class AddStudentToPlanDtoValidatorTests
     {

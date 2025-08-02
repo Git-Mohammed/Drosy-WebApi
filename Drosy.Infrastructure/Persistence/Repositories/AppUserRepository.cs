@@ -14,10 +14,10 @@ namespace Drosy.Infrastructure.Persistence.Repositories
             _dbSet = dbContext.AppUsers;
         }
 
-        public async Task<AppUser?> FindByIdAsync(int id)
+        public async Task<AppUser?> FindByIdAsync(int id, CancellationToken ct)
         {
             if (id <= 0) return null;
-            var user = await _dbSet.FirstOrDefaultAsync(u => u.Id == id);
+            var user = await _dbSet.FirstOrDefaultAsync(u => u.Id == id, ct);
             if (user is null) return null;
             return new AppUser
             {

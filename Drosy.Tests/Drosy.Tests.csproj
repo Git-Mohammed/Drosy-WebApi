@@ -18,6 +18,7 @@
     </ItemGroup>
 
     <ItemGroup>
+      <ProjectReference Include="..\Drosy.Api\Drosy.Api.csproj" />
       <ProjectReference Include="..\Drosy.Application\Drosy.Application.csproj" />
       <ProjectReference Include="..\Drosy.Domain\Drosy.Domain.csproj" />
       <ProjectReference Include="..\Drosy.Infrastructure\Drosy.Infrastructure.csproj" />
