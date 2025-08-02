@@ -35,16 +35,7 @@ public class PlanRepository(ApplicationDbContext dbContext) : BaseRepository<Pla
 
         var dayValues = days.Select(d => d.Day).Distinct().ToList();
 
-        var overlappingExists = await DbContext.Set<PlanDay>()
-        .Where(pd => pd.Plan.Status == PlanStatus.Active)
-        .Where(pd => dayValues.Contains(pd.Day))
-        .Where(pd =>
-            days.Any(input =>
-                input.Day == pd.Day &&
-                input.StartSession < pd.EndSession &&
-                input.EndSession > pd.StartSession))
-        .AnyAsync(cancellationToken);
-
+        var overlappingExists = await DbContext.Set<PlanDay>();
 
         var dayValuse = days.Select(d => d.Day).Distinct().ToList();
         

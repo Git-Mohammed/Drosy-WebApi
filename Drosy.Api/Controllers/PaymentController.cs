@@ -114,7 +114,7 @@ public class PaymentController(IPaymentService paymentService, ILogger<PaymentCo
     [ProducesResponseType(typeof(ApiResponse<object>), StatusCodes.Status500InternalServerError)]
     public async Task<IActionResult> CrateNewPaymentAsync([FromBody] CreatePaymentDto payment, CancellationToken ct)
     {
-        var result = await _paymentService.CreatePaymentAsync(payment, ct);
+        var result = await _paymentService.CreateAsync(payment, ct);
 
         if (result.IsSuccess)
         {
@@ -123,6 +123,37 @@ public class PaymentController(IPaymentService paymentService, ILogger<PaymentCo
 
         _logger.LogError(result.Error.Message);
         return ApiResponseFactory.FromFailure(result, "CreatePaymentAsync", "CreatePayment");
+    }
+
+    [HttpPut("{id}",Name = "UpdatePaymentAsync")]
+    [ProducesResponseType(typeof(ApiResponse<PaymentDto>), StatusCodes.Status200OK)]
+    [ProducesResponseType(typeof(ApiResponse<object>), StatusCodes.Status404NotFound)]
+    [ProducesResponseType(typeof(ApiResponse<object>), StatusCodes.Status500InternalServerError)]
+    public async Task<IActionResult> UpdatePaymentAsync(int id,UpdatePaymentDto payment, CancellationToken ct)
+    {
+        var result = await _paymentService.UpdateAsync(id,payment, ct);
+        if (result.IsSuccess)
+        {
+            return ApiResponseFactory.SuccessResponse();
+        }
+        _logger.LogError(result.Error.Message);
+        return ApiResponseFactory.FromFailure(result, "UpdatePaymentAsync", "UpdatePayment");
+    }
+
+    [HttpDelete]
+    [Route("{id}", Name = "DeletePaymentAsync")]
+    [ProducesResponseType(typeof(ApiResponse<object>), StatusCodes.Status200OK)]
+    [ProducesResponseType(typeof(ApiResponse<object>), StatusCodes.Status404NotFound)]
+    [ProducesResponseType(typeof(ApiResponse<object>), StatusCodes.Status500InternalServerError)]
+    public async Task<IActionResult> DeletePaymentAsync(int id, CancellationToken ct)
+    {
+        var result = await _paymentService.DeleteAsync(id, ct);
+        if (result.IsSuccess)
+        {
+            return ApiResponseFactory.SuccessResponse();
+        }
+        _logger.LogError(result.Error.Message);
+        return ApiResponseFactory.FromFailure(result, "DeletePaymentAsync", "DeletePayment");
     }
 
     #endregion
