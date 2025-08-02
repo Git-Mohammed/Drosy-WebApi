@@ -41,6 +41,8 @@ public class PlansController(IPlanService planService, ISessionService sessionSe
         _logger.LogError("Error retrieving plan [{id}]: {Error}", id, result.Error);
         return ApiResponseFactory.FromFailure(result, operation, nameof(PlanDto));
     }
+
+
     // GET /api/plans
     [HttpGet(Name = "GetPlans")]
     public async Task<IActionResult> GetListAsync(
