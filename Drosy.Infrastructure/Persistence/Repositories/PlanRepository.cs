@@ -23,6 +23,7 @@ public class PlanRepository(ApplicationDbContext dbContext) : BaseRepository<Pla
 
     public async Task<bool> ExistsAsync(List<PlanDay> days, CancellationToken cancellationToken)
     {
+
         // return await DbContext.Set<PlanDay>()
         //     .Where(pd => pd.Plan.Status == PlanStatus.Active)
         //     .AnyAsync(pd =>
@@ -39,16 +40,27 @@ public class PlanRepository(ApplicationDbContext dbContext) : BaseRepository<Pla
         var dayValues = days.Select(d => d.Day).Distinct().ToList();
 
         var overlappingExists = await DbContext.Set<PlanDay>()
-            .Where(pd => pd.Plan.Status == PlanStatus.Active)
-            .Where(pd => dayValues.Contains(pd.Day))
-            .Where(pd =>
-                days.Any(input =>
-                    input.Day == pd.Day &&
-                    input.StartSession < pd.EndSession &&
-                    input.EndSession > pd.StartSession))
-            .AnyAsync(cancellationToken);
 
-        return overlappingExists;
+        var dayValuse = days.Select(d => d.Day).Distinct().ToList();
+        
+        // query to get all plan that same days
+        var planDays = await DbContext.Set<PlanDay>()
+
+            .Where(pd => pd.Plan.Status == PlanStatus.Active)
+            .Where(pd => dayValuse.Contains(pd.Day))
+            .ToListAsync(cancellationToken);
+        
+        // check overlapping 
+        foreach (var pd in planDays)
+        {
+            foreach (var input in days.Where(p => p.Day == pd.Day))
+            {
+                if (input.StartSession < pd.EndSession && input.EndSession > pd.StartSession)
+                    return true;
+            }
+        }
+        return false;
+
     }
 
     public async Task<Plan?> GetByIdAsync(int planId, CancellationToken ct)
@@ -111,6 +123,7 @@ public class PlanRepository(ApplicationDbContext dbContext) : BaseRepository<Pla
 
     public async Task<IEnumerable<Plan>> GetAllByWeekAsync(int year, int week, CancellationToken cancellationToken)
     {
+
         var (monday, sunday) = IsoWeekHelper.GetWeekRange(year, week);
         return await DbSet.AsNoTracking()
              .Include(p => p.PlanDays)
@@ -118,6 +131,19 @@ public class PlanRepository(ApplicationDbContext dbContext) : BaseRepository<Pla
          .Include(p => p.Students)
          .Where(p => p.StartDate.Date >= monday && p.EndDate.Date <= sunday)
             .ToListAsync(cancellationToken);
+
+        return await DbSet
+            .Include(p=> p.PlanDays)
+            .FirstOrDefaultAsync(p => p.Id == id, cancellationToken);
+    }
+
+    public override async Task<IEnumerable<Plan>> GetAllAsync(CancellationToken cancellationToken)
+    {
+        return await DbSet
+            .AsNoTracking()
+            .Include(PlanDay => PlanDay.PlanDays)
+            .ToListAsync();
+
     }
 
     public async Task<IEnumerable<Plan>> GetAllByMonthAsync(int year, int month, CancellationToken cancellationToken)
@@ -134,5 +160,3 @@ public class PlanRepository(ApplicationDbContext dbContext) : BaseRepository<Pla
 
  
 }
-
-// modify this

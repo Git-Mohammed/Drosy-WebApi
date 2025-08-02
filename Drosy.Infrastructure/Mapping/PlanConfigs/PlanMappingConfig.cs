@@ -35,6 +35,10 @@ public class PlanMappingConfig : IRegister
                     : 0)
             .Map(dest => dest.Period, src => (src.EndDate - src.StartDate).Days);
 
+
+        config.NewConfig<UpdatePlanStatusDto, PlanStatus>()
+            .Map(dest => dest, src => GetPlanStatus(src.Status));
+        
         #region PlanDay
 
         config.NewConfig<PlanDay, PlanDayDto>()

@@ -1,4 +1,4 @@
-﻿using Drosy.Application.UseCases.Plans.DTOs;
+using Drosy.Application.UseCases.Plans.DTOs;
 using Drosy.Application.UseCases.Schedule.DTOs;
 using Drosy.Domain.Entities;
 using Drosy.Domain.Enums;
@@ -25,16 +25,28 @@ public interface IPlanService
     Task<Result<PlanDto>> GetPlanByIdAsync(int id, CancellationToken cancellationToken);
 
     /// <summary>
+    /// Retrieves all available plans with their details.
+    /// </summary>
+    /// <param name="cancellationToken">Token to cancel the operation.</param>
+    /// <returns>
+    /// A <see cref="Result"/> containing a <see cref="DataResult{T}"/> of a list of <see cref="PlanDto"/> objects,
+    /// or a failure result if no plans are found.
+    /// </returns>
+    Task<Result<DataResult<PlanDto>>> GetAllPlansAsync(CancellationToken cancellationToken);
+
+    /// <summary>
     /// Checks whether a plan with the specified ID exists.
     /// </summary>
     /// <param name="id">The ID of the plan to check.</param>
     /// <param name="cancellationToken">Token to cancel the operation.</param>
     /// <returns>
     /// A <see cref="Result"/> indicating success if the plan exists, or failure with error information.
+
     /// </returns>
     Task<Result> ExistsAsync(int id, CancellationToken cancellationToken);
 
     /// <summary>
+
     /// Retrieves all available plans.
     /// </summary>
     /// <param name="cancellationToken">Token to cancel the operation.</param>
@@ -138,4 +150,25 @@ public interface IPlanService
     Task<Result<PlanDto>> CreatePlanAsync(CreatePlanDto newPlan, CancellationToken cancellationToken);
 
     #endregion
+}
+
+    /// Deletes the plan with the specified ID.
+    /// </summary>
+    /// <param name="id">The ID of the plan to delete.</param>
+    /// <param name="cancellationToken">Token to cancel the operation.</param>
+    /// <returns>
+    /// A <see cref="Result"/> indicating success or failure of the deletion.
+    /// </returns>
+    Task<Result> DeleteAsync(int id, CancellationToken cancellationToken);
+
+    /// <summary>
+    /// Updates the status of the plan with the specified ID.
+    /// </summary>
+    /// <param name="id">The ID of the plan to update.</param>
+    /// <param name="status">The new status to apply to the plan.</param>
+    /// <param name="cancellationToken">Token to cancel the operation.</param>
+    /// <returns>
+    /// A <see cref="Result"/> indicating success or failure of the update.
+    /// </returns>
+    Task<Result> UpdateStatusAsync(int id, UpdatePlanStatusDto status, CancellationToken cancellationToken);
 }
