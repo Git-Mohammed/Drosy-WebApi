@@ -1,8 +1,13 @@
-﻿using Drosy.Application.UseCases.Sessions.DTOs;
+﻿using Drosy.Application.UseCases.Plans.Interfaces;
+using Drosy.Application.UseCases.Schedule.DTOs;
+using Drosy.Application.UseCases.Sessions.DTOs;
 using Drosy.Application.UseCases.Sessions.Interfaces;
+using Drosy.Application.UseCases.Sessions.Services;
+using Drosy.Domain.Entities;
 using Drosy.Domain.Enums;
 using Drosy.Domain.Shared.ApplicationResults;
 using Drosy.Domain.Shared.ErrorComponents.Common;
+using Drosy.Domain.Shared.ErrorComponents.Sesstions;
 using Moq;
 using System;
 using System.Threading;
@@ -360,7 +365,251 @@ namespace Drosy.Tests.Application.Sessions
             Assert.False(result.IsSuccess);
         }
 
+
+        #region Calendar
+
+        #region GetSessionsCalenderAsync
+
+        [Fact]
+        public async Task GetSessionsCalenderAsync_ReturnsSuccess_WhenPlansExist()
+        {
+            // Arrange
+            var sessions = new List<CalenderSessionDto> { new CalenderSessionDto { PlanId = 1, ExcepectedDate = DateTime.Today } };
+            var data = new DataResult<CalenderSessionDto> { Data = sessions, TotalRecordsCount = 1 };
+            _sessionService.Setup(s => s.GetSessionsCalenderAsync(It.IsAny<CancellationToken>()))
+                .ReturnsAsync(Result.Success(data));
+
+            // Act
+            var result = await _sessionService.Object.GetSessionsCalenderAsync(CancellationToken.None);
+
+            // Assert
+            Assert.True(result.IsSuccess);
+            Assert.Equal(1, result.Value.TotalRecordsCount);
+            Assert.Single(result.Value.Data);
+            Assert.Equal(1, result.Value.Data.First().PlanId);
+        }
+
+        [Fact]
+        public async Task GetSessionsCalenderAsync_ReturnsFailure_WhenServiceFails()
+        {
+            // Arrange
+            _sessionService.Setup(s => s.GetSessionsCalenderAsync(It.IsAny<CancellationToken>()))
+                .ReturnsAsync(Result.Failure<DataResult<CalenderSessionDto>>(CommonErrors.Unexpected));
+
+            // Act
+            var result = await _sessionService.Object.GetSessionsCalenderAsync(CancellationToken.None);
+
+            // Assert
+            Assert.False(result.IsSuccess);
+            Assert.Equal(CommonErrors.Unexpected.Code, result.Error.Code);
+        }
+
+        [Fact]
+        public async Task GetSessionsCalenderAsync_ReturnsEmpty_WhenNoPlansExist()
+        {
+            // Arrange
+            var data = new DataResult<CalenderSessionDto> { Data = new List<CalenderSessionDto>(), TotalRecordsCount = 0 };
+            _sessionService.Setup(s => s.GetSessionsCalenderAsync(It.IsAny<CancellationToken>()))
+                .ReturnsAsync(Result.Success(data));
+
+            // Act
+            var result = await _sessionService.Object.GetSessionsCalenderAsync(CancellationToken.None);
+
+            // Assert
+            Assert.True(result.IsSuccess);
+            Assert.Empty(result.Value.Data);
+            Assert.Equal(0, result.Value.TotalRecordsCount);
+        }
+
         #endregion
+
+        #region GetSessionsCalenderByDate
+
+        [Fact]
+        public async Task GetSessionsCalenderByDate_ReturnsSuccess_WhenPlansMatchDate()
+        {
+            // Arrange
+            var date = DateTime.Today;
+            var sessions = new List<CalenderSessionDto> { new CalenderSessionDto { PlanId = 1, ExcepectedDate = date } };
+            var data = new DataResult<CalenderSessionDto> { Data = sessions, TotalRecordsCount = 1 };
+            _sessionService.Setup(s => s.GetSessionsCalenderByDate(date, It.IsAny<CancellationToken>()))
+                .ReturnsAsync(Result.Success(data));
+
+            // Act
+            var result = await _sessionService.Object.GetSessionsCalenderByDate(date, CancellationToken.None);
+
+            // Assert
+            Assert.True(result.IsSuccess);
+            Assert.Equal(1, result.Value.TotalRecordsCount);
+            Assert.Single(result.Value.Data);
+            Assert.Equal(date, result.Value.Data.First().ExcepectedDate);
+        }
+
+        [Fact]
+        public async Task GetSessionsCalenderByDate_ReturnsEmpty_WhenNoPlansMatchDate()
+        {
+            // Arrange
+            var date = DateTime.Today;
+            var data = new DataResult<CalenderSessionDto> { Data = new List<CalenderSessionDto>(), TotalRecordsCount = 0 };
+            _sessionService.Setup(s => s.GetSessionsCalenderByDate(date, It.IsAny<CancellationToken>()))
+                .ReturnsAsync(Result.Success(data));
+
+            // Act
+            var result = await _sessionService.Object.GetSessionsCalenderByDate(date, CancellationToken.None);
+
+            // Assert
+            Assert.True(result.IsSuccess);
+            Assert.Empty(result.Value.Data);
+            Assert.Equal(0, result.Value.TotalRecordsCount);
+        }
+
+        #endregion
+
+        #region GetSessionsCalenderInRange
+
+        [Theory]
+        [InlineData("2025-08-01", "2025-07-31", false)] // Invalid range
+        [InlineData("2025-08-01", "2025-08-02", true)]  // Valid range
+        public async Task GetSessionsCalenderInRange_ValidatesRange(string start, string end, bool isValid)
+        {
+            // Arrange
+            var startDate = DateTime.Parse(start);
+            var endDate = DateTime.Parse(end);
+            if (isValid)
+            {
+                var sessions = new List<CalenderSessionDto> { new CalenderSessionDto { PlanId = 1, ExcepectedDate = startDate } };
+                var data = new DataResult<CalenderSessionDto> { Data = sessions, TotalRecordsCount = 1 };
+                _sessionService.Setup(s => s.GetSessionsCalenderInRange(startDate, endDate, It.IsAny<CancellationToken>()))
+                    .ReturnsAsync(Result.Success(data));
+            }
+            else
+            {
+                _sessionService.Setup(s => s.GetSessionsCalenderInRange(startDate, endDate, It.IsAny<CancellationToken>()))
+                    .ReturnsAsync(Result.Failure<DataResult<CalenderSessionDto>>(SessionErrors.ExpectedDateInThePast));
+            }
+
+            // Act
+            var result = await _sessionService.Object.GetSessionsCalenderInRange(startDate, endDate, CancellationToken.None);
+
+            // Assert
+            if (isValid)
+            {
+                Assert.True(result.IsSuccess);
+                Assert.Equal(1, result.Value.TotalRecordsCount);
+            }
+            else
+            {
+                Assert.False(result.IsSuccess);
+                Assert.Equal(SessionErrors.ExpectedDateInThePast.Code, result.Error.Code);
+            }
+        }
+
+        #endregion
+
+        #region GetSessionsCalenderByWeek
+
+        [Theory]
+        [InlineData(2025, 30, true)]  // Valid week
+        public async Task GetSessionsCalenderByWeek_ReturnsSuccess_WhenValidWeek(int year, int week, bool isValid)
+        {
+            // Arrange
+            var start = GetStartOfWeek(year, week);
+            var sessions = new List<CalenderSessionDto> { new CalenderSessionDto { PlanId = 1, ExcepectedDate = start } };
+            var data = new DataResult<CalenderSessionDto> { Data = sessions, TotalRecordsCount = 1 };
+            if (isValid)
+            {
+                _sessionService.Setup(s => s.GetSessionsCalenderByWeek(year, week, It.IsAny<CancellationToken>()))
+                    .ReturnsAsync(Result.Success(data));
+            }
+
+            // Act
+            var result = await _sessionService.Object.GetSessionsCalenderByWeek(year, week, CancellationToken.None);
+
+            // Assert
+            Assert.True(result.IsSuccess);
+            Assert.Equal(1, result.Value.TotalRecordsCount);
+        }
+
+        #endregion
+
+        #region GetSessionsCalenderByMonth
+
+        [Theory]
+        [InlineData(2025, 7, true)]  // Valid month
+        public async Task GetSessionsCalenderByMonth_ReturnsSuccess_WhenValidMonth(int year, int month, bool isValid)
+        {
+            // Arrange
+            var start = new DateTime(year, month, 1);
+            var sessions = new List<CalenderSessionDto> { new CalenderSessionDto { PlanId = 1, ExcepectedDate = start } };
+            var data = new DataResult<CalenderSessionDto> { Data = sessions, TotalRecordsCount = 1 };
+            if (isValid)
+            {
+                _sessionService.Setup(s => s.GetSessionsCalenderByMonth(year, month, It.IsAny<CancellationToken>()))
+                    .ReturnsAsync(Result.Success(data));
+            }
+
+            // Act
+            var result = await _sessionService.Object.GetSessionsCalenderByMonth(year, month, CancellationToken.None);
+
+            // Assert
+            Assert.True(result.IsSuccess);
+            Assert.Equal(1, result.Value.TotalRecordsCount);
+        }
+
+        #endregion
+
+        #region GetSessionsCalenderByStatus
+
+        [Theory]
+        [InlineData(PlanStatus.Active)]
+        [InlineData(PlanStatus.Inactive)]
+        public async Task GetSessionsCalenderByStatus_ReturnsSuccess_WhenPlansExistForStatus(PlanStatus status)
+        {
+            // Arrange
+            var sessions = new List<CalenderSessionDto> { new CalenderSessionDto { PlanId = 1, PlanStatus = status.ToString() } };
+            var data = new DataResult<CalenderSessionDto> { Data = sessions, TotalRecordsCount = 1 };
+            _sessionService.Setup(s => s.GetSessionsCalenderByStatus(status, It.IsAny<CancellationToken>()))
+                .ReturnsAsync(Result.Success(data));
+
+            // Act
+            var result = await _sessionService.Object.GetSessionsCalenderByStatus(status, CancellationToken.None);
+
+            // Assert
+            Assert.True(result.IsSuccess);
+            Assert.Equal(1, result.Value.TotalRecordsCount);
+            Assert.Equal(status.ToString(), result.Value.Data.First().PlanStatus);
+        }
+
+        [Fact]
+        public async Task GetSessionsCalenderByStatus_ReturnsFailure_WhenServiceFails()
+        {
+            // Arrange
+            var status = PlanStatus.Active;
+            _sessionService.Setup(s => s.GetSessionsCalenderByStatus(status, It.IsAny<CancellationToken>()))
+                .ReturnsAsync(Result.Failure<DataResult<CalenderSessionDto>>(CommonErrors.Unexpected));
+
+            // Act
+            var result = await _sessionService.Object.GetSessionsCalenderByStatus(status, CancellationToken.None);
+
+            // Assert
+            Assert.False(result.IsSuccess);
+            Assert.Equal(CommonErrors.Unexpected.Code, result.Error.Code);
+        }
+
+        #endregion
+
+        #endregion
+
+        private DateTime GetStartOfWeek(int year, int week)
+        {
+            var jan1 = new DateTime(year, 1, 1);
+            var daysOffset = DayOfWeek.Monday - jan1.DayOfWeek;
+            if (daysOffset < 0) daysOffset += 7;
+            return jan1.AddDays(daysOffset).AddDays((week - 1) * 7);
+        }
+
+        #endregion
+
         #region Plan-scoped methods
 
         #region GetSessionsByPlan
