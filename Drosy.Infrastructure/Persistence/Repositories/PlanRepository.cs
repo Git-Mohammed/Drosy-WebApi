@@ -35,7 +35,7 @@ public class PlanRepository(ApplicationDbContext dbContext) : BaseRepository<Pla
 
         var dayValues = days.Select(d => d.Day).Distinct().ToList();
 
-        var overlappingExists = DbContext.Set<PlanDay>();
+      //  var overlappingExists = await DbContext.Set<PlanDay>();
 
         var dayValuse = days.Select(d => d.Day).Distinct().ToList();
         
