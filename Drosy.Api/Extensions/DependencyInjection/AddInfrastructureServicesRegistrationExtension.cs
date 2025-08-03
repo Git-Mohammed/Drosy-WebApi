@@ -69,7 +69,7 @@ namespace Drosy.Api.Extensions.DependencyInjection
             services.AddScoped<IPasswordResetTokenRepository, PasswordResetTokenRepository>();
             services.AddScoped<IPaymentRepository, PaymentRepository>();
             services.AddScoped<IAttendencesRepository, AttendencesRepository>();
-
+            services.AddScoped<ISubjectRepository, SubjectRepository>();
             #endregion
 
             return services;
