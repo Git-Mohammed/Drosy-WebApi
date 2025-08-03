@@ -31,6 +31,7 @@ namespace Drosy.Application.UseCases.Attendences.Interfaces
         /// <param name="ct">Cancellation token to cancel the operation.</param>
         /// <returns>A Result wrapping a DataResult containing a list of attendance DTOs and total record count.</returns>
         Task<Result<DataResult<AttendenceDto>>> GetAllForSessionAsync(int sessionId, CancellationToken ct);
+        Task<Result<DataResult<AttendenceDto>>> GetAllForStudentAsync(int sessionId, CancellationToken ct);
 
         /// <summary>
         /// Retrieves all attendance records for a given session filtered by attendance status.

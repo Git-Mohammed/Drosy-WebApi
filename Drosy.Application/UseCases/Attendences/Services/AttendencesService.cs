@@ -106,6 +106,37 @@ namespace Drosy.Application.UseCases.Attendences.Services
             }
         }
 
+        public async Task<Result<DataResult<AttendenceDto>>> GetAllForStudentAsync(int studentId, CancellationToken ct)
+        {
+            try
+            {
+                ct.ThrowIfCancellationRequested();
+
+                var attendences = (await _attendencesRepository.GetAllForStudentAsync(studentId, ct)).ToList();
+
+                var dtos = _mapper.Map<List<Attendence>, List<AttendenceDto>>(attendences);
+                var result = new DataResult<AttendenceDto>
+                {
+                    Data = dtos,
+                    TotalRecordsCount = dtos.Count
+                };
+
+                _logger.LogInformation("Fetched {Count} attendences for StudentId={StudentId}", dtos.Count, studentId);
+                return Result.Success(result);
+            }
+            catch (OperationCanceledException)
+            {
+                _logger.LogWarning("GetAllForSessionAsync canceled for StudentId={StudentId}", studentId);
+                return Result.Failure<DataResult<AttendenceDto>>(CommonErrors.OperationCancelled);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex.Message, "Error in GetAllForSessionAsync for StudentId={StudentId}", studentId);
+                return Result.Failure<DataResult<AttendenceDto>>(AppError.Failure);
+            }
+        }
+
+
         public async Task<Result<DataResult<AttendenceDto>>> GetAllForSessionByStatusAsync(int sessionId, AttendenceStatus status, CancellationToken ct)
         {
             _logger.LogInformation("Fetching attendences for SessionId={SessionId} with Status={Status}", sessionId, status);

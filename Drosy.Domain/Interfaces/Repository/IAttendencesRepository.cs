@@ -47,6 +47,7 @@ namespace Drosy.Domain.Interfaces.Repository
         /// <param name="ct">Cancellation token.</param>
         /// <returns>A collection of attendance records for the session.</returns>
         Task<IEnumerable<Attendence>> GetAllForSessionAsync(int sessionId, CancellationToken ct);
+        Task<IEnumerable<Attendence>> GetAllForStudentAsync(int studentId, CancellationToken ct);
 
         /// <summary>
         /// Retrieves all attendance records for a given session filtered by attendance status.

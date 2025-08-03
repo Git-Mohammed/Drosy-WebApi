@@ -111,6 +111,36 @@ namespace Drosy.Api.Controllers
             }
         }
 
+
+        [HttpGet("/api/sessions/attendences/students/{studentId:int}", Name = "GetStudentAttendences")]
+        [ProducesResponseType(typeof(ApiResponse<DataResult<AttendenceDto>>), 200)]
+        [ProducesResponseType(typeof(ApiResponse<object>), 400)]
+        [ProducesResponseType(typeof(ApiResponse<object>), 422)]
+        [ProducesResponseType(typeof(ApiResponse<object>), 500)]
+        public async Task<IActionResult> GetAllForStudentAsync([FromRoute] int studentId, [FromQuery] AttendenceStatus? status, CancellationToken ct)
+        {
+            if (studentId < 1)
+            {
+                var error = new ApiError("studentId", ErrorMessageResourceRepository.GetMessage(CommonErrors.Invalid.Message, AppError.CurrentLanguage));
+                return ApiResponseFactory.BadRequestResponse("studentId", "Invalid student ID.", error.Message);
+            }
+
+            try
+            {
+               var result = await _attendencesService.GetAllForStudentAsync(studentId, ct);
+
+                if (result.IsFailure)
+                    return ApiResponseFactory.FromFailure(result, nameof(GetAllForSessionAsync), "Attendences");
+
+                return ApiResponseFactory.SuccessResponse(result.Value);
+            }
+            catch (Exception ex)
+            {
+                return ApiResponseFactory.FromException(ex);
+            }
+        }
+
+
         #endregion
 
         #region Write
