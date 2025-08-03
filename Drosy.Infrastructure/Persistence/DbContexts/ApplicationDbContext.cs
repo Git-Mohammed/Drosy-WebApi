@@ -25,6 +25,9 @@ namespace Drosy.Infrastructure.Persistence.DbContexts
         public DbSet<Attendence> Attendences { get; set; }
         public DbSet<Payment> Payments { get; set; }
 
+        public DbSet<Subject> Subjects { get; set; }
+
+
         protected override void OnModelCreating(ModelBuilder builder)
         {
             base.OnModelCreating(builder);
