@@ -1,4 +1,6 @@
-﻿using Drosy.Domain.Entities;
+﻿using System.Reflection.Emit;
+using Drosy.Application.UseCases.Dashboard.DTOs;
+using Drosy.Domain.Entities;
 using Drosy.Infrastructure.Identity.Entities;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
@@ -24,6 +26,7 @@ namespace Drosy.Infrastructure.Persistence.DbContexts
         public DbSet<Session> Sessions { get; set; }
         public DbSet<Attendence> Attendences { get; set; }
         public DbSet<Payment> Payments { get; set; }
+        public DbSet<DashboardStatsViewDTO> DashboardStats {  get; set; }
 
         public DbSet<Subject> Subjects { get; set; }
 
@@ -33,6 +36,11 @@ namespace Drosy.Infrastructure.Persistence.DbContexts
             base.OnModelCreating(builder);
             builder.ApplyConfigurationsFromAssembly(typeof(ApplicationDbContext).Assembly);
             builder.Ignore<AppUser>();
+           
+            builder
+               .Entity<DashboardStatsViewDTO>()
+               .ToView("vw_DashboardStats")
+               .HasNoKey();
 
             #region Rename Identity Tables Names
             builder.Entity<ApplicationUser>().ToTable("Users", "Identity");

@@ -1,5 +1,6 @@
 ﻿using Drosy.Application.UseCases.Plans.DTOs;
 
+
 namespace Drosy.Application.UseCases.Sessions.DTOs;
 
 public class SessionDTO
@@ -15,4 +16,3 @@ public class SessionDTO
     public PlanDto Plan { get; set; } = null!;
     #endregion
 }
-

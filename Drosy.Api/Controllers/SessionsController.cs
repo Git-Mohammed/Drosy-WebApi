@@ -46,9 +46,10 @@ namespace Drosy.Api.Controllers
         {
             if (id < 1)
             {
-                var error = new ApiError("id", ErrorMessageResourceRepository.GetMessage(CommonErrors.Invalid.Message, AppError.CurrentLanguage));
+                var error = new ApiError("id", "Invalid session ID.");
                 return ApiResponseFactory.BadRequestResponse("id", "Invalid session ID.", error.Message);
             }
+
 
             try
             {
@@ -67,97 +68,153 @@ namespace Drosy.Api.Controllers
             }
         }
 
-     
-        // GET /api/sessions?date=2025-07-26
-        // GET /api/sessions?start=2025-07-01&end=2025-07-31
-        // GET /api/sessions?status=Planned
-        // GET /api/sessions?year=2025&week=30
-        // GET /api/sessions?year=2025&month=7
+
+        //GET /api/sessions? date = 2023 - 10 - 15
+        //GET /api/sessions? start = 2023 - 10 - 01 & end = 2023 - 10 - 07
+        //GET /api/sessions? planStatus = Active
+        //GET /api/sessions? year = 2023 & week = 42
+        //GET /api/sessions? year = 2023 & month = 10
+        //GET /api/sessions
         [HttpGet(Name = "GetSessions")]
         [ProducesResponseType(typeof(ApiResponse<DataResult<SessionDTO>>), 200)]
         [ProducesResponseType(typeof(ApiResponse<object>), 400)]
         [ProducesResponseType(typeof(ApiResponse<object>), 422)]
         [ProducesResponseType(typeof(ApiResponse<object>), 500)]
         public async Task<IActionResult> GetListAsync(
-          [FromQuery] DateTime? date,
-          [FromQuery] DateTime? start,
-          [FromQuery] DateTime? end,
-          [FromQuery] SessionStatus? status,
-          [FromQuery] int? year,
-          [FromQuery] int? week,
-          [FromQuery] int? month,
-          CancellationToken ct)
+            [FromQuery] DateTime? date,
+            [FromQuery] DateTime? start,
+            [FromQuery] DateTime? end,
+            [FromQuery] SessionStatus? status,
+            [FromQuery] int? year,
+            [FromQuery] int? week,
+            [FromQuery] int? month,
+            CancellationToken ct)
         {
-            // 1) single‐date
+            // Guards
+            if (week.HasValue && !year.HasValue)
+                return ApiResponseFactory.BadRequestResponse("week", "`week` requires `year`.");
+            if (month.HasValue && !year.HasValue)
+                return ApiResponseFactory.BadRequestResponse("month", "`month` requires `year`.");
+            if (week.HasValue && month.HasValue)
+                return ApiResponseFactory.BadRequestResponse("filters", "Cannot filter by both `week` and `month`.");
+
+            // Dispatch
             if (date.HasValue)
-                return await GetByDate(date.Value, ct);
+                return await Wrappers.WrapListFilter(
+                    () => _sessionService.GetSessionsByDate(date.Value, ct),
+                    $"Sessions on {date:yyyy-MM-dd}",
+                    nameof(GetListAsync),
+                    "Sessions");
 
-            // 2) date‐range
             if (start.HasValue && end.HasValue)
-                return await GetByRange(start.Value, end.Value, ct);
+                return await Wrappers.WrapListFilter(
+                    () => _sessionService.GetSessionsInRange(start.Value, end.Value, ct),
+                    $"Sessions from {start:yyyy-MM-dd} to {end:yyyy-MM-dd}",
+                    nameof(GetListAsync),
+                    "Sessions");
 
-            // 3) status
             if (status.HasValue)
-                return await GetByStatus(status.Value, ct);
+                return await Wrappers.WrapListFilter(
+                    () => _sessionService.GetSessionsByStatus(status.Value, ct),
+                    $"Sessions with status {status}",
+                    nameof(GetListAsync),
+                    "Sessions");
 
-            // 4) ISO‐week (needs both year+week)
             if (year.HasValue && week.HasValue)
-                return await GetByWeek(year.Value, week.Value, ct);
+                return await Wrappers.WrapListFilter(
+                    () => _sessionService.GetSessionsByWeek(year.Value, week.Value, ct),
+                    $"Sessions in ISO week {week}/{year}",
+                    nameof(GetListAsync),
+                    "Sessions");
 
-            // 5) month (needs both year+month)
             if (year.HasValue && month.HasValue)
-                return await GetByMonth(year.Value, month.Value, ct);
+                return await Wrappers.WrapListFilter(
+                    () => _sessionService.GetSessionsByMonth(year.Value, month.Value, ct),
+                    $"Sessions in {year}-{month:D2}",
+                    nameof(GetListAsync),
+                    "Sessions");
 
-            // 6) no recognized filter → 400 Bad Request
-            return ApiResponseFactory.BadRequestResponse(
-                "filters",
-                "You must supply one of: date; start+end; status; year+week; or year+month."
-            );
+            // No filters: return all
+            return await Wrappers.WrapListFilter(
+                () => _sessionService.GetAllAsync(ct),
+                "All sessions",
+                nameof(GetListAsync),
+                "Sessions");
         }
 
-        private Task<IActionResult> GetByDate(DateTime date, CancellationToken ct) =>
-            Wrap(() => _sessionService.GetSessionsByDate(date, ct),
-                 $"Sessions for {date:yyyy-MM-dd}");
 
-        private Task<IActionResult> GetByRange(DateTime start, DateTime end, CancellationToken ct) =>
-            Wrap(() => _sessionService.GetSessionsInRange(start, end, ct),
-                 $"Sessions from {start:yyyy-MM-dd} to {end:yyyy-MM-dd}");
-
-        private Task<IActionResult> GetByStatus(SessionStatus status, CancellationToken ct) =>
-            Wrap(() => _sessionService.GetSessionsByStatus(status, ct),
-                 $"Sessions with status {status}");
-
-        private Task<IActionResult> GetByWeek(int year, int week, CancellationToken ct) =>
-            Wrap(() => _sessionService.GetSessionsByWeek(year, week, ct),
-                 $"Sessions for ISO week {week} of {year}");
-
-        private Task<IActionResult> GetByMonth(int year, int month, CancellationToken ct) =>
-            Wrap(() => _sessionService.GetSessionsByMonth(year, month, ct),
-                 $"Sessions for {year}-{month:D2}");
-
-        /// <summary>
-        /// Centralizes try/catch + domain‐failure handling + success→200.
-        /// </summary>
-        private async Task<IActionResult> Wrap<T>(
-            Func<Task<Result<T>>> op,
-            string successMsg)
+        //GET /api/sessions/calendar? date = 2023 - 10 - 15
+        //GET /api/sessions/calendar? start = 2023 - 10 - 01 & end = 2023 - 10 - 07
+        //GET /api/sessions/calendar? planStatus = Active
+        //GET /api/sessions/calendar? year = 2023 & week = 42
+        //GET /api/sessions/calendar? year = 2023 & month = 10
+        //GET /api/sessions/calendar
+        [HttpGet("calendar", Name = "GetSessionsCalendar")]
+        [ProducesResponseType(typeof(ApiResponse<DataResult<CalenderSessionDto>>), 200)]
+        [ProducesResponseType(typeof(ApiResponse<object>), 400)]
+        [ProducesResponseType(typeof(ApiResponse<object>), 422)]
+        [ProducesResponseType(typeof(ApiResponse<object>), 500)]
+        public async Task<IActionResult> GetSessionsCalendarAsync(
+            [FromQuery] DateTime? date,
+            [FromQuery] DateTime? start,
+            [FromQuery] DateTime? end,
+            [FromQuery] PlanStatus? planStatus,
+            [FromQuery] int? year,
+            [FromQuery] int? week,
+            [FromQuery] int? month,
+            CancellationToken ct)
         {
-            try
-            {
-                var result = await op();
-                if (result.IsFailure)
-                    return ApiResponseFactory.FromFailure(result, nameof(GetListAsync));
+            // Validation guards
+            if (week.HasValue && !year.HasValue)
+                return ApiResponseFactory.BadRequestResponse("week", "`week` requires `year`.");
+            if (month.HasValue && !year.HasValue)
+                return ApiResponseFactory.BadRequestResponse("month", "`month` requires `year`.");
+            if (week.HasValue && month.HasValue)
+                return ApiResponseFactory.BadRequestResponse("filters", "Cannot filter by both `week` and `month`.");
 
-                return ApiResponseFactory.SuccessResponse(result.Value, successMsg);
-            }
-            catch (Exception ex)
-            {
-                return ApiResponseFactory.FromException(ex);
-            }
+            // Dispatch to the appropriate service method based on parameters
+            if (date.HasValue)
+                return await Wrappers.WrapListFilter(
+                    () => _sessionService.GetSessionsCalenderByDate(date.Value, ct),
+                    $"Calendar sessions on {date:yyyy-MM-dd}",
+                    nameof(GetSessionsCalendarAsync),
+                    "CalendarSessions");
+
+            if (start.HasValue && end.HasValue)
+                return await Wrappers.WrapListFilter(
+                    () => _sessionService.GetSessionsCalenderInRange(start.Value, end.Value, ct),
+                    $"Calendar sessions from {start:yyyy-MM-dd} to {end:yyyy-MM-dd}",
+                    nameof(GetSessionsCalendarAsync),
+                    "CalendarSessions");
+
+            if (planStatus.HasValue)
+                return await Wrappers.WrapListFilter(
+                    () => _sessionService.GetSessionsCalenderByStatus(planStatus.Value, ct),
+                    $"Calendar sessions with plan status {planStatus}",
+                    nameof(GetSessionsCalendarAsync),
+                    "CalendarSessions");
+
+            if (year.HasValue && week.HasValue)
+                return await Wrappers.WrapListFilter(
+                    () => _sessionService.GetSessionsCalenderByWeek(year.Value, week.Value, ct),
+                    $"Calendar sessions in ISO week {week}/{year}",
+                    nameof(GetSessionsCalendarAsync),
+                    "CalendarSessions");
+
+            if (year.HasValue && month.HasValue)
+                return await Wrappers.WrapListFilter(
+                    () => _sessionService.GetSessionsCalenderByMonth(year.Value, month.Value, ct),
+                    $"Calendar sessions in {year}-{month:D2}",
+                    nameof(GetSessionsCalendarAsync),
+                    "CalendarSessions");
+
+            // Default case: no filters provided, return all calendar sessions
+            return await Wrappers.WrapListFilter(
+                () => _sessionService.GetSessionsCalenderAsync(ct),
+                "All calendar sessions",
+                nameof(GetSessionsCalendarAsync),
+                "CalendarSessions");
         }
-
-
-
         #endregion
 
         #region 🆕 Create
@@ -180,10 +237,10 @@ namespace Drosy.Api.Controllers
         [ProducesResponseType(typeof(ApiResponse<object>), 500)]
         public async Task<IActionResult> CreateAsync([FromBody] CreateSessionDTO dto, CancellationToken ct)
         {
-            if (dto == null)
+            if (dto == null || string.IsNullOrEmpty(dto.Title))
             {
-                var error = new ApiError("dto", ErrorMessageResourceRepository.GetMessage(CommonErrors.NullValue.Message, AppError.CurrentLanguage));
-                return ApiResponseFactory.BadRequestResponse("dto", "Invalid session data.", error.Message);
+                var error = new ApiError("dto", "Invalid session data.");
+                return ApiResponseFactory.UnprocessableEntityResponse("Session creation failed.");
             }
 
             try
@@ -251,10 +308,8 @@ namespace Drosy.Api.Controllers
                     return ApiResponseFactory.FromFailure(result, nameof(RescheduleAsync), "Session");
                 }
 
-                return ApiResponseFactory.SuccessResponse(
-                    result.Value,
-                    "Session rescheduled successfully."
-                );
+                return ApiResponseFactory.SuccessResponse(result.Value, "Session rescheduled successfully.");
+
             }
             catch (Exception ex)
             {

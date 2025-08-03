@@ -13,7 +13,7 @@ using Drosy.Domain.Shared.ErrorComponents.EFCore;
 using Moq;
 
 
-namespace Drosy.Tests.Application.Attendeces.Service
+namespace Drosy.Tests.Application.Attendeces
 {
     public class AttendencesServiceTests
     {
