@@ -5,6 +5,7 @@ using Drosy.Domain.Entities;
 using Drosy.Domain.Interfaces.Common.Uow;
 using Drosy.Domain.Interfaces.Repository;
 using Drosy.Domain.Shared.ApplicationResults;
+using Drosy.Domain.Shared.ErrorComponents.Common;
 using Drosy.Domain.Shared.ErrorComponents.Subjects;
 
 public class SubjectService : ISubjectService
@@ -26,6 +27,31 @@ public class SubjectService : ISubjectService
         _logger = logger;
     }
 
+    public async Task<Result<DataResult<SubjectDTO>>> GetAllAsync(CancellationToken ct)
+    {
+        try
+        {
+            var subjects = await _subjectRepository.GetAllAsync(ct);
+            if (subjects is null)
+            {
+                return Result.Failure<DataResult<SubjectDTO>>(SubjectErrors.SubjectNotFound);
+            }
+
+            DataResult<SubjectDTO> dataResult = new DataResult<SubjectDTO>
+            {
+                Data = _mapper.Map<IEnumerable<Subject>, IEnumerable<SubjectDTO>>(subjects),
+                TotalRecordsCount = subjects.Count()
+            };
+
+            return Result.Success(dataResult);
+
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex.Message, ex);
+            return Result.Failure<DataResult<SubjectDTO>>(CommonErrors.Unexpected);
+        }
+    }
     public async Task<Result<SubjectDTO>> GetByIdAsync(int id, CancellationToken ct)
     {
         try
@@ -113,12 +139,5 @@ public class SubjectService : ISubjectService
             _logger.LogError("Error deleting subject: {Message}", ex.Message);
             return Result.Failure(SubjectErrors.SubjectFailure);
         }
-    }
-
-    
-
-    public async Task<Result<DataResult<SubjectDTO>>> GetAllAsync(CancellationToken ct)
-    {
-        throw new NotImplementedException();
     }
 }

@@ -18,6 +18,7 @@ using Drosy.Application.UseCases.Sessions.Interfaces;
 using Drosy.Application.UseCases.Sessions.Services;
 using Drosy.Application.UseCases.Students.Interfaces;
 using Drosy.Application.UseCases.Students.Services;
+using Drosy.Application.UseCases.Subjects.Interfaces;
 using Drosy.Application.UsesCases.Authentication.DTOs;
 using Drosy.Infrastructure.Email.Mailkit;
 using Drosy.Infrastructure.Identity;
@@ -44,7 +45,7 @@ namespace Drosy.Api.Extensions.DependencyInjection
             services.AddScoped<IAttendencesService, AttendencesService>();
             services.AddScoped<IPaymentService, PaymentService>();
             services.AddScoped<ISessionService, SessionService>();
-
+            services.AddScoped<ISubjectService, SubjectService>();
             services.AddScoped<IEmailService, EmailService>();
             #endregion
 
