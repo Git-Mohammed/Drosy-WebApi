@@ -4,6 +4,7 @@ using Drosy.Infrastructure.Persistence.DbContexts;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace Drosy.Infrastructure.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20250804162115_AddSystemSettingEntity")]
+    partial class AddSystemSettingEntity
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -562,14 +565,6 @@ namespace Drosy.Infrastructure.Migrations
                     b.HasKey("Id");
 
                     b.ToTable("SystemSettings", "Configuration");
-
-                    b.HasData(
-                        new
-                        {
-                            Id = 1,
-                            DefaultCurrency = "USD",
-                            WebName = "Drosy"
-                        });
                 });
 
             modelBuilder.Entity("Drosy.Domain.Entities.Teacher", b =>

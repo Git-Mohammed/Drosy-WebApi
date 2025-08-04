@@ -70,6 +70,8 @@ namespace Drosy.Api.Extensions.DependencyInjection
             services.AddScoped<IPaymentRepository, PaymentRepository>();
             services.AddScoped<IAttendencesRepository, AttendencesRepository>();
             services.AddScoped<ISubjectRepository, SubjectRepository>();
+            services.AddScoped<ISystemSettingRepository, SystemSettingRepository>();
+
             #endregion
 
             return services;

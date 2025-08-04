@@ -19,8 +19,11 @@ using Drosy.Application.UseCases.Sessions.Services;
 using Drosy.Application.UseCases.Students.Interfaces;
 using Drosy.Application.UseCases.Students.Services;
 using Drosy.Application.UseCases.Subjects.Interfaces;
+using Drosy.Application.UseCases.SystemSettings.Interfaces;
+using Drosy.Application.UseCases.SystemSettings.Services;
 using Drosy.Application.UsesCases.Authentication.DTOs;
 using Drosy.Infrastructure.Email.Mailkit;
+using Drosy.Infrastructure.Helper.Image;
 using Drosy.Infrastructure.Identity;
 using Drosy.Infrastructure.JWT;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
@@ -47,6 +50,8 @@ namespace Drosy.Api.Extensions.DependencyInjection
             services.AddScoped<ISessionService, SessionService>();
             services.AddScoped<ISubjectService, SubjectService>();
             services.AddScoped<IEmailService, EmailService>();
+            services.AddScoped<ISystemSettingService, SystemSettingService>();
+            services.AddScoped<IImageService, ImageService>();
             #endregion
 
 
