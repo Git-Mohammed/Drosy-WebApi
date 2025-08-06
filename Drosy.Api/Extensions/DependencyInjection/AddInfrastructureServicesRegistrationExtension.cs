@@ -71,6 +71,7 @@ namespace Drosy.Api.Extensions.DependencyInjection
             services.AddScoped<IAttendencesRepository, AttendencesRepository>();
             services.AddScoped<ISubjectRepository, SubjectRepository>();
             services.AddScoped<ISystemSettingRepository, SystemSettingRepository>();
+            services.AddScoped<IRegionRepository, RegionRepository>();
 
             #endregion
 

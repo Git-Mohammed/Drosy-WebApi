@@ -29,6 +29,8 @@ namespace Drosy.Infrastructure.Persistence.DbContexts
         public DbSet<DashboardStatsViewDTO> DashboardStats {  get; set; }
         public DbSet<Subject> Subjects { get; set; }
         public DbSet<SystemSetting> SystemSettings { get; set; }
+        public DbSet<Region> Regions { get; set; }
+
         protected override void OnModelCreating(ModelBuilder builder)
         {
             base.OnModelCreating(builder);
