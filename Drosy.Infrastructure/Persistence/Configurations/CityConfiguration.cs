@@ -21,9 +21,11 @@ namespace Drosy.Infrastructure.Persistence.Configurations
 
         private List<City> LoadCities()
         {
-            return new List<City>() {
-                new City { Id = 1, Name = "صنعاء", CountryId = 1 },
-                new City { Id = 2, Name = "الرياض", CountryId = 2 }
+            return new List<City>
+            {
+                new City { Id = 1, Name = "صنعاء", CountryId = 1 },   // Sana’a Region
+                new City { Id = 2, Name = "مأرب", CountryId = 1},    // Ma’rib Region
+                new City { Id = 3, Name = "عدن", CountryId = 1}   // Aden Region
             };
         }
     }

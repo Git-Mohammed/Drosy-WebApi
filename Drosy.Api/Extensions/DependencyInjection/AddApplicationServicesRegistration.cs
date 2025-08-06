@@ -14,6 +14,7 @@ using Drosy.Application.UseCases.Plans.Interfaces;
 using Drosy.Application.UseCases.Plans.Services;
 using Drosy.Application.UseCases.PlanStudents.Interfaces;
 using Drosy.Application.UseCases.PlanStudents.Services;
+using Drosy.Application.UseCases.Regions.Interfaces;
 using Drosy.Application.UseCases.Sessions.Interfaces;
 using Drosy.Application.UseCases.Sessions.Services;
 using Drosy.Application.UseCases.Students.Interfaces;
@@ -52,6 +53,8 @@ namespace Drosy.Api.Extensions.DependencyInjection
             services.AddScoped<IEmailService, EmailService>();
             services.AddScoped<ISystemSettingService, SystemSettingService>();
             services.AddScoped<IImageService, ImageService>();
+            services.AddScoped<IRegionService, RegionService>();
+
             #endregion
 
 
