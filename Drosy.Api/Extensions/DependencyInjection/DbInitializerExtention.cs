@@ -11,7 +11,7 @@ namespace Drosy.Api.Extensions.DependencyInjection
             return services;
         }
 
-        public static void setupDBInitializer(this IApplicationBuilder app)
+        public static void SetupDbInitializer(this IApplicationBuilder app)
         {
             using (var scope = app.ApplicationServices.CreateScope())
             {

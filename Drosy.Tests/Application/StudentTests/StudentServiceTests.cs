@@ -1,10 +1,13 @@
-﻿using Moq;
-using Drosy.Application.UseCases.Students.Interfaces;
-using Drosy.Application.UseCases.Students.DTOs;
+﻿using Drosy.Application.UseCases.Cities.DTOs;
 using Drosy.Application.UseCases.Grades.DTOs;
-using Drosy.Application.UseCases.Cities.DTOs;
+using Drosy.Application.UseCases.Payments.DTOs;
+using Drosy.Application.UseCases.Sessions.DTOs;
+using Drosy.Application.UseCases.Students.DTOs;
+using Drosy.Application.UseCases.Students.Interfaces;
+using Drosy.Domain.Entities;
 using Drosy.Domain.Shared.ApplicationResults;
 using Drosy.Domain.Shared.ErrorComponents.Common;
+using Moq;
 
 namespace Drosy.Tests.Application.StudentTests
 {
@@ -287,6 +290,41 @@ namespace Drosy.Tests.Application.StudentTests
                 Assert.NotNull(result.Error);
             }
         }
+
+
+        [Theory]
+        [InlineData(1, true)] // Valid student, not canceled
+        [InlineData(2, false)] // Student not found
+        [InlineData(3, true)]  // Operation canceled
+        public async Task GetStudentInfoDetailsAsync_ShouldReturnExpectedResult(int studentId, bool studentExists)
+        {
+            // Arrange
+            var student = studentExists ? new StudentDetailsDto
+            {
+                PaymentStats = new PaymentStatsDto { PaidAmount = 100, TotalAmount = 150 },
+                LessonStats = new LessonStatsDto { CompletedLessons = 5 }
+            } : null;
+
+            _studentService
+                .Setup(repo => repo.GetStudentInfoDetailsAsync(studentId, It.IsAny<CancellationToken>()))
+                .ReturnsAsync(student);
+
+
+            // Act
+            var result = await _studentService.Object.GetStudentInfoDetailsAsync(studentId, It.IsAny<CancellationToken>());
+
+            // Assert
+            if (!studentExists)
+            {
+                Assert.True(result.IsFailure);
+                Assert.NotNull(result.Error);
+            }
+            else
+            {
+                Assert.True(result.IsSuccess);
+            }
+        }
+
 
     }
 
