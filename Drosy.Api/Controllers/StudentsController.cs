@@ -1,9 +1,11 @@
-﻿using Drosy.Api.Commons.Responses;
+﻿using System.Security.Claims;
+using Drosy.Api.Commons.Responses;
 using Drosy.Application.UseCases.Students.DTOs;
 using Drosy.Application.UseCases.Students.Interfaces;
 using Drosy.Domain.Shared.ApplicationResults;
 using Drosy.Domain.Shared.ErrorComponents;
 using Drosy.Domain.Shared.ErrorComponents.Common;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using static System.Runtime.InteropServices.JavaScript.JSType;
 
@@ -15,6 +17,7 @@ namespace Drosy.Api.Controllers
 
     [ApiController]
     [Route("api/students")]
+    [Authorize]
     public class StudentsController : ControllerBase
     {
         private readonly IStudentService _studentService;
@@ -94,6 +97,26 @@ namespace Drosy.Api.Controllers
             }
             return ApiResponseFactory.SuccessResponse<List<StudentCardInfoDTO>>(result.Value);
         }
+
+        [HttpGet("{studentId:int}/details", Name = "GetStudentInfoDetailsAsync")]
+        public async Task<IActionResult> GetStudentInfoDetailsAsync(int studentId, CancellationToken ct)
+        {
+            if (ct.IsCancellationRequested)
+            {
+                return ApiResponseFactory.FromFailure(Result.Failure(CommonErrors.OperationCancelled), nameof(GetStudentInfoDetailsAsync));
+            }
+
+            var result = await _studentService.GetStudentInfoDetailsAsync(studentId, ct);
+
+            if (result.IsFailure)
+            {
+                return ApiResponseFactory.FromFailure(result, nameof(GetAllStudentsInfoCardsAsync));
+            }
+            return ApiResponseFactory.SuccessResponse(result.Value);
+        }
+
+
+
         #endregion
 
         #region Write
@@ -172,6 +195,20 @@ namespace Drosy.Api.Controllers
             {
                 return ApiResponseFactory.FromException(ex);
             }
+        }
+
+        [HttpDelete("{id:int}")]
+        public async Task<IActionResult> DeleteStudentAsync(int id, CancellationToken ct)
+        {
+            if (ct.IsCancellationRequested)
+            {
+                return ApiResponseFactory.FromFailure(Result.Failure(CommonErrors.OperationCancelled), nameof(DeleteStudentAsync));
+            }
+            var userId = 0;
+            int.TryParse(User.FindFirst(ClaimTypes.NameIdentifier)?.Value, out userId);
+            var result = await _studentService.DeleteStudentAsync(id, userId, ct);
+
+            return result.IsSuccess ? ApiResponseFactory.SuccessResponse() : ApiResponseFactory.FromFailure(result, nameof(DeleteStudentAsync));
         }
         #endregion
     }

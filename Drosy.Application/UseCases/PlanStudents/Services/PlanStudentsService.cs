@@ -30,6 +30,68 @@ namespace Drosy.Application.UseCases.PlanStudents.Services
             _logger = logger;
         }
 
+        public async Task<Result<PlanStudentDto>> GetById(int planId, int studentId, CancellationToken ct)
+        {
+            _logger.LogInformation("Starting GetById for PlanId={PlanId}, StudentId={StudentId}", planId, studentId);
+
+            try
+            {
+                ct.ThrowIfCancellationRequested();
+
+                PlanStudent? entity = await _planStudentRepository.GetById(planId,studentId, ct);
+
+                if (entity != null)
+                {
+                    _logger.LogInformation("Student {StudentId} not in Plan {PlanId}", studentId, planId);
+                    return Result.Failure<PlanStudentDto>(CommonErrors.NotFound);
+                }
+
+                var dto = _mapper.Map<PlanStudent,PlanStudentDto>(entity!);
+
+                return Result.Success(dto);
+            }
+            catch (OperationCanceledException)
+            {
+                _logger.LogWarning("Operation canceled in GetById for PlanId={PlanId}", planId);
+                return Result.Failure<PlanStudentDto>(CommonErrors.OperationCancelled);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex.Message, "Unexpected error in GetById for PlanId={PlanId}, StudentId={StudentId}", planId, studentId);
+                return Result.Failure<PlanStudentDto>(AppError.Failure);
+            }
+        }
+
+        public async Task<Result> IsStudentInPlanAsync(int planId, int studentId, CancellationToken ct)
+        {
+            _logger.LogInformation("Starting IsStudentInPlanAsync for PlanId={PlanId}, StudentId={StudentId}", planId, studentId);
+
+            try
+            {
+                ct.ThrowIfCancellationRequested();
+
+                var isExists = await _planStudentRepository.ExistsAsync(planId,studentId, ct);
+
+                if (!isExists)
+                {
+                    _logger.LogInformation("Student {StudentId} not in Plan {PlanId}", studentId, planId);
+                    return Result.Failure(CommonErrors.NotFound);
+                }
+
+                return Result.Success();
+            }
+            catch (OperationCanceledException)
+            {
+                _logger.LogWarning("Operation canceled in IsStudentInPlanAsync for PlanId={PlanId}", planId);
+                return Result.Failure<PlanStudentDto>(CommonErrors.OperationCancelled);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex.Message, "Unexpected error in IsStudentInPlanAsync for PlanId={PlanId}, StudentId={StudentId}", planId, studentId);
+                return Result.Failure(AppError.Failure);
+            }
+        }
+
         public async Task<Result<PlanStudentDto>> AddStudentToPlanAsync(int planId, AddStudentToPlanDto dto, CancellationToken ct)
         {
             _logger.LogInformation("Starting AddStudentToPlanAsync for PlanId={PlanId}, StudentId={StudentId}", planId, dto.StudentId);
@@ -52,8 +114,8 @@ namespace Drosy.Application.UseCases.PlanStudents.Services
                 }
 
                 //3) No duplicate
-                bool alreadyInPlan = await _planStudentRepository.ExistsAsync(planId, dto.StudentId, ct);
-                if (alreadyInPlan)
+                bool existing = await _planStudentRepository.ExistsAsync(planId, dto.StudentId, ct);
+                if (existing)
                 {
                     _logger.LogWarning("Student {StudentId} already assigned to Plan {PlanId}", dto.StudentId, planId);
                     return Result.Failure<PlanStudentDto>(CommonErrors.Conflict, new Exception("Student is already assigned to this plan."));
@@ -144,15 +206,15 @@ namespace Drosy.Application.UseCases.PlanStudents.Services
                     return Result.Failure<DataResult<PlanStudentDto>>(EfCoreErrors.CanNotSaveChanges);
                 }
 
-                var mappedDtos = _mapper.Map<List<PlanStudent>, List<PlanStudentDto>>(planStudents);
+                var planStudentsDtos = _mapper.Map<List<PlanStudent>, List<PlanStudentDto>>(planStudents);
                 var dataResult = new DataResult<PlanStudentDto>
                 {
-                    Data = mappedDtos ?? Enumerable.Empty<PlanStudentDto>(),
-                    TotalRecordsCount = mappedDtos!.Count
+                    Data = planStudentsDtos ?? Enumerable.Empty<PlanStudentDto>(),
+                    TotalRecordsCount = planStudentsDtos!.Count
                 };
 
                 _logger.LogInformation("Successfully added {Count} students to Plan {PlanId}", dataResult.TotalRecordsCount, planId);
-                return Result<DataResult<PlanStudentDto>>.Success(dataResult);
+                return Result.Success(dataResult);
 
             }
             catch (OperationCanceledException)

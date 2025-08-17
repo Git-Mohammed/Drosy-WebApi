@@ -1,7 +1,6 @@
 ﻿using Drosy.Api.Commons.Responses;
 using Drosy.Application.UseCases.PlanStudents.DTOs;
 using Drosy.Application.UseCases.PlanStudents.Interfaces;
-using Drosy.Application.UseCases.PlanStudents.Services;
 using Drosy.Domain.Shared.ApplicationResults;
 using Drosy.Domain.Shared.ErrorComponents;
 using Drosy.Domain.Shared.ErrorComponents.Common;

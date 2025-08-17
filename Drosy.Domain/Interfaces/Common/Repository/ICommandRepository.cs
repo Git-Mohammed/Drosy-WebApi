@@ -59,6 +59,8 @@
         /// <param name="cancellationToken">Token to cancel the operation.</param>
         Task DeleteRangeAsync(IEnumerable<TEntity> entities, CancellationToken cancellationToken);
 
+
+        public Task SoftDeleteAsync(TEntity entity, int deletedBy, CancellationToken ct);
         #endregion
     }
 }

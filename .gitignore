@@ -364,3 +364,6 @@ FodyWeavers.xsd
 /Drosy.Api/appsettings.json
 /Drosy.Api/appsettings.Development.json
 /Drosy.Api/appsettings.Development.json
+/Drosy.Api/appsettings.json
+/Drosy.Api/Development.appsettings.json
+/Drosy.Api/wwwroot/uploads/System
